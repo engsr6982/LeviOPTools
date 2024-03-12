@@ -2,18 +2,18 @@
 
 #include <ll/api/plugin/NativePlugin.h>
 
-namespace rename_this {
+namespace entry {
 
-class RenameThis {
-    RenameThis();
+class entry {
+    entry();
 
 public:
-    RenameThis(RenameThis&&)                 = delete;
-    RenameThis(const RenameThis&)            = delete;
-    RenameThis& operator=(RenameThis&&)      = delete;
-    RenameThis& operator=(const RenameThis&) = delete;
+    entry(entry&&)                 = delete;
+    entry(const entry&)            = delete;
+    entry& operator=(entry&&)      = delete;
+    entry& operator=(const entry&) = delete;
 
-    static RenameThis& getInstance();
+    static entry& getInstance();
 
     [[nodiscard]] ll::plugin::NativePlugin& getSelf() const;
 
@@ -30,4 +30,4 @@ private:
     ll::plugin::NativePlugin* mSelf{};
 };
 
-} // namespace rename_this
+} // namespace entry
