@@ -1,7 +1,11 @@
 #include "Entry.h"
+#include "PluginInfo.h"
 
 #include <ll/api/plugin/NativePlugin.h>
+#include <ll/api/service/ServerInfo.h>
+#include <ll/api/service/Service.h>
 #include <memory>
+
 
 // my files
 #include "Command/Command.h"
@@ -19,10 +23,31 @@ entry& entry::getInstance() {
 ll::plugin::NativePlugin& entry::getSelf() const { return *mSelf; }
 
 bool entry::load(ll::plugin::NativePlugin& self) {
-    mSelf = std::addressof(self);
-    getSelf().getLogger().info("loading...");
-
+    mSelf        = std::addressof(self);
+    auto& logger = getSelf().getLogger();
     // Code for loading the plugin goes here.
+
+    logger.info("Autor: {}", PLUGIN_AUTHOR);
+    logger.info(
+        "Version: {}.{}.{} for Levilamina and BDS Protocol {}",
+        PLUGIN_VERSION_MAJOR,
+        PLUGIN_VERSION_MINOR,
+        PLUGIN_VERSION_REVISION,
+        PLUGIN_TARGET_BDS_PROTOCOL_VERSION
+    );
+    if (std::filesystem::exists("./plugins/PPOUI/debug")) {
+        logger.consoleLevel = 5;
+        logger.warn("Printing debugging information is enabled");
+    }
+    if (ll::getServerProtocolVersion() != PLUGIN_TARGET_BDS_PROTOCOL_VERSION) {
+        logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. ");
+        logger.warn(
+            "Current protocol version {}  Adaptation protocol version {}",
+            ll::getServerProtocolVersion(),
+            PLUGIN_TARGET_BDS_PROTOCOL_VERSION
+        );
+    }
+
     tools::config::loadConfig();
 
     return true;

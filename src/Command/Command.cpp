@@ -2,10 +2,6 @@
 #include "Config/Config.h"
 
 #include "form/index.h"
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <iostream>
 #include <ll/api/Logger.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
@@ -23,11 +19,7 @@
 #include <mc/server/commands/CommandSelector.h>
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/player/Player.h>
-#include <memory>
-#include <numeric>
-#include <stdexcept>
 #include <string>
-#include <utility>
 
 
 namespace tools::command {
@@ -71,7 +63,11 @@ bool regCommand() {
         Actor* entity = origin.getEntity();
         if (entity) {
             auto& player = *static_cast<Player*>(entity); // entity* => Player&
-            tools::form::index(player);
+            if (player.isOperator()) {
+                tools::form::index(player);
+            } else {
+                output.error("This command is available to [OP] only!");
+            }
         }
     }>();
 
