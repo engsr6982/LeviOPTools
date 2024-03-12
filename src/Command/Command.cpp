@@ -51,7 +51,12 @@ namespace tools::command {
     }
 // clang-format on
 
+struct Arg_Player {
+    CommandSelector<Player> player;
+};
+
 bool regCommand() {
+    using ll::command::CommandRegistrar;
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
         config::cfg.command.commandName,
         config::cfg.command.commandDescription
@@ -70,6 +75,24 @@ bool regCommand() {
             }
         }
     }>();
+
+    // tools kill <target: Player>
+    cmd.overload<Arg_Player>()
+        .text("kill")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
+            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            Actor* entity = origin.getEntity();
+            if (entity) {
+                auto& player = *static_cast<Player*>(entity);
+                auto  item   = param.player.results(origin).data;
+                for (Player* target : *item) {
+                    if (target) {
+                        target->kill();
+                        player.sendMessage("try kill player" + target->getRealName());
+                    }
+                }
+            }
+        }>();
 
     return true;
 }
