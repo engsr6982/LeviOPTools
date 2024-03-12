@@ -70,7 +70,7 @@ bool regCommand() {
         CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
         Actor* entity = origin.getEntity();
         if (entity) {
-            auto& player = *static_cast<Player*>(entity);
+            auto& player = *static_cast<Player*>(entity); // entity* => Player&
             tools::form::index(player);
         }
     }>();

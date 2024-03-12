@@ -5,7 +5,7 @@ namespace tools::config {
 struct Configs {
     int version = 1;
     struct Command {
-        std::string commandName = "toosl";
+        std::string commandName = "tools";
         std::string commandDescription = "LeviOPTools";
     } command;
 };
