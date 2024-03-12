@@ -3,6 +3,10 @@
 #include <ll/api/plugin/NativePlugin.h>
 #include <memory>
 
+// my files
+#include "Command/Command.h"
+#include "Config/Config.h"
+
 namespace entry {
 
 entry::entry() = default;
@@ -19,6 +23,7 @@ bool entry::load(ll::plugin::NativePlugin& self) {
     getSelf().getLogger().info("loading...");
 
     // Code for loading the plugin goes here.
+    tools::config::loadConfig();
 
     return true;
 }
@@ -27,6 +32,7 @@ bool entry::enable() {
     getSelf().getLogger().info("enabling...");
 
     // Code for enabling the plugin goes here.
+    tools::command::regCommand();
 
     return true;
 }
