@@ -51,8 +51,14 @@ namespace tools::command {
     }
 // clang-format on
 
+using string = std::string;
+
 struct Arg_Player {
     CommandSelector<Player> player;
+};
+struct Args_Kick {
+    CommandSelector<Player> player;
+    string                  message;
 };
 
 bool regCommand() {
@@ -76,20 +82,49 @@ bool regCommand() {
         }
     }>();
 
-    // tools kill <target: Player>
+    // tools kill <Player>
     cmd.overload<Arg_Player>()
         .text("kill")
+        .required("player")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
             if (entity) {
                 auto& player = *static_cast<Player*>(entity);
-                auto  item   = param.player.results(origin).data;
-                for (Player* target : *item) {
-                    if (target) {
-                        target->kill();
-                        player.sendMessage("try kill player" + target->getRealName());
+                if (player.isOperator()) {
+                    auto item = param.player.results(origin).data;
+                    for (Player* target : *item) {
+                        if (target) {
+                            target->kill();
+                            player.sendMessage("try kill player: " + target->getRealName());
+                        }
                     }
+                } else {
+                    output.error("This command is available to [OP] only!");
+                }
+            }
+        }>();
+
+    // tools kick <Player> [Msg]
+    cmd.overload<Args_Kick>()
+        .text("kick")
+        .required("player")
+        .optional("message")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
+            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            Actor* entity = origin.getEntity();
+            if (entity) {
+                auto& player = *static_cast<Player*>(entity);
+                if (player.isOperator()) {
+                    auto item = param.player.results(origin).data;
+                    for (Player* target : *item) {
+                        if (target) {
+                            target->disconnect(param.message.empty() ? "server disconnect" : param.message);
+                            player.sendMessage("try kick player: " + target->getRealName());
+                        }
+                    }
+                } else {
+                    output.error("This command is available to [OP] only!");
                 }
             }
         }>();
