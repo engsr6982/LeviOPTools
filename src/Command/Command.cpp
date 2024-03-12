@@ -50,7 +50,7 @@ using ll::i18n_literals::operator""_tr;
             case CommandOriginType::ExecuteContext: targetTypeStr = "execute contexts"; break;                         \
             default: targetTypeStr = "unknown";                                                                        \
         }                                                                                                              \
-        return output.error("This command is available to [" + targetTypeStr + "] only!"_tr());                        \
+        return output.error("This command is available to [{}] only!"_tr(targetTypeStr));                              \
     }
 // clang-format on
 
