@@ -11,6 +11,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <ll/api/utils/HashUtils.h>
 #include <mc/entity/utilities/ActorType.h>
+#include <mc/network/packet/LevelChunkPacket.h>
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOriginType.h>
 #include <mc/server/commands/CommandOutput.h>
@@ -130,6 +131,33 @@ bool regCommand() {
                 }
             }
         }>();
+
+    // tools crash <Player>
+    cmd.overload<Arg_Player>()
+        .text("crash")
+        .required("player")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
+            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            Actor* entity = origin.getEntity();
+            if (entity) {
+                auto& player = *static_cast<Player*>(entity);
+                if (player.isOperator()) {
+                    auto item = param.player.results(origin).data;
+                    for (Player* target : *item) {
+                        if (target) {
+                            string           name = target->getRealName();
+                            LevelChunkPacket pkt  = LevelChunkPacket();
+                            pkt.mCacheEnabled     = true;
+                            target->sendNetworkPacket(pkt);
+                            player.sendMessage("try crash player: {}"_tr(name));
+                        }
+                    }
+                } else {
+                    output.error("This command is available to [OP] only!"_tr());
+                }
+            }
+        }>();
+
 
     return true;
 }
