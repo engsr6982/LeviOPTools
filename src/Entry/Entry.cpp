@@ -1,54 +1,53 @@
 #include "Entry.h"
 #include "PluginInfo.h"
 
+#include <ll/api/i18n/I18n.h>
 #include <ll/api/plugin/NativePlugin.h>
 #include <ll/api/service/ServerInfo.h>
 #include <ll/api/service/Service.h>
 #include <memory>
-
 
 // my files
 #include "Command/Command.h"
 #include "Config/Config.h"
 
 namespace entry {
-
 entry::entry() = default;
-
 entry& entry::getInstance() {
     static entry instance;
     return instance;
 }
-
 ll::plugin::NativePlugin& entry::getSelf() const { return *mSelf; }
 
 bool entry::load(ll::plugin::NativePlugin& self) {
     mSelf        = std::addressof(self);
     auto& logger = getSelf().getLogger();
-    // Code for loading the plugin goes here.
 
-    logger.info("Autor: {}", PLUGIN_AUTHOR);
-    logger.info(
-        "Version: {}.{}.{} for Levilamina and BDS Protocol {}",
+    tools::config::loadConfig();
+
+    ll::i18n::load("plugins/LeviOPTools/lang");
+    using ll::i18n_literals::operator""_tr;
+
+    logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
+    logger.info("Version: {}.{}.{} for Levilamina and BDS Protocol {}"_tr(
         PLUGIN_VERSION_MAJOR,
         PLUGIN_VERSION_MINOR,
         PLUGIN_VERSION_REVISION,
         PLUGIN_TARGET_BDS_PROTOCOL_VERSION
-    );
+    ));
+
     if (std::filesystem::exists("./plugins/PPOUI/debug")) {
         logger.consoleLevel = 5;
-        logger.warn("Printing debugging information is enabled");
+        logger.warn("Printing debugging information is enabled"_tr());
     }
     if (ll::getServerProtocolVersion() != PLUGIN_TARGET_BDS_PROTOCOL_VERSION) {
-        logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. ");
-        logger.warn(
-            "Current protocol version {}  Adaptation protocol version {}",
+        logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. "_tr());
+        logger.warn("Current protocol version {}  Adaptation protocol version {}"_tr(
             ll::getServerProtocolVersion(),
             PLUGIN_TARGET_BDS_PROTOCOL_VERSION
-        );
+        ));
     }
 
-    tools::config::loadConfig();
 
     return true;
 }

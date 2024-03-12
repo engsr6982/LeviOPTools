@@ -3,12 +3,15 @@
 
 #include <filesystem>
 #include <ll/api/Config.h>
+#include <ll/api/i18n/I18n.h>
 
 namespace tools::config {
 
 Configs cfg; // init Config
 
 #define CONFIG_FILE_NAME "Config.json"
+using ll::i18n_literals::operator""_tr;
+
 
 bool loadConfig() {
     auto& mSelf    = entry::entry::getInstance().getSelf();
@@ -17,12 +20,12 @@ bool loadConfig() {
     // init file
     std::filesystem::path p = filePath;
     if (!std::filesystem::exists(p)) {
-        logger.info("Saving default configurations");
+        logger.info("Saving default configurations"_tr());
         writeConfig(cfg);
     }
     // loading
     if (!ll::config::loadConfig(cfg, filePath)) {
-        logger.warn("无法从 {} 加载配置", filePath);
+        logger.warn("Unable to load configuration from {}"_tr(filePath));
         return false;
     }
     return true;
@@ -34,7 +37,7 @@ bool writeConfig(Configs newCfg) {
     auto& logger         = mSelf.getLogger();
 
     if (!ll::config::saveConfig(newCfg, configFilePath)) {
-        logger.error("Cannot save configurations to {}", configFilePath);
+        logger.error("Cannot save configurations to {}"_tr(configFilePath));
         return false;
     }
     return true;

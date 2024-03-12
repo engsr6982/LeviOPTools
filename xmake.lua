@@ -13,7 +13,7 @@ end
 
 target("LeviOPTools") -- Change this to your plugin name.
     add_cxflags("/EHa", "/utf-8")
-    add_defines("NOMINMAX", "UNICODE")
+    add_defines("NOMINMAX", "UNICODE", "LL_I18N_COLLECT_STRINGS")
     add_files("src/**.cpp")
     add_includedirs("src")
     add_packages("levilamina")

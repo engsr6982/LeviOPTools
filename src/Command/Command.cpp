@@ -6,6 +6,7 @@
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>
+#include <ll/api/i18n/I18n.h>
 #include <ll/api/plugin/NativePlugin.h>
 #include <ll/api/service/Bedrock.h>
 #include <ll/api/utils/HashUtils.h>
@@ -23,6 +24,7 @@
 
 
 namespace tools::command {
+using ll::i18n_literals::operator""_tr;
 
 // clang-format off
 #define CHECK_COMMAND_TYPE(currentType, targetType)                                                                    \
@@ -47,7 +49,7 @@ namespace tools::command {
             case CommandOriginType::ExecuteContext: targetTypeStr = "execute contexts"; break;                         \
             default: targetTypeStr = "unknown";                                                                        \
         }                                                                                                              \
-        return output.error("This command is available to [" + targetTypeStr + "] only!");                             \
+        return output.error("This command is available to [" + targetTypeStr + "] only!"_tr());                        \
     }
 // clang-format on
 
@@ -77,7 +79,7 @@ bool regCommand() {
             if (player.isOperator()) {
                 tools::form::index(player);
             } else {
-                output.error("This command is available to [OP] only!");
+                output.error("This command is available to [OP] only!"_tr());
             }
         }
     }>();
@@ -96,11 +98,11 @@ bool regCommand() {
                     for (Player* target : *item) {
                         if (target) {
                             target->kill();
-                            player.sendMessage("try kill player: " + target->getRealName());
+                            player.sendMessage("try kill player: {}"_tr(target->getRealName()));
                         }
                     }
                 } else {
-                    output.error("This command is available to [OP] only!");
+                    output.error("This command is available to [OP] only!"_tr());
                 }
             }
         }>();
@@ -120,11 +122,11 @@ bool regCommand() {
                     for (Player* target : *item) {
                         if (target) {
                             target->disconnect(param.message.empty() ? "server disconnect" : param.message);
-                            player.sendMessage("try kick player: " + target->getRealName());
+                            player.sendMessage("try kick player: {}"_tr(target->getRealName()));
                         }
                     }
                 } else {
-                    output.error("This command is available to [OP] only!");
+                    output.error("This command is available to [OP] only!"_tr());
                 }
             }
         }>();
