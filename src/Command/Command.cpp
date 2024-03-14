@@ -9,9 +9,14 @@
 #include <ll/api/i18n/I18n.h>
 #include <ll/api/plugin/NativePlugin.h>
 #include <ll/api/service/Bedrock.h>
+#include <ll/api/service/PlayerInfo.h>
+#include <ll/api/service/Service.h>
 #include <ll/api/utils/HashUtils.h>
 #include <mc/entity/utilities/ActorType.h>
 #include <mc/network/packet/LevelChunkPacket.h>
+#include <mc/network/packet/TextPacket.h>
+#include <mc/server/ServerLevel.h>
+#include <mc/server/ServerPlayer.h>
 #include <mc/server/commands/CommandOrigin.h>
 #include <mc/server/commands/CommandOriginType.h>
 #include <mc/server/commands/CommandOutput.h>
@@ -150,6 +155,41 @@ bool regCommand() {
                             pkt.mCacheEnabled     = true;
                             target->sendNetworkPacket(pkt);
                             player.sendMessage("try crash player: {}"_tr(name));
+                        }
+                    }
+                } else {
+                    output.error("This command is available to [OP] only!"_tr());
+                }
+            }
+        }>();
+
+    // tools talkas <Player> [msg]
+    cmd.overload<Args_Kick>()
+        .text("talkas")
+        .required("player")
+        .required("message")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
+            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            Actor* entity = origin.getEntity();
+            if (entity) {
+                auto& player = *static_cast<Player*>(entity);
+                if (player.isOperator()) {
+                    auto item = param.player.results(origin).data;
+                    for (Player* target : *item) {
+                        if (target) {
+                            TextPacket pkt = TextPacket::createChat(
+                                target->getName(),
+                                param.message.empty() ? "" : param.message,
+                                target->getXuid(),
+                                ""
+                            );
+                            if (ll::service::getLevel().has_value()) {
+                                ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
+                                    player.sendNetworkPacket(pkt); // send to all player
+                                    return true;
+                                });
+                            }
+                            player.sendMessage("try talkas player: {}"_tr(target->getRealName()));
                         }
                     }
                 } else {
