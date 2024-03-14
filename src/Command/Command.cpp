@@ -1,5 +1,5 @@
 #include "Command.h"
-#include "Config/Config.h"
+#include "file/Config.h"
 
 #include "form/index.h"
 #include <ll/api/Logger.h>
@@ -163,7 +163,7 @@ bool regCommand() {
             }
         }>();
 
-    // tools talkas <Player> [msg]
+    // tools talkas <Player> <msg>
     cmd.overload<Args_Kick>()
         .text("talkas")
         .required("player")

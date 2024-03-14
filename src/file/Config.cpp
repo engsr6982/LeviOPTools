@@ -20,7 +20,7 @@ bool loadConfig() {
     // init file
     std::filesystem::path p = filePath;
     if (!std::filesystem::exists(p)) {
-        logger.info("Saving default configurations"_tr());
+        logger.info("Saving default configurations");
         writeConfig(cfg);
     }
     // loading

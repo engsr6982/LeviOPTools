@@ -9,7 +9,7 @@
 
 // my files
 #include "Command/Command.h"
-#include "Config/Config.h"
+#include "file/Config.h"
 
 namespace entry {
 entry::entry() = default;
@@ -23,10 +23,10 @@ bool entry::load(ll::plugin::NativePlugin& self) {
     mSelf        = std::addressof(self);
     auto& logger = getSelf().getLogger();
 
-    tools::config::loadConfig();
-
-    ll::i18n::load("plugins/LeviOPTools/lang");
+    ll::i18n::load(mSelf->getLangDir());
     using ll::i18n_literals::operator""_tr;
+
+    tools::config::loadConfig();
 
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
     logger.info("Version: {}.{}.{} for Levilamina and BDS Protocol {}"_tr(
