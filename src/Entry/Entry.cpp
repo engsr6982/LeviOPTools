@@ -10,6 +10,7 @@
 // my files
 #include "Command/Command.h"
 #include "file/Config.h"
+#include "form/Global.h"
 
 namespace entry {
 entry::entry() = default;
@@ -57,6 +58,7 @@ bool entry::enable() {
 
     // Code for enabling the plugin goes here.
     tools::command::regCommand();
+    tools::form::initMapping();
 
     return true;
 }

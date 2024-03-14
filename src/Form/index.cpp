@@ -1,14 +1,16 @@
-#include "Form/index.h"
+#include "Form/Global.h"
+#include "api/Global.h"
 #include "entry/Entry.h"
 #include "entry/PluginInfo.h"
 #include "file/file.h"
 
-#include <fstream>
+
 #include <functional>
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
 #include <ll/api/form/SimpleForm.h>
 #include <ll/api/i18n/I18n.h>
+#include <ll/api/utils/HashUtils.h>
 #include <mc/world/actor/player/Player.h>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -51,10 +53,9 @@ void from_json(const json& j, FormStruct& f) {
     j.at("buttons").get_to(f.buttons);
 }
 
-void index(Player& player) {
+void index(Player& player, std::filesystem::path filePath) {
     auto& mSelf    = entry::entry::getInstance().getSelf();
     auto& logger   = mSelf.getLogger();
-    auto  filePath = mSelf.getPluginDir() / "form" / "index.json";
     auto  jsonData = tools::file::loadJsonFile(filePath);
     if (jsonData) {
         FormStruct formStruct = jsonData->get<FormStruct>();
@@ -66,8 +67,27 @@ void index(Player& player) {
         for (const auto& button : formStruct.buttons) {
 
             std::function<void(Player&)> buttonCallback = [&, button](Player& player) {
-                // 这里可以访问button变量
-                player.sendMessage("点击了按钮: " + button.title); // 举例
+                using namespace ll::hash_utils;
+                using namespace ll::hash_literals;
+                switch (doHash(button.callbackType)) {
+                case "cmd"_h:
+                    tools::api::runCmd(player, button.callbackRun);
+                    break;
+                case "form"_h:
+                    index(player, mSelf.getPluginDir() / "form" / button.callbackRun);
+                    break;
+                case "function"_h:
+                    if (mapping.find(button.callbackRun) != mapping.end()) {
+                        return mapping[button.callbackRun](player);
+                    }
+                    logger.error("Unsupported function parameters: {}"_tr(button.callbackRun));
+                    player.sendMessage("The plugin error is due to the error in the console"_tr());
+                    break;
+                default:
+                    logger.error("Unsupported callbackType: {}"_tr(button.callbackType));
+                    player.sendMessage("The plugin error is due to the error in the console"_tr());
+                    break;
+                }
             };
 
             if (button.imageType.empty() || button.imageUrl.empty()) {
@@ -85,10 +105,13 @@ void index(Player& player) {
 
         fm.sendTo(player);
     } else {
-        player.sendMessage("Plugin error, unable to read or find file \"{}\""_tr(filePath));
-        logger.error("The plugin error is due to the error in the console"_tr());
+        player.sendMessage("The plugin error is due to the error in the console"_tr());
+        logger.error("Plugin error, unable to read or find file \"{}\""_tr(filePath));
     }
 }
-
+void index(Player& player) {
+    auto filePath = entry::entry::getInstance().getSelf().getPluginDir() / "form" / "index.json";
+    return index(player, filePath);
+}
 
 } // namespace tools::form

@@ -1,7 +1,7 @@
 #include "Command.h"
 #include "file/Config.h"
 
-#include "form/index.h"
+#include "form/Global.h"
 #include <ll/api/Logger.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
