@@ -1,24 +1,20 @@
 #pragma once
 
-#include <ll/api/plugin/NativePlugin.h>
+#include "ll/api/plugin/NativePlugin.h"
 
-namespace entry {
+namespace my_plugin {
 
-class entry {
-    entry();
+class MyPlugin {
 
 public:
-    entry(entry&&)                 = delete;
-    entry(const entry&)            = delete;
-    entry& operator=(entry&&)      = delete;
-    entry& operator=(const entry&) = delete;
+    static MyPlugin& getInstance();
 
-    static entry& getInstance();
+    MyPlugin(ll::plugin::NativePlugin& self) : mSelf(self) {}
 
-    [[nodiscard]] ll::plugin::NativePlugin& getSelf() const;
+    [[nodiscard]] ll::plugin::NativePlugin& getSelf() const { return mSelf; }
 
     /// @return True if the plugin is loaded successfully.
-    bool load(ll::plugin::NativePlugin&);
+    bool load();
 
     /// @return True if the plugin is enabled successfully.
     bool enable();
@@ -26,8 +22,12 @@ public:
     /// @return True if the plugin is disabled successfully.
     bool disable();
 
+    // TODO: Implement this method if you need to unload the plugin.
+    // /// @return True if the plugin is unloaded successfully.
+    // bool unload();
+
 private:
-    ll::plugin::NativePlugin* mSelf{};
+    ll::plugin::NativePlugin& mSelf;
 };
 
-} // namespace entry
+} // namespace my_plugin

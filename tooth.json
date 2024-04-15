@@ -1,25 +1,28 @@
 {
     "format_version": 2,
-    "tooth": "change-this",
-    "version": "0.0.0",
+    "tooth": "github.com/engsr6982/LeviOPTools",
+    "version": "0.1.0",
     "info": {
-        "name": "change-this",
-        "description": "change-this",
-        "author": "change-this",
+        "name": "LeviOPTools",
+        "description": "OP管理工具",
+        "author": "engsr6982",
         "tags": [
             "levilamina",
-            "plugin"
+            "plugin",
+            "optools",
+            "levioptools",
+            "tools"
         ]
     },
-    "asset_url": "change-this",
+    "asset_url": "https://github.com/engsr6982/LeviOPTools/releases/download/v1.1.1/LeviOPTools-windows-x64.zip",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "change-this"
+        "github.com/LiteLDev/LeviLamina": "0.10.x"
     },
     "files": {
         "place": [
             {
-                "src": "change-this/*",
-                "dest": "plugins/change-this/"
+                "src": "LeviOPTools/*",
+                "dest": "plugins/LeviOPTools/"
             }
         ]
     }

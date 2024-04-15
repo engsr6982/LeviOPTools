@@ -96,9 +96,6 @@ function pack_plugin(target,plugin_define)
         local oritargetfile = target:targetfile()
         local oripdbfile = path.join(path.directory(oritargetfile), path.basename(oritargetfile) .. ".pdb")
 
-        local langdir = path.join(os.projectdir(), "assets", "lang")
-        os.cp(langdir, outputdir)
-
         os.mkdir(outputdir)
         os.cp(oritargetfile, targetfile)
         if os.isfile(oripdbfile) then

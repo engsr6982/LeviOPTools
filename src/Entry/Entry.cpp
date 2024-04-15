@@ -1,26 +1,23 @@
-#include "Entry.h"
-#include "PluginInfo.h"
+#include "plugin/MyPlugin.h"
 
-#include <ll/api/i18n/I18n.h>
-#include <ll/api/plugin/NativePlugin.h>
-#include <ll/api/service/ServerInfo.h>
-#include <ll/api/service/Service.h>
 #include <memory>
 
+#include "ll/api/plugin/NativePlugin.h"
+#include "ll/api/plugin/RegisterHelper.h"
 // my files
 #include "Command/Command.h"
 #include "file/Config.h"
 #include "form/Global.h"
+#include "Entry.h"
+#include "PluginInfo.h"
 
-namespace entry {
-entry::entry() = default;
-entry& entry::getInstance() {
-    static entry instance;
-    return instance;
-}
-ll::plugin::NativePlugin& entry::getSelf() const { return *mSelf; }
+namespace my_plugin {
 
-bool entry::load(ll::plugin::NativePlugin& self) {
+static std::unique_ptr<MyPlugin> instance;
+
+MyPlugin& MyPlugin::getInstance() { return *instance; }
+
+bool MyPlugin::load() {
     mSelf        = std::addressof(self);
     auto& logger = getSelf().getLogger();
 
@@ -48,41 +45,23 @@ bool entry::load(ll::plugin::NativePlugin& self) {
             PLUGIN_TARGET_BDS_PROTOCOL_VERSION
         ));
     }
-
-
     return true;
 }
 
-bool entry::enable() {
-    getSelf().getLogger().info("enabling...");
-
+bool MyPlugin::enable() {
+    getSelf().getLogger().info("Enabling...");
     // Code for enabling the plugin goes here.
     tools::command::regCommand();
     tools::form::initMapping();
-
     return true;
 }
 
-bool entry::disable() {
-    getSelf().getLogger().info("disabling...");
-
+bool MyPlugin::disable() {
+    getSelf().getLogger().info("Disabling...");
     // Code for disabling the plugin goes here.
-
     return true;
 }
 
-extern "C" {
-_declspec(dllexport) bool ll_plugin_load(ll::plugin::NativePlugin& self) { return entry::getInstance().load(self); }
+} // namespace my_plugin
 
-_declspec(dllexport) bool ll_plugin_enable(ll::plugin::NativePlugin&) { return entry::getInstance().enable(); }
-
-_declspec(dllexport) bool ll_plugin_disable(ll::plugin::NativePlugin&) { return entry::getInstance().disable(); }
-
-/// @warning Unloading the plugin may cause a crash if the plugin has not released all of its
-/// resources. If you are unsure, keep this function commented out.
-// _declspec(dllexport) bool ll_plugin_unload(ll::plugin::NativePlugin&) {
-//     return entry::getInstance().unload();
-// }
-}
-
-} // namespace entry
+LL_REGISTER_PLUGIN(my_plugin::MyPlugin, my_plugin::instance);
