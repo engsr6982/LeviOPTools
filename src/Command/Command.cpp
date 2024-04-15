@@ -1,7 +1,6 @@
 #include "Command.h"
-#include "file/Config.h"
-
-#include "form/Global.h"
+#include "File/Config.h"
+#include "Form/Form.h"
 #include <ll/api/Logger.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
@@ -29,7 +28,7 @@
 #include <string>
 
 
-namespace tools::command {
+namespace tls::command {
 using ll::i18n_literals::operator""_tr;
 
 // clang-format off
@@ -83,7 +82,7 @@ bool regCommand() {
         if (entity) {
             auto& player = *static_cast<Player*>(entity); // entity* => Player&
             if (player.isOperator()) {
-                tools::form::index(player);
+                tls::form::index(player);
             } else {
                 output.error("This command is available to [OP] only!"_tr());
             }
@@ -202,4 +201,4 @@ bool regCommand() {
     return true;
 }
 
-} // namespace tools::command
+} // namespace tls::command

@@ -1,7 +1,5 @@
 #include <string>
 
-namespace tools::config {
-
 struct Configs {
     int version = 1;
 
@@ -12,10 +10,12 @@ struct Configs {
     } command;
 };
 
+namespace tls::config {
+
 extern Configs cfg;
 
 bool loadConfig();
 bool writeConfig();
 bool writeConfig(Configs newCfg);
 
-} // namespace tools::config
+} // namespace tls::config

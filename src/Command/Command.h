@@ -1,6 +1,6 @@
 
 
-namespace tools::command {
+namespace tls::command {
 
 bool regCommand();
 

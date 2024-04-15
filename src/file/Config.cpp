@@ -5,7 +5,7 @@
 #include <ll/api/Config.h>
 #include <ll/api/i18n/I18n.h>
 
-namespace tools::config {
+namespace tls::config {
 
 Configs cfg; // init Config
 
@@ -44,4 +44,4 @@ bool writeConfig(Configs newCfg) {
 }
 bool writeConfig() { return writeConfig(cfg); }
 
-} // namespace tools::config
+} // namespace tls::config

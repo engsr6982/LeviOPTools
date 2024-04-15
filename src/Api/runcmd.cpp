@@ -1,4 +1,4 @@
-#include "api/Global.h"
+#include "Api.h"
 #include <ll/api/service/Bedrock.h>
 #include <ll/api/service/ServerInfo.h>
 #include <ll/api/service/Service.h>
@@ -12,7 +12,7 @@
 #include <mc/world/level/Command.h>
 
 
-namespace tools::api {
+namespace tls::api {
 
 bool runCmd(Player& player, const std::string& cmd) {
     try {
@@ -25,5 +25,4 @@ bool runCmd(Player& player, const std::string& cmd) {
     }
 }
 
-
-} // namespace tools::api
+} // namespace tls::api

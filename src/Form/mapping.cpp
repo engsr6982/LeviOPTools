@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace tools::form {
+namespace tls::form {
 
 std::unordered_map<std::string, std::function<void(Player&)>> mapping;
 
@@ -16,4 +16,4 @@ bool initMapping() {
 }
 
 
-} // namespace tools::form
+} // namespace tls::form

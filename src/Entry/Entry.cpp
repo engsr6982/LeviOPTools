@@ -1,30 +1,32 @@
-#include "plugin/MyPlugin.h"
-
+#include <ll/api/Logger.h>
+#include <ll/api/i18n/I18n.h>
+#include <ll/api/plugin/NativePlugin.h>
+#include <ll/api/plugin/RegisterHelper.h>
+#include <ll/api/service/ServerInfo.h>
+#include <ll/api/service/Service.h>
 #include <memory>
 
-#include "ll/api/plugin/NativePlugin.h"
-#include "ll/api/plugin/RegisterHelper.h"
 // my files
 #include "Command/Command.h"
-#include "file/Config.h"
-#include "form/Global.h"
 #include "Entry.h"
+#include "File/Config.h"
+#include "Form/Form.h"
 #include "PluginInfo.h"
 
-namespace my_plugin {
 
-static std::unique_ptr<MyPlugin> instance;
+namespace tls {
 
-MyPlugin& MyPlugin::getInstance() { return *instance; }
+static std::unique_ptr<entry> instance;
 
-bool MyPlugin::load() {
-    mSelf        = std::addressof(self);
+entry& entry::getInstance() { return *instance; }
+
+bool entry::load() {
     auto& logger = getSelf().getLogger();
 
-    ll::i18n::load(mSelf->getLangDir());
+    ll::i18n::load(mSelf.getLangDir());
     using ll::i18n_literals::operator""_tr;
 
-    tools::config::loadConfig();
+    tls::config::loadConfig();
 
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
     logger.info("Version: {}.{}.{} for Levilamina and BDS Protocol {}"_tr(
@@ -48,20 +50,20 @@ bool MyPlugin::load() {
     return true;
 }
 
-bool MyPlugin::enable() {
+bool entry::enable() {
     getSelf().getLogger().info("Enabling...");
     // Code for enabling the plugin goes here.
-    tools::command::regCommand();
-    tools::form::initMapping();
+    tls::command::regCommand();
+    tls::form::initMapping();
     return true;
 }
 
-bool MyPlugin::disable() {
+bool entry::disable() {
     getSelf().getLogger().info("Disabling...");
     // Code for disabling the plugin goes here.
     return true;
 }
 
-} // namespace my_plugin
+} // namespace tls
 
-LL_REGISTER_PLUGIN(my_plugin::MyPlugin, my_plugin::instance);
+LL_REGISTER_PLUGIN(tls::entry, tls::instance);

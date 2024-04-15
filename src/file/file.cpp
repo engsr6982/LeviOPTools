@@ -3,7 +3,7 @@
 #include <fstream>
 #include <optional>
 
-namespace tools::file {
+namespace tls::file {
 
 std::optional<nlohmann::json> loadJsonFile(const std::filesystem::path& path) {
     try {
@@ -18,5 +18,4 @@ std::optional<nlohmann::json> loadJsonFile(const std::filesystem::path& path) {
     return std::nullopt;
 }
 
-
-} // namespace tools::file
+} // namespace tls::file
