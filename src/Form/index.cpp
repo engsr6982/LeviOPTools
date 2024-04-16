@@ -2,7 +2,8 @@
 #include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
 #include "File/file.h"
-#include "Form/Form.h"
+#include "Form/index.h"
+#include "Form/Mapping.h"
 
 #include <functional>
 #include <ll/api/form/CustomForm.h>

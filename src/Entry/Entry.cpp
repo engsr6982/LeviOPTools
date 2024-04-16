@@ -10,7 +10,7 @@
 #include "Command/Command.h"
 #include "Entry.h"
 #include "File/Config.h"
-#include "Form/Form.h"
+#include "Form/Mapping.h"
 #include "PluginInfo.h"
 
 
