@@ -34,4 +34,4 @@ enum Permission {
 
 void initPermission();
 
-} // namespace tls::perm
+} // namespace tls::perms
