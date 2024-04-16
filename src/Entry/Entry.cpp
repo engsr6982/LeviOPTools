@@ -11,6 +11,7 @@
 #include "Entry.h"
 #include "File/Config.h"
 #include "Form/Mapping.h"
+#include "Permission/Permission.h"
 #include "PluginInfo.h"
 
 
@@ -23,11 +24,18 @@ entry& entry::getInstance() { return *instance; }
 bool entry::load() {
     auto& logger = getSelf().getLogger();
 
+    // load i18n
     ll::i18n::load(mSelf.getLangDir());
     using ll::i18n_literals::operator""_tr;
 
+    // load config and set logger level
     tls::config::loadConfig();
+    logger.consoleLevel = tls::config::cfg.loggerLevel;
 
+    // load permission
+    tls::perms::initPermission();
+
+    // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
     logger.info("Version: {}.{}.{} for Levilamina and BDS Protocol {}"_tr(
         PLUGIN_VERSION_MAJOR,
@@ -35,11 +43,7 @@ bool entry::load() {
         PLUGIN_VERSION_REVISION,
         PLUGIN_TARGET_BDS_PROTOCOL_VERSION
     ));
-
-    if (std::filesystem::exists("./plugins/PPOUI/debug")) {
-        logger.consoleLevel = 5;
-        logger.warn("Printing debugging information is enabled"_tr());
-    }
+    // check server protocol version
     if (ll::getServerProtocolVersion() != PLUGIN_TARGET_BDS_PROTOCOL_VERSION) {
         logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. "_tr());
         logger.warn("Current protocol version {}  Adaptation protocol version {}"_tr(
@@ -52,15 +56,15 @@ bool entry::load() {
 
 bool entry::enable() {
     getSelf().getLogger().info("Enabling...");
-    // Code for enabling the plugin goes here.
+
     tls::command::regCommand();
     tls::form::initMapping();
+
     return true;
 }
 
 bool entry::disable() {
     getSelf().getLogger().info("Disabling...");
-    // Code for disabling the plugin goes here.
     return true;
 }
 

@@ -1,9 +1,11 @@
 #include "Permission.h"
+#include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
 #include <PermissionCore/Group.h>
 #include <PermissionCore/PermissionCore.h>
 #include <PermissionCore/PermissionManager.h>
 #include <PermissionCore/PermissionRegister.h>
+#include <ll/api/Logger.h>
 #include <ll/api/i18n/I18n.h>
 #include <stdexcept>
 
@@ -22,6 +24,7 @@ void initPermission() {
     auto& reg = perm::PermissionRegister::getInstance();
 
     reg.registerPermission(PLUGIN_NAME, Permission::Unknown, "unknown"_tr());
+    reg.registerPermission(PLUGIN_NAME, Permission::indexForm, "index_form"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::KickPlayer, "kick_player"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::KillPlayer, "kill_player"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::ChangeWeather, "change_weather"_tr());
@@ -44,9 +47,9 @@ void initPermission() {
     reg.registerPermission(PLUGIN_NAME, Permission::CommandBlacklist, "command_blacklist"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::PotionGUI, "potion_gui"_tr());
 
-    if (reg.getAllPermission(PLUGIN_NAME).size() != 22) {
-        std::runtime_error("Plugin fatal error: Permission register failed."_tr());
-    }
+    tls::entry::getInstance().getSelf().getLogger().info(
+        "Register permission success. Total permission count: {}"_tr(reg.getAllPermission(PLUGIN_NAME).size())
+    );
 }
 
 } // namespace tls::perms

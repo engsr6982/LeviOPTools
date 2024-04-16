@@ -1,6 +1,11 @@
 #include "Command.h"
 #include "File/Config.h"
 #include "Form/index.h"
+#include "Permission/Permission.h"
+#include <Entry/PluginInfo.h>
+#include <PermissionCore/Group.h>
+#include <PermissionCore/PermissionCore.h>
+#include <PermissionCore/PermissionManager.h>
 #include <ll/api/Logger.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
@@ -82,7 +87,7 @@ std::string CommandOriginTypeToString(CommandOriginType type) {
     }
 }
 
-#define CHECK_COMMAND_TYPE(__output, __originType, ...)                                                        \
+#define CHECK_COMMAND_TYPE(__output, __originType, ...)                                                                \
     {                                                                                                                  \
         std::initializer_list<CommandOriginType> __allowedTypes = {__VA_ARGS__};                                       \
         bool                                     __typeMatched  = false;                                               \
@@ -127,14 +132,15 @@ bool regCommand() {
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
         Actor* entity = origin.getEntity();
-        if (entity) {
-            auto& player = *static_cast<Player*>(entity); // entity* => Player&
-            if (player.isOperator()) {
-                tls::form::index(player);
-            } else {
-                output.error("This command is available to [OP] only!"_tr());
-            }
-        }
+        if (!entity) return output.error("get entity failed!"_tr());
+        auto& player = *static_cast<Player*>(entity); // entity* => Player&
+        if (perm::PermissionManager::getInstance()
+                .getPermissionCore(PLUGIN_NAME)
+                ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::indexForm)
+            == false)
+            return output.error("You don't have permission to use this command!"_tr());
+        // processing
+        tls::form::index(player);
     }>();
 
     // tools kill <Player>
@@ -144,18 +150,19 @@ bool regCommand() {
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
-            if (entity) {
-                auto& player = *static_cast<Player*>(entity);
-                if (player.isOperator()) {
-                    auto item = param.player.results(origin).data;
-                    for (Player* target : *item) {
-                        if (target) {
-                            target->kill();
-                            player.sendMessage("try kill player: {}"_tr(target->getRealName()));
-                        }
-                    }
-                } else {
-                    output.error("This command is available to [OP] only!"_tr());
+            if (!entity) return output.error("get entity failed!"_tr());
+            auto& player = *static_cast<Player*>(entity);
+            if (perm::PermissionManager::getInstance()
+                    .getPermissionCore(PLUGIN_NAME)
+                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KillPlayer)
+                == false)
+                return output.error("You don't have permission to use this command!"_tr());
+            // processing
+            auto item = param.player.results(origin).data;
+            for (Player* target : *item) {
+                if (target) {
+                    target->kill();
+                    player.sendMessage("try kill player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -168,18 +175,19 @@ bool regCommand() {
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
-            if (entity) {
-                auto& player = *static_cast<Player*>(entity);
-                if (player.isOperator()) {
-                    auto item = param.player.results(origin).data;
-                    for (Player* target : *item) {
-                        if (target) {
-                            target->disconnect(param.message.empty() ? "server disconnect" : param.message);
-                            player.sendMessage("try kick player: {}"_tr(target->getRealName()));
-                        }
-                    }
-                } else {
-                    output.error("This command is available to [OP] only!"_tr());
+            if (!entity) return output.error("get entity failed!"_tr());
+            auto& player = *static_cast<Player*>(entity);
+            if (perm::PermissionManager::getInstance()
+                    .getPermissionCore(PLUGIN_NAME)
+                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
+                == false)
+                return output.error("You don't have permission to use this command!"_tr());
+            // processing
+            auto item = param.player.results(origin).data;
+            for (Player* target : *item) {
+                if (target) {
+                    target->disconnect(param.message.empty() ? "server disconnect" : param.message);
+                    player.sendMessage("try kick player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -191,21 +199,22 @@ bool regCommand() {
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
-            if (entity) {
-                auto& player = *static_cast<Player*>(entity);
-                if (player.isOperator()) {
-                    auto item = param.player.results(origin).data;
-                    for (Player* target : *item) {
-                        if (target) {
-                            string           name = target->getRealName();
-                            LevelChunkPacket pkt  = LevelChunkPacket();
-                            pkt.mCacheEnabled     = true;
-                            target->sendNetworkPacket(pkt);
-                            player.sendMessage("try crash player: {}"_tr(name));
-                        }
-                    }
-                } else {
-                    output.error("This command is available to [OP] only!"_tr());
+            if (!entity) return output.error("get entity failed!"_tr());
+            auto& player = *static_cast<Player*>(entity);
+            if (perm::PermissionManager::getInstance()
+                    .getPermissionCore(PLUGIN_NAME)
+                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::CrashPlayerClient)
+                == false)
+                return output.error("You don't have permission to use this command!"_tr());
+            // processing
+            auto item = param.player.results(origin).data;
+            for (Player* target : *item) {
+                if (target) {
+                    string           name = target->getRealName();
+                    LevelChunkPacket pkt  = LevelChunkPacket();
+                    pkt.mCacheEnabled     = true;
+                    target->sendNetworkPacket(pkt);
+                    player.sendMessage("try crash player: {}"_tr(name));
                 }
             }
         }>();
@@ -218,29 +227,30 @@ bool regCommand() {
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
-            if (entity) {
-                auto& player = *static_cast<Player*>(entity);
-                if (player.isOperator()) {
-                    auto item = param.player.results(origin).data;
-                    for (Player* target : *item) {
-                        if (target) {
-                            TextPacket pkt = TextPacket::createChat(
-                                target->getName(),
-                                param.message.empty() ? "" : param.message,
-                                target->getXuid(),
-                                ""
-                            );
-                            if (ll::service::getLevel().has_value()) {
-                                ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
-                                    player.sendNetworkPacket(pkt); // send to all player
-                                    return true;
-                                });
-                            }
-                            player.sendMessage("try talkas player: {}"_tr(target->getRealName()));
-                        }
+            if (!entity) return output.error("get entity failed!"_tr());
+            auto& player = *static_cast<Player*>(entity);
+            if (perm::PermissionManager::getInstance()
+                    .getPermissionCore(PLUGIN_NAME)
+                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
+                == false)
+                return output.error("You don't have permission to use this command!"_tr());
+            // processing
+            auto item = param.player.results(origin).data;
+            for (Player* target : *item) {
+                if (target) {
+                    TextPacket pkt = TextPacket::createChat(
+                        target->getName(),
+                        param.message.empty() ? "" : param.message,
+                        target->getXuid(),
+                        ""
+                    );
+                    if (ll::service::getLevel().has_value()) {
+                        ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
+                            player.sendNetworkPacket(pkt); // send to all player
+                            return true;
+                        });
                     }
-                } else {
-                    output.error("This command is available to [OP] only!"_tr());
+                    player.sendMessage("try talkas player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -252,22 +262,22 @@ bool regCommand() {
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Message const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
-            if (entity) {
-                auto& player = *static_cast<Player*>(entity);
-                if (player.isOperator()) {
-                    TextPacket pkt =
-                        TextPacket::createChat("Server", param.message.empty() ? "" : param.message, "", "");
-                    if (ll::service::getLevel().has_value()) {
-                        ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
-                            player.sendNetworkPacket(pkt); // send to all player
-                            return true;
-                        });
-                    }
-                    player.sendMessage("try broadcast message: {}"_tr(param.message));
-                } else {
-                    output.error("This command is available to [OP] only!"_tr());
-                }
+            if (!entity) return output.error("get entity failed!"_tr());
+            auto& player = *static_cast<Player*>(entity);
+            if (perm::PermissionManager::getInstance()
+                    .getPermissionCore(PLUGIN_NAME)
+                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
+                == false)
+                return output.error("You don't have permission to use this command!"_tr());
+            // processing
+            TextPacket pkt = TextPacket::createChat("Server", param.message.empty() ? "" : param.message, "", "");
+            if (ll::service::getLevel().has_value()) {
+                ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
+                    player.sendNetworkPacket(pkt); // send to all player
+                    return true;
+                });
             }
+            player.sendMessage("try broadcast message: {}"_tr(param.message));
         }>();
 
     return true;

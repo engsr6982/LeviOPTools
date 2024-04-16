@@ -1,9 +1,10 @@
 #include <string>
 
 struct Configs {
-    int version = 1;
+    int         version     = 2;
+    int         loggerLevel = 4;
+    std::string language    = "zh_CN";
 
-    std::string language = "zh_CN";
     struct Command {
         std::string commandName        = "tools";
         std::string commandDescription = "LeviOPTools";

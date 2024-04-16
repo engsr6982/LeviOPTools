@@ -8,6 +8,7 @@ namespace tls::perms {
 
 enum Permission {
     Unknown,                  // 未知
+    indexForm,                // 首页
     KickPlayer,               // 踢出玩家
     KillPlayer,               // 杀死玩家
     ChangeWeather,            // 更改天气
