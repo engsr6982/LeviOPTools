@@ -1,22 +1,31 @@
 #include <string>
 
-struct Configs {
-    int         version     = 2;
-    int         loggerLevel = 4;
-    std::string language    = "zh_CN";
+using string = std::string;
 
-    struct Command {
-        std::string commandName        = "tools";
-        std::string commandDescription = "LeviOPTools";
+struct S_Config {
+    int    version     = 2;
+    int    loggerLevel = 4;
+    string language    = "zh_CN";
+
+    struct S_Command {
+        struct S_Tools {
+            string commandName        = "tools";
+            string commandDescription = "LeviOPTools";
+        } tools;
+        struct S_Gm {
+            bool   enable             = true;
+            string commandName        = "gm";
+            string commandDescription = "LeviOPTools GM";
+        } gm;
     } command;
 };
 
 namespace tls::config {
 
-extern Configs cfg;
+extern S_Config cfg;
 
 bool loadConfig();
 bool writeConfig();
-bool writeConfig(Configs newCfg);
+bool writeConfig(S_Config newCfg);
 
 } // namespace tls::config

@@ -2,6 +2,8 @@
 #include "File/Config.h"
 #include "Form/index.h"
 #include "Permission/Permission.h"
+#include "mc/network/ServerNetworkHandler.h"
+#include "mc/network/packet/SetTimePacket.h"
 #include <Entry/PluginInfo.h>
 #include <PermissionCore/Group.h>
 #include <PermissionCore/PermissionCore.h>
@@ -37,16 +39,7 @@ namespace tls::command {
 
 using ll::i18n_literals::operator""_tr;
 using string = std::string;
-
-#define C_RESET  "\033[0m"
-#define C_BLACK  "\033[30m" /* Black */
-#define C_RED    "\033[31m" /* Red */
-#define C_GREEN  "\033[32m" /* Green */
-#define C_YELLOW "\033[33m" /* Yellow */
-#define C_BLUE   "\033[34m" /* Blue */
-#define C_PURPLE "\033[35m" /* Purple */
-#define C_CYAN   "\033[36m" /* Cyan */
-#define C_WHITE  "\033[37m" /* White */
+using ll::command::CommandRegistrar;
 
 std::string CommandOriginTypeToString(CommandOriginType type) {
     switch (type) {
@@ -110,6 +103,22 @@ std::string CommandOriginTypeToString(CommandOriginType type) {
         }                                                                                                              \
     }
 
+bool checkCallbackPermission(CommandOrigin const& origin, CommandOutput& output, int const& permission) {
+    if (origin.getOriginType() == CommandOriginType::DedicatedServer) return true;
+    Actor* entity = origin.getEntity();
+    if (entity) {
+        auto& player = *static_cast<Player*>(entity);
+        return perm::PermissionManager::getInstance()
+            .getPermissionCore(PLUGIN_NAME)
+            ->checkUserPermission(player.getUuid().asString().c_str(), permission);
+    } else {
+        output.error("get entity failed!"_tr());
+        return false;
+    };
+}
+
+// ----------------------------------------------------------------------
+
 struct Arg_Player {
     CommandSelector<Player> player;
 };
@@ -120,27 +129,33 @@ struct Args_Kick {
 struct Arg_Message {
     string message;
 };
+struct Arg_SetMaxPlayers {
+    int maxPlayers;
+};
 
-bool regCommand() {
-    using ll::command::CommandRegistrar;
+void regCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
-        config::cfg.command.commandName,
-        config::cfg.command.commandDescription
+        config::cfg.command.tools.commandName,
+        config::cfg.command.tools.commandDescription
     );
 
     // tools
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+        if (!checkCallbackPermission(origin, output, tls::perms::indexForm)) {
+            output.error("You don't have permission to use this command!"_tr());
+            return;
+        }
         Actor* entity = origin.getEntity();
-        if (!entity) return output.error("get entity failed!"_tr());
-        auto& player = *static_cast<Player*>(entity); // entity* => Player&
-        if (perm::PermissionManager::getInstance()
-                .getPermissionCore(PLUGIN_NAME)
-                ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::indexForm)
-            == false)
-            return output.error("You don't have permission to use this command!"_tr());
-        // processing
+        auto&  player = *static_cast<Player*>(entity); // entity* => Player&
         tls::form::index(player);
+    }>();
+
+    // tools reload
+    cmd.overload().text("reload").execute<[&](CommandOrigin const& origin, CommandOutput& output) {
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::DedicatedServer);
+        tls::config::loadConfig();
+        output.success("Config reloaded!"_tr());
     }>();
 
     // tools kill <Player>
@@ -149,14 +164,12 @@ bool regCommand() {
         .required("player")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::KillPlayer)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
             Actor* entity = origin.getEntity();
-            if (!entity) return output.error("get entity failed!"_tr());
-            auto& player = *static_cast<Player*>(entity);
-            if (perm::PermissionManager::getInstance()
-                    .getPermissionCore(PLUGIN_NAME)
-                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KillPlayer)
-                == false)
-                return output.error("You don't have permission to use this command!"_tr());
+            auto&  player = *static_cast<Player*>(entity);
             // processing
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
@@ -174,14 +187,12 @@ bool regCommand() {
         .optional("message")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::KickPlayer)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
             Actor* entity = origin.getEntity();
-            if (!entity) return output.error("get entity failed!"_tr());
-            auto& player = *static_cast<Player*>(entity);
-            if (perm::PermissionManager::getInstance()
-                    .getPermissionCore(PLUGIN_NAME)
-                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
-                == false)
-                return output.error("You don't have permission to use this command!"_tr());
+            auto&  player = *static_cast<Player*>(entity);
             // processing
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
@@ -198,14 +209,12 @@ bool regCommand() {
         .required("player")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::CrashPlayerClient)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
             Actor* entity = origin.getEntity();
-            if (!entity) return output.error("get entity failed!"_tr());
-            auto& player = *static_cast<Player*>(entity);
-            if (perm::PermissionManager::getInstance()
-                    .getPermissionCore(PLUGIN_NAME)
-                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::CrashPlayerClient)
-                == false)
-                return output.error("You don't have permission to use this command!"_tr());
+            auto&  player = *static_cast<Player*>(entity);
             // processing
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
@@ -226,14 +235,12 @@ bool regCommand() {
         .required("message")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::UsePlayerIdentitySay)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
             Actor* entity = origin.getEntity();
-            if (!entity) return output.error("get entity failed!"_tr());
-            auto& player = *static_cast<Player*>(entity);
-            if (perm::PermissionManager::getInstance()
-                    .getPermissionCore(PLUGIN_NAME)
-                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
-                == false)
-                return output.error("You don't have permission to use this command!"_tr());
+            auto&  player = *static_cast<Player*>(entity);
             // processing
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
@@ -261,14 +268,12 @@ bool regCommand() {
         .required("message")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Message const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::BroadCastMessage)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
             Actor* entity = origin.getEntity();
-            if (!entity) return output.error("get entity failed!"_tr());
-            auto& player = *static_cast<Player*>(entity);
-            if (perm::PermissionManager::getInstance()
-                    .getPermissionCore(PLUGIN_NAME)
-                    ->checkUserPermission(player.getUuid().asString().c_str(), tls::perms::KickPlayer)
-                == false)
-                return output.error("You don't have permission to use this command!"_tr());
+            auto&  player = *static_cast<Player*>(entity);
             // processing
             TextPacket pkt = TextPacket::createChat("Server", param.message.empty() ? "" : param.message, "", "");
             if (ll::service::getLevel().has_value()) {
@@ -280,7 +285,166 @@ bool regCommand() {
             player.sendMessage("try broadcast message: {}"_tr(param.message));
         }>();
 
-    return true;
+    // tools setmaxplayers <int>
+    cmd.overload<Arg_SetMaxPlayers>()
+        .text("setmaxplayers")
+        .required("maxPlayers")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_SetMaxPlayers const& param) {
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            if (!checkCallbackPermission(origin, output, tls::perms::SetServerMaxPlayer)) {
+                output.error("You don't have permission to use this command!"_tr());
+                return;
+            }
+            // processing
+            int back = ll::service::getServerNetworkHandler()->setMaxNumPlayers(param.maxPlayers);
+            ll::service::getServerNetworkHandler()->updateServerAnnouncement();
+            output.success("Max players set to {}, previous value is {}"_tr(param.maxPlayers, back));
+        }>();
+
+    tls::command::registerGamemodeCommand();
+}
+
+// ------------------------------ gamemode command ---------------------------------
+
+#include <mc/enums/GameType.h>
+
+enum class GameTypeStringBrief : int {
+    s = static_cast<int>(GameType::Survival),
+    c = static_cast<int>(GameType::Creative),
+    a = static_cast<int>(GameType::Adventure),
+    d = static_cast<int>(GameType::Default)
+};
+
+struct GameMode_String_Brief {
+    GameTypeStringBrief     gameType;
+    CommandSelector<Player> player;
+};
+
+struct GameMode_String_Full {
+    GameType                gameType;
+    CommandSelector<Player> player;
+};
+
+struct GameMode_Int {
+    int                     gameType;
+    CommandSelector<Player> player;
+};
+
+#define Gm_String_Full_CallBack                                                                                        \
+    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Full const& param) {                       \
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
+        if (!checkCallbackPermission(origin, output, tls::perms::ChangeGameMode)) {                                    \
+            output.error("You don't have permission to use this command!"_tr());                                       \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (param.player.results(origin).empty()) {                                                                    \
+            auto& player = *static_cast<Player*>(origin.getEntity());                                                  \
+            player.setPlayerGameType(param.gameType);                                                                  \
+            output.success("try set game mode: {}"_tr(param.gameType));                                                \
+        } else {                                                                                                       \
+            auto player = param.player.results(origin).data;                                                           \
+            for (Player * target : *player) {                                                                          \
+                if (target) {                                                                                          \
+                    target->setPlayerGameType(param.gameType);                                                         \
+                    output.success("try set game mode: {} to player: {}"_tr(param.gameType, target->getRealName()));   \
+                }                                                                                                      \
+            }                                                                                                          \
+        }                                                                                                              \
+    }
+
+#define Gm_String_Brief_CallBack                                                                                       \
+    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Brief const& param) {                      \
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
+        if (!checkCallbackPermission(origin, output, tls::perms::ChangeGameMode)) {                                    \
+            output.error("You don't have permission to use this command!"_tr());                                       \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (param.player.results(origin).empty()) {                                                                    \
+            auto& player = *static_cast<Player*>(origin.getEntity());                                                  \
+            player.setPlayerGameType((GameType)param.gameType);                                                        \
+            output.success("try set game mode: {}"_tr(param.gameType));                                                \
+        } else {                                                                                                       \
+            auto player = param.player.results(origin).data;                                                           \
+            for (Player * target : *player) {                                                                          \
+                if (target) {                                                                                          \
+                    target->setPlayerGameType((GameType)param.gameType);                                               \
+                    output.success("try set game mode: {} to player: {}"_tr(param.gameType, target->getRealName()));   \
+                }                                                                                                      \
+            }                                                                                                          \
+        }                                                                                                              \
+    }
+
+#define Gm_Int_CallBack                                                                                                \
+    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_Int const& param) {                               \
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
+        if (!checkCallbackPermission(origin, output, tls::perms::ChangeGameMode)) {                                    \
+            output.error("You don't have permission to use this command!"_tr());                                       \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (param.gameType == -1 || param.gameType == 0 || param.gameType == 1 || param.gameType == 2                  \
+            || param.gameType == 5 || param.gameType == 6) {                                                           \
+            if (param.player.results(origin).empty()) {                                                                \
+                auto& player = *static_cast<Player*>(origin.getEntity());                                              \
+                player.setPlayerGameType((GameType)param.gameType);                                                    \
+                output.success("try set game mode: {}"_tr(param.gameType));                                            \
+            } else {                                                                                                   \
+                auto player = param.player.results(origin).data;                                                       \
+                for (Player * target : *player) {                                                                      \
+                    if (target) {                                                                                      \
+                        target->setPlayerGameType((GameType)param.gameType);                                           \
+                        output.success("try set game mode: {} to player: {}"_tr(param.gameType, target->getRealName()) \
+                        );                                                                                             \
+                    }                                                                                                  \
+                }                                                                                                      \
+            }                                                                                                          \
+        } else {                                                                                                       \
+            output.error("Invalid game mode!"_tr());                                                                   \
+        }                                                                                                              \
+    }
+
+void registerGamemodeCommand() {
+    // ------------------------------ tools ---------------------------------
+
+    auto& tools = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
+        config::cfg.command.tools.commandName,
+        config::cfg.command.tools.commandDescription
+    );
+    // tools gm <int> [player]
+    tools.overload<GameMode_Int>().text("gm").required("gameType").optional("player").execute<Gm_Int_CallBack>();
+
+    // tools gm <s|c|a|d> [player]
+    tools.overload<GameMode_String_Brief>()
+        .text("gm")
+        .required("gameType")
+        .optional("player")
+        .execute<Gm_String_Brief_CallBack>();
+
+    // tools gm <GameType> [player]
+    tools.overload<GameMode_String_Full>()
+        .text("gm")
+        .required("gameType")
+        .optional("player")
+        .execute<Gm_String_Full_CallBack>();
+
+    // ------------------------------ gm ---------------------------------
+
+    if (config::cfg.command.gm.enable) {
+        auto& gm = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
+            config::cfg.command.gm.commandName,
+            config::cfg.command.gm.commandDescription
+        );
+        // gm <int> [player]
+        tools.overload<GameMode_Int>().required("gameType").optional("player").execute<Gm_Int_CallBack>();
+
+        // gm <s|c|a|d> [player]
+        gm.overload<GameMode_String_Brief>()
+            .required("gameType")
+            .optional("player")
+            .execute<Gm_String_Brief_CallBack>();
+
+        // gm <GameType> [player]
+        gm.overload<GameMode_String_Full>().required("gameType").optional("player").execute<Gm_String_Full_CallBack>();
+    }
 }
 
 } // namespace tls::command

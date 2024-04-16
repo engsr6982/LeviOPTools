@@ -2,6 +2,7 @@
 
 namespace tls::command {
 
-bool regCommand();
+void regCommand();
+void registerGamemodeCommand();
 
-}
+} // namespace tls::command

@@ -7,7 +7,7 @@
 
 namespace tls::config {
 
-Configs cfg; // init Config
+S_Config cfg; // init Config
 
 #define CONFIG_FILE_NAME "Config.json"
 using ll::i18n_literals::operator""_tr;
@@ -31,7 +31,7 @@ bool loadConfig() {
     return true;
 }
 
-bool writeConfig(Configs newCfg) {
+bool writeConfig(S_Config newCfg) {
     auto& mSelf          = entry::entry::getInstance().getSelf();
     auto  configFilePath = mSelf.getConfigDir() / CONFIG_FILE_NAME;
     auto& logger         = mSelf.getLogger();
