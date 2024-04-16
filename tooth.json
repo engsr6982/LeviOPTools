@@ -16,7 +16,8 @@
     },
     "asset_url": "https://github.com/engsr6982/LeviOPTools/releases/download/v1.1.1/LeviOPTools-windows-x64.zip",
     "prerequisites": {
-        "github.com/LiteLDev/LeviLamina": "0.10.x"
+        "github.com/LiteLDev/LeviLamina": "0.10.x",
+        "github.com/engsr6982/PermissionCore": "0.6.x"
     },
     "files": {
         "place": [
