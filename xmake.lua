@@ -5,11 +5,23 @@ add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 -- add_requires("levilamina x.x.x") for a specific version
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
-add_requires("levilamina 0.11.0")
+add_requires(
+    "levilamina 0.11.0",
+    "PermissionCore"
+)
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
 end
+
+-- 描述 PermissionCore 包
+package("PermissionCore")
+    set_urls("https://github.com/engsr6982/PermissionCore/releases/download/$(version)/SDK-PermissionCore.zip")
+    add_versions("v0.6.1", "56d01a7a9422fb489a8f5fb31a84660f18ceec29626721e03950b5ade88ae675")
+    add_includedirs("include/")
+    on_install(function (package)
+        os.cp("*", package:installdir())
+    end)
 
 target("LeviOPTools") -- Change this to your plugin name.
     add_cxflags(
@@ -26,7 +38,10 @@ target("LeviOPTools") -- Change this to your plugin name.
     add_defines("NOMINMAX", "UNICODE")
     add_files("src/**.cpp")
     add_includedirs("src")
-    add_packages("levilamina")
+    add_packages(
+        "levilamina",
+        "PermissionCore"
+    )
     add_shflags("/DELAYLOAD:bedrock_server.dll") -- To use symbols provided by SymbolProvider.
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")

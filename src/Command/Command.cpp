@@ -29,36 +29,81 @@
 
 
 namespace tls::command {
+
 using ll::i18n_literals::operator""_tr;
-
-// clang-format off
-#define CHECK_COMMAND_TYPE(currentType, targetType)                                                                    \
-    if (currentType != targetType) {                                                                                   \
-        std::string targetTypeStr;                                                                                     \
-        switch (targetType) {                                                                                          \
-            case CommandOriginType::Player: targetTypeStr = "players"; break;                                          \
-            case CommandOriginType::CommandBlock: targetTypeStr = "command blocks"; break;                             \
-            case CommandOriginType::MinecartCommandBlock: targetTypeStr = "minecart command blocks"; break;            \
-            case CommandOriginType::DevConsole: targetTypeStr = "the developer console"; break;                        \
-            case CommandOriginType::Test: targetTypeStr = "test origins"; break;                                       \
-            case CommandOriginType::AutomationPlayer: targetTypeStr = "automation players"; break;                     \
-            case CommandOriginType::ClientAutomation: targetTypeStr = "client automation"; break;                      \
-            case CommandOriginType::DedicatedServer: targetTypeStr = "dedicated servers"; break;                       \
-            case CommandOriginType::Entity: targetTypeStr = "entities"; break;                                         \
-            case CommandOriginType::Virtual: targetTypeStr = "virtual origins"; break;                                 \
-            case CommandOriginType::GameArgument: targetTypeStr = "game argument origins"; break;                      \
-            case CommandOriginType::EntityServer: targetTypeStr = "entity servers"; break;                             \
-            case CommandOriginType::Precompiled: targetTypeStr = "precompiled origins"; break;                         \
-            case CommandOriginType::GameDirectorEntityServer: targetTypeStr = "game director entity servers"; break;   \
-            case CommandOriginType::Scripting: targetTypeStr = "scripting origins"; break;                             \
-            case CommandOriginType::ExecuteContext: targetTypeStr = "execute contexts"; break;                         \
-            default: targetTypeStr = "unknown";                                                                        \
-        }                                                                                                              \
-        return output.error("This command is available to [{}] only!"_tr(targetTypeStr));                              \
-    }
-// clang-format on
-
 using string = std::string;
+
+#define C_RESET  "\033[0m"
+#define C_BLACK  "\033[30m" /* Black */
+#define C_RED    "\033[31m" /* Red */
+#define C_GREEN  "\033[32m" /* Green */
+#define C_YELLOW "\033[33m" /* Yellow */
+#define C_BLUE   "\033[34m" /* Blue */
+#define C_PURPLE "\033[35m" /* Purple */
+#define C_CYAN   "\033[36m" /* Cyan */
+#define C_WHITE  "\033[37m" /* White */
+
+std::string CommandOriginTypeToString(CommandOriginType type) {
+    switch (type) {
+    case CommandOriginType::Player:
+        return "players";
+    case CommandOriginType::CommandBlock:
+        return "command blocks";
+    case CommandOriginType::MinecartCommandBlock:
+        return "minecart command blocks";
+    case CommandOriginType::DevConsole:
+        return "the developer console";
+    case CommandOriginType::Test:
+        return "test origins";
+    case CommandOriginType::AutomationPlayer:
+        return "automation players";
+    case CommandOriginType::ClientAutomation:
+        return "client automation";
+    case CommandOriginType::DedicatedServer:
+        return "dedicated servers";
+    case CommandOriginType::Entity:
+        return "entities";
+    case CommandOriginType::Virtual:
+        return "virtual origins";
+    case CommandOriginType::GameArgument:
+        return "game argument origins";
+    case CommandOriginType::EntityServer:
+        return "entity servers";
+    case CommandOriginType::Precompiled:
+        return "precompiled origins";
+    case CommandOriginType::GameDirectorEntityServer:
+        return "game director entity servers";
+    case CommandOriginType::Scripting:
+        return "scripting origins";
+    case CommandOriginType::ExecuteContext:
+        return "execute contexts";
+    default:
+        return "unknown";
+    }
+}
+
+#define CHECK_COMMAND_TYPE(__output, __originType, ...)                                                        \
+    {                                                                                                                  \
+        std::initializer_list<CommandOriginType> __allowedTypes = {__VA_ARGS__};                                       \
+        bool                                     __typeMatched  = false;                                               \
+        for (auto _allowedType : __allowedTypes) {                                                                     \
+            if (__originType == _allowedType) {                                                                        \
+                __typeMatched = true;                                                                                  \
+                break;                                                                                                 \
+            }                                                                                                          \
+        }                                                                                                              \
+        if (!__typeMatched) {                                                                                          \
+            std::stringstream __allowedTypesStr;                                                                       \
+            bool              __first = true;                                                                          \
+            for (auto __allowedType : __allowedTypes) {                                                                \
+                if (!__first) __allowedTypesStr << ", ";                                                               \
+                __allowedTypesStr << CommandOriginTypeToString(__allowedType);                                         \
+                __first = false;                                                                                       \
+            }                                                                                                          \
+            __output.error("This command is available to '{}' only!"_tr(__allowedTypesStr.str()));                     \
+            return;                                                                                                    \
+        }                                                                                                              \
+    }
 
 struct Arg_Player {
     CommandSelector<Player> player;
@@ -66,6 +111,9 @@ struct Arg_Player {
 struct Args_Kick {
     CommandSelector<Player> player;
     string                  message;
+};
+struct Arg_Message {
+    string message;
 };
 
 bool regCommand() {
@@ -77,7 +125,7 @@ bool regCommand() {
 
     // tools
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
-        CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
         Actor* entity = origin.getEntity();
         if (entity) {
             auto& player = *static_cast<Player*>(entity); // entity* => Player&
@@ -94,7 +142,7 @@ bool regCommand() {
         .text("kill")
         .required("player")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
-            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
             if (entity) {
                 auto& player = *static_cast<Player*>(entity);
@@ -118,7 +166,7 @@ bool regCommand() {
         .required("player")
         .optional("message")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
-            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
             if (entity) {
                 auto& player = *static_cast<Player*>(entity);
@@ -141,7 +189,7 @@ bool regCommand() {
         .text("crash")
         .required("player")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
-            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
             if (entity) {
                 auto& player = *static_cast<Player*>(entity);
@@ -168,7 +216,7 @@ bool regCommand() {
         .required("player")
         .required("message")
         .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Kick const& param) {
-            CHECK_COMMAND_TYPE(origin.getOriginType(), CommandOriginType::Player);
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             Actor* entity = origin.getEntity();
             if (entity) {
                 auto& player = *static_cast<Player*>(entity);
@@ -197,6 +245,30 @@ bool regCommand() {
             }
         }>();
 
+    // tools broadcast <msg>
+    cmd.overload<Arg_Message>()
+        .text("broadcast")
+        .required("message")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Message const& param) {
+            CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+            Actor* entity = origin.getEntity();
+            if (entity) {
+                auto& player = *static_cast<Player*>(entity);
+                if (player.isOperator()) {
+                    TextPacket pkt =
+                        TextPacket::createChat("Server", param.message.empty() ? "" : param.message, "", "");
+                    if (ll::service::getLevel().has_value()) {
+                        ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
+                            player.sendNetworkPacket(pkt); // send to all player
+                            return true;
+                        });
+                    }
+                    player.sendMessage("try broadcast message: {}"_tr(param.message));
+                } else {
+                    output.error("This command is available to [OP] only!"_tr());
+                }
+            }
+        }>();
 
     return true;
 }
