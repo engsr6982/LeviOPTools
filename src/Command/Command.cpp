@@ -1,13 +1,10 @@
+// my
 #include "Command.h"
 #include "File/Config.h"
 #include "Form/index.h"
-#include "Permission/Permission.h"
-#include "mc/network/ServerNetworkHandler.h"
-#include "mc/network/packet/SetTimePacket.h"
 #include <Entry/PluginInfo.h>
-#include <PermissionCore/Group.h>
-#include <PermissionCore/PermissionCore.h>
-#include <PermissionCore/PermissionManager.h>
+
+// ll
 #include <ll/api/Logger.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
@@ -18,6 +15,10 @@
 #include <ll/api/service/PlayerInfo.h>
 #include <ll/api/service/Service.h>
 #include <ll/api/utils/HashUtils.h>
+
+// mc
+#include "mc/network/ServerNetworkHandler.h"
+#include "mc/network/packet/SetTimePacket.h"
 #include <mc/entity/utilities/ActorType.h>
 #include <mc/network/packet/LevelChunkPacket.h>
 #include <mc/network/packet/TextPacket.h>
@@ -32,7 +33,41 @@
 #include <mc/server/commands/CommandSelector.h>
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/player/Player.h>
+
+// library
+#include "Permission/Permission.h"
+#include <PermissionCore/Group.h>
+#include <PermissionCore/PermissionCore.h>
+#include <PermissionCore/PermissionManager.h>
+
+// c++
+#include <algorithm>
+#include <cmath>
+#include <ctime>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <stdexcept>
 #include <string>
+#include <vector>
+
+// test
+#include "ll/api/service/Bedrock.h"
+#include "mc/common/wrapper/optional_ref.h"
+#include "mc/deps/core/string/HashedString.h"
+#include "mc/nbt/CompoundTag.h"
+#include "mc/world/level/BlockPos.h"
+#include "mc/world/level/BlockSource.h"
+#include "mc/world/level/ChunkPos.h"
+#include "mc/world/level/Level.h"
+#include "mc/world/level/block/Block.h"
+#include "mc/world/level/block/actor/BlockActor.h"
+#include "mc/world/level/chunk/LevelChunk.h"
+#include "mc/world/level/dimension/Dimension.h"
 
 
 namespace tls::command {
@@ -133,11 +168,48 @@ struct Arg_SetMaxPlayers {
     int maxPlayers;
 };
 
+void debugCommand() {
+    auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
+        config::cfg.command.tools.commandName,
+        config::cfg.command.tools.commandDescription
+    );
+
+    cmd.overload().text("chunkpos").execute<[&](CommandOrigin const& origin, CommandOutput& output) {
+        CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+        try {
+            auto* player = static_cast<Player*>(origin.getEntity());
+            if (!player) {
+                output.error("get entity failed!"_tr());
+                return;
+            }
+            auto vec3 = player->getPosition();
+
+            auto&    dimPtr = player->getDimension();
+            auto&    bls    = dimPtr.getBlockSourceFromMainChunkSource();
+            BlockPos bp{vec3.x, vec3.y, vec3.z};
+            auto*    chunk = bls.getChunkAt(bp);
+            auto&    cpos  = chunk->getPosition();
+            std::cout << "ChunkPos::toString = " << cpos.toString() << std::endl;
+            std::cout << "ChunkPos::size = " << cpos.size() << std::endl;
+            std::cout << "ChunkPos::length = " << cpos.length() << std::endl;
+            std::cout << "ChunkPos::lengthSqr = " << cpos.lengthSqr() << std::endl;
+        } catch (...) {
+            output.error("unknown error!"_tr());
+        }
+    }>();
+}
+
+// ------------------------------ tools command ---------------------------------
+
 void regCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
         config::cfg.command.tools.commandName,
         config::cfg.command.tools.commandDescription
     );
+
+#ifdef DEBUG
+    debugCommand();
+#endif
 
     // tools
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {

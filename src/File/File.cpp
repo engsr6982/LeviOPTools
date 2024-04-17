@@ -15,7 +15,6 @@ std::optional<nlohmann::json> loadJsonFile(const std::filesystem::path& path) {
     } catch (...) {
         return std::nullopt;
     }
-    return std::nullopt;
 }
 
 } // namespace tls::file
