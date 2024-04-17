@@ -38,6 +38,13 @@ target("LeviOPTools") -- Change this to your plugin name.
     add_defines("NOMINMAX", "UNICODE")
     add_files("src/**.cpp")
     add_includedirs("src")
+
+    if is_mode("debug") then
+        add_defines(
+            "DEBUG",
+            "LL_I18N_COLLECT_STRINGS"
+        )
+    end
     add_packages(
         "levilamina",
         "PermissionCore"
