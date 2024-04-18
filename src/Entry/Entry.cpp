@@ -57,15 +57,16 @@ bool entry::load() {
 bool entry::enable() {
     getSelf().getLogger().info("Enabling...");
 
-    tls::command::regCommand();
+    tls::command::registerCommand();
     tls::form::initMapping();
 
     return true;
 }
 
 bool entry::disable() {
-    getSelf().getLogger().info("Disabling...");
-    return true;
+    getSelf().getLogger().warn("Don't try unload、reload、disable this plugin.");
+    getSelf().getLogger().warn("if you want reload、disable、unload this plugin, please stop the server first.");
+    return false;
 }
 
 } // namespace tls
