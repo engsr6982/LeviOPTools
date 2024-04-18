@@ -58,7 +58,6 @@
 #include <vector>
 
 // test
-#include "Chunk/ChunkTraverser.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/common/wrapper/optional_ref.h"
 #include "mc/deps/core/string/HashedString.h"
@@ -137,16 +136,9 @@ void registerDebugCommand() {
             std::cout << "LevelChunk::getMaxY = " << levelChunk->getMaxY() << std::endl;
             std::cout << "LevelChunk::getMinY = " << levelChunk->getMinY() << std::endl;
 
-            auto& tc = ChunkTraverser::getInstance();
+            // ChunkBlockPos cbp = ChunkBlockPos(pos, dimid.getMinHeight());
+            // Block const&  bl  = levelChunk->getBlock(cbp);
 
-            tc.startTraversal(levelChunk->getMin(), levelChunk->getMax(), [&](Vec3 pos) {
-                ChunkBlockPos cbp = ChunkBlockPos(pos, dimid.getMinHeight());
-                Block const&  bl  = levelChunk->getBlock(cbp);
-
-                std::cout << "[lambda]: [" << tc.getCount() << "] "
-                          << "Vec3: " << pos.toString() << "Block:" << bl.getName().c_str() << std::endl;
-            });
-            std::cout << "Spend time: " << tc.getElapsedTime() << "ms" << std::endl;
         } catch (...) {
             output.error("unknown error!"_tr());
         }

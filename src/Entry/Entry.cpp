@@ -7,6 +7,7 @@
 #include <memory>
 
 // my files
+#include "Chunk/ChunkDB.h"
 #include "Command/Command.h"
 #include "Entry.h"
 #include "File/Config.h"
@@ -34,6 +35,9 @@ bool entry::load() {
 
     // load permission
     tls::perms::initPermission();
+
+    // load chunk db
+    tls::chunk::ChunkDB::getInstance().init();
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
@@ -63,7 +67,14 @@ bool entry::enable() {
     return true;
 }
 
-bool entry::disable() { return true; }
+bool entry::disable() {
+    getSelf().getLogger().info("Disabling...");
+
+    // TODO: 销毁注册的权限
+    // TODO: 销毁PermissionCore
+
+    return true;
+}
 
 } // namespace tls
 
