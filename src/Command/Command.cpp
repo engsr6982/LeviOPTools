@@ -58,12 +58,14 @@
 #include <vector>
 
 // test
+#include "Chunk/ChunkTraverser.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/common/wrapper/optional_ref.h"
 #include "mc/deps/core/string/HashedString.h"
 #include "mc/nbt/CompoundTag.h"
 #include "mc/world/level/BlockPos.h"
 #include "mc/world/level/BlockSource.h"
+#include "mc/world/level/ChunkBlockPos.h"
 #include "mc/world/level/ChunkPos.h"
 #include "mc/world/level/Level.h"
 #include "mc/world/level/block/Block.h"
@@ -107,17 +109,44 @@ void registerDebugCommand() {
                 output.error("get entity failed!"_tr());
                 return;
             }
-            auto vec3 = player->getPosition();
+            auto playerVec3 = player->getPosition();
 
-            auto&    dimPtr = player->getDimension();
-            auto&    bls    = dimPtr.getBlockSourceFromMainChunkSource();
-            BlockPos bp{vec3.x, vec3.y, vec3.z};
-            auto*    chunk = bls.getChunkAt(bp);
-            auto&    cpos  = chunk->getPosition();
-            std::cout << "ChunkPos::toString = " << cpos.toString() << std::endl;
-            std::cout << "ChunkPos::size = " << cpos.size() << std::endl;
-            std::cout << "ChunkPos::length = " << cpos.length() << std::endl;
-            std::cout << "ChunkPos::lengthSqr = " << cpos.lengthSqr() << std::endl;
+            Dimension const& dimid       = player->getDimension();
+            BlockSource&     blockSource = dimid.getBlockSourceFromMainChunkSource();
+            BlockPos         blockPos{playerVec3.x, playerVec3.y, playerVec3.z};
+            LevelChunk*      levelChunk = blockSource.getChunkAt(blockPos);
+            ChunkPos const&  chunkPos   = levelChunk->getPosition();
+
+            std::cout << "ChunkPos::toString = " << chunkPos.toString() << std::endl;
+            std::cout << "ChunkPos::size = " << chunkPos.size() << std::endl;
+            std::cout << "ChunkPos::length = " << chunkPos.length() << std::endl;
+            std::cout << "ChunkPos::lengthSqr = " << chunkPos.lengthSqr() << std::endl;
+
+            std::cout << "ChunkPos::b = " << chunkPos.b << std::endl;
+            std::cout << "ChunkPos::g = " << chunkPos.g << std::endl;
+            std::cout << "ChunkPos::p = " << chunkPos.p << std::endl;
+            std::cout << "ChunkPos::r = " << chunkPos.r << std::endl;
+            std::cout << "ChunkPos::s = " << chunkPos.s << std::endl;
+            std::cout << "ChunkPos::t = " << chunkPos.t << std::endl;
+            std::cout << "ChunkPos::x = " << chunkPos.x << std::endl;
+            std::cout << "ChunkPos::y = " << chunkPos.y << std::endl;
+            std::cout << "ChunkPos::z = " << chunkPos.z << std::endl;
+
+            std::cout << "LevelChunk::getMax = " << levelChunk->getMax().toString() << std::endl;
+            std::cout << "LevelChunk::getMin = " << levelChunk->getMin().toString() << std::endl;
+            std::cout << "LevelChunk::getMaxY = " << levelChunk->getMaxY() << std::endl;
+            std::cout << "LevelChunk::getMinY = " << levelChunk->getMinY() << std::endl;
+
+            auto& tc = ChunkTraverser::getInstance();
+
+            tc.startTraversal(levelChunk->getMin(), levelChunk->getMax(), [&](Vec3 pos) {
+                ChunkBlockPos cbp = ChunkBlockPos(pos, dimid.getMinHeight());
+                Block const&  bl  = levelChunk->getBlock(cbp);
+
+                std::cout << "[lambda]: [" << tc.getCount() << "] "
+                          << "Vec3: " << pos.toString() << "Block:" << bl.getName().c_str() << std::endl;
+            });
+            std::cout << "Spend time: " << tc.getElapsedTime() << "ms" << std::endl;
         } catch (...) {
             output.error("unknown error!"_tr());
         }

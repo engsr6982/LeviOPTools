@@ -63,11 +63,7 @@ bool entry::enable() {
     return true;
 }
 
-bool entry::disable() {
-    getSelf().getLogger().warn("Don't try unload、reload、disable this plugin.");
-    getSelf().getLogger().warn("if you want reload、disable、unload this plugin, please stop the server first.");
-    return false;
-}
+bool entry::disable() { return true; }
 
 } // namespace tls
 
