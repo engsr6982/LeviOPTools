@@ -8,6 +8,8 @@ namespace tls::chunk {
 using string = std::string;
 using json   = nlohmann::json;
 
+std::unique_ptr<ll::data::KeyValueDB> ChunkDB::dbInstance = nullptr;
+
 ChunkDB& ChunkDB::getInstance() {
     static ChunkDB instance;
     return instance;
@@ -40,7 +42,7 @@ string keyTypeToString(KeyType type) {
 bool ChunkDB::insert(DBChunkData data) {
     auto chunkData = dbInstance->get(keyTypeToString(data.type));
     // parse json
-    json j      = json::parse(chunkData);
+    json j      = json::parse(*chunkData);
     json j2     = data.toJSON();
     j[data.key] = j2;
     dbInstance->set(keyTypeToString(data.type), j.dump());
@@ -59,7 +61,7 @@ bool ChunkDB::insert(LevelChunk* chunk, KeyType type) {
 std::optional<DBChunkData> ChunkDB::get(string name, KeyType type) {
     auto chunkData = dbInstance->get(keyTypeToString(type));
     // parse json
-    json j = json::parse(chunkData);
+    json j = json::parse(*chunkData);
     if (j.contains(name)) {
         return DBChunkData::fromJSON(j[name]);
     }
@@ -75,7 +77,7 @@ std::optional<DBChunkData> ChunkDB::get(ChunkPos pos, KeyType type) { return get
 bool ChunkDB::remove(string name, KeyType type) {
     auto chunkData = dbInstance->get(keyTypeToString(type));
     // parse json
-    json j = json::parse(chunkData);
+    json j = json::parse(*chunkData);
     if (j.contains(name)) {
         j.erase(name);
         dbInstance->set(keyTypeToString(type), j.dump());
