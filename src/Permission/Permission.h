@@ -1,3 +1,4 @@
+#pragma once
 #include <PermissionCore/Group.h>
 #include <PermissionCore/PermissionCore.h>
 #include <PermissionCore/PermissionManager.h>

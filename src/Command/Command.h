@@ -1,3 +1,4 @@
+#pragma once
 // my
 #include "File/Config.h"
 #include "Form/index.h"
