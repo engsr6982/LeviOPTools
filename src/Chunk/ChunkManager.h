@@ -1,9 +1,9 @@
 // stl
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
-
 
 // ll
 #include "ll/api/data/KeyValueDB.h"
@@ -51,24 +51,40 @@ private:
 public:
     static ChunkManager& getInstance();
 
-    LevelChunk* getChunkAt(const Vec3& pos, const Dimension& dimension);
+    // save and load chunk
+    bool                               saveChunk(LevelChunk* chunk);
+    std::unique_ptr<StructureTemplate> loadChunk(const ChunkPos& pos);
+    bool                               findChunkInFile(const ChunkPos& pos);
+    bool                               findChunkInDb(const ChunkPos& pos);
+    bool                               canLoadChunk(const ChunkPos& pos);
 
-    const Block& getBlockAt(LevelChunk* chunk, const Vec3& pos);
+    // save and load custom chunk data
+    bool                               saveCustomData(std::unique_ptr<class CompoundTag> customData);
+    std::unique_ptr<StructureTemplate> loadCustomData(string fileName);
+    bool                               canLoadCustomData(string fileName);
+    bool                               canSaveCustomData(string fileName);
 
-    std::unique_ptr<StructureTemplate>
-    getStructureTemplate(LevelChunk* chunk, bool ignoreBlocks = false, bool ignoreEntities = false);
+    // structure
+    bool                               saveStructure(std::unique_ptr<StructureTemplate> structure);
+    std::unique_ptr<StructureTemplate> loadStructure(string fileName);
+    bool                               canLoadStructure(string fileName);
+    bool                               canSaveStructure(string fileName);
 
-    std::unique_ptr<class CompoundTag>
-    getStructureNBT(LevelChunk* chunk, bool ignoreBlocks = false, bool ignoreEntities = false);
+    // core save and load functions
+    bool saveFile(std::filesystem::path path, std::unique_ptr<class CompoundTag> nbt);
+    bool loadFile(std::filesystem::path path);
+    bool findFile(std::filesystem::path path);
+    bool canLoadFile(std::filesystem::path path);
+    bool canSaveFile(std::filesystem::path path);
 
-    // save and load nbt
-    bool saveNbtToFile(LevelChunk* chunk);
-    bool saveNbtToFile(std::unique_ptr<class CompoundTag> nbt, string filename);
-    bool saveNbtToFile(std::unique_ptr<class CompoundTag> nbt, std::filesystem::path path);
+    // chunk tools functions
+    static LevelChunk*  getChunkAt(const Vec3& pos, const Dimension& dimension);
+    static const Block& getBlockAt(LevelChunk* chunk, const Vec3& pos);
 
-    std::unique_ptr<class CompoundTag> loadNbtFromFile(const ChunkPos& pos);
-    std::unique_ptr<class CompoundTag> loadNbtFromFile(const string& filename);
-    std::unique_ptr<class CompoundTag> loadNbtFromFile(const std::filesystem::path& path);
+    static std::unique_ptr<StructureTemplate> convertTagToStructure(const class CompoundTag& tag);
+    static std::unique_ptr<class CompoundTag> convertStructureToTag(const StructureTemplate& structure);
+    static std::unique_ptr<StructureTemplate>
+    convertLevelChunkToStructure(LevelChunk* chunk, bool ignoreBlocks = false, bool ignoreEntities = false);
 };
 
 } // namespace tls::chunk

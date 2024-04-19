@@ -18,7 +18,7 @@ ChunkDB& ChunkDB::getInstance() {
 std::unique_ptr<ll::data::KeyValueDB>& ChunkDB::getDbInstance() { return dbInstance; }
 
 bool ChunkDB::init() {
-    auto path  = tls::entry::getInstance().getSelf().getDataDir() / "ChunkDB";
+    auto path  = tls::entry::getInstance().getSelf().getPluginDir() / "Chunk" / "ChunkDB";
     dbInstance = std::make_unique<ll::data::KeyValueDB>(path);
 
     dbInstance->set("chunk_data", json::object().dump());
