@@ -29,15 +29,11 @@ bool entry::load() {
     ll::i18n::load(mSelf.getLangDir());
     using ll::i18n_literals::operator""_tr;
 
-    // load config and set logger level
+    // load
     tls::config::loadConfig();
-    logger.consoleLevel = tls::config::cfg.loggerLevel;
-
-    // load permission
     tls::perms::initPermission();
-
-    // load chunk db
     tls::chunk::ChunkDB::getInstance().init();
+    logger.consoleLevel = tls::config::cfg.loggerLevel;
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
@@ -62,6 +58,8 @@ bool entry::enable() {
     getSelf().getLogger().info("Enabling...");
 
     tls::command::registerCommand();
+    tls::command::registerChunkCommand();
+    tls::command::registerGamemodeCommand();
     tls::form::initMapping();
 
     return true;
