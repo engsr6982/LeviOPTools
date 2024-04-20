@@ -296,9 +296,21 @@ ChunkManager::getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks
 }
 
 void ChunkManager::checkAndFixLittelEndianCooridnates(BoundingBox& box) {
-    if (box.min > box.max) {
-        std::swap(box.min, box.max);
+    // Checking small end coordinates and large end coordinates
+    // Y-axis is given to box.max.y if it is big, or box.min.y if it is small.
+    if (box.min.y > box.max.y) {
+        std::swap(box.min.y, box.max.y);
     }
+    // Checking the x and z axis
+    if (box.min.x > box.max.x) {
+        std::swap(box.min.x, box.max.x);
+    }
+    if (box.min.z > box.max.z) {
+        std::swap(box.min.z, box.max.z);
+    }
+    tls::entry::getInstance().getSelf().getLogger().debug(
+        "try fix little endian coordinates, min: {}, max: {}"_tr(box.min.toString(), box.max.toString())
+    );
 }
 
 // structure place in world
