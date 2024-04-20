@@ -274,13 +274,25 @@ std::unique_ptr<class CompoundTag> ChunkManager::convertBinaryNbtToTag(const str
 
 std::unique_ptr<StructureTemplate>
 ChunkManager::getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks, bool ignoreEntities) {
-    return StructureTemplate::create(
-        "",
-        ll::service::getLevel()->getDimension(dimensionId)->getBlockSourceFromMainChunkSource(),
-        box,
-        ignoreBlocks,
-        ignoreEntities
-    );
+    try {
+        return StructureTemplate::create(
+            "",
+            ll::service::getLevel()->getDimension(dimensionId)->getBlockSourceFromMainChunkSource(),
+            box,
+            ignoreBlocks,
+            ignoreEntities
+        );
+        // catch std::length_error, vector too long
+    } catch (const std::length_error& e) {
+        tls::entry::getInstance().getSelf().getLogger().error(
+            "Selection error, point 1: {} | point 2: {}, original error: {}"_tr(
+                box.min.toString(),
+                box.max.toString(),
+                e.what()
+            )
+        );
+        return nullptr;
+    }
 }
 
 void ChunkManager::checkAndFixLittelEndianCooridnates(BoundingBox& box) {
