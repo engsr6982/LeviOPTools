@@ -60,7 +60,8 @@ using json   = nlohmann::json;
                 x: int,
                 y: int,
                 z: int
-            }
+            },
+            dimensionId: int // 维度ID
         }
     },
     "custom_data": {        // 自定义备份区域
@@ -74,7 +75,8 @@ using json   = nlohmann::json;
                 x: int,
                 y: int,
                 z: int
-            }
+            },
+            dimensionId: int // 维度ID
         }
     }
 }
@@ -88,14 +90,24 @@ struct DBChunkData {
     KeyType type;
     Vec3    min;
     Vec3    max;
+    int     dimensionId;
+
+    DBChunkData() {}
+    DBChunkData(string key, KeyType type, Vec3 min, Vec3 max, int dimensionId)
+    : key(key),
+      type(type),
+      min(min),
+      max(max),
+      dimensionId(dimensionId) {}
 
     static inline DBChunkData fromJSON(const string& jsonStr) {
         json        j = json::parse(jsonStr);
         DBChunkData data;
         data.key = j["key"];
         // data.type = static_cast<KeyType>(j["type"]);
-        data.min = Vec3(j["min"]["x"].get<int>(), j["min"]["y"].get<int>(), j["min"]["z"].get<int>());
-        data.max = Vec3(j["max"]["x"].get<int>(), j["max"]["y"].get<int>(), j["max"]["z"].get<int>());
+        data.min         = Vec3(j["min"]["x"].get<int>(), j["min"]["y"].get<int>(), j["min"]["z"].get<int>());
+        data.max         = Vec3(j["max"]["x"].get<int>(), j["max"]["y"].get<int>(), j["max"]["z"].get<int>());
+        data.dimensionId = j["dimensionId"].get<int>();
         return data;
     }
 
@@ -103,14 +115,15 @@ struct DBChunkData {
         json j;
         j["key"] = key;
         // j["type"]     = static_cast<int>(type);
-        j["min"]      = json::object();
-        j["min"]["x"] = min.x;
-        j["min"]["y"] = min.y;
-        j["min"]["z"] = min.z;
-        j["max"]      = json::object();
-        j["max"]["x"] = max.x;
-        j["max"]["y"] = max.y;
-        j["max"]["z"] = max.z;
+        j["min"]         = json::object();
+        j["min"]["x"]    = min.x;
+        j["min"]["y"]    = min.y;
+        j["min"]["z"]    = min.z;
+        j["max"]         = json::object();
+        j["max"]["x"]    = max.x;
+        j["max"]["y"]    = max.y;
+        j["max"]["z"]    = max.z;
+        j["dimensionId"] = dimensionId;
         return j;
     }
 
