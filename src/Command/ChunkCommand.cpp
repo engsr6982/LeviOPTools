@@ -307,7 +307,7 @@ void registerChunkCommand() {
                     chunk::ChunkManager::placeStructure(
                         param.dimentionId == -1 ? bindData.dimentionId : param.dimentionId,
                         std::move(structure),
-                        bindData.box.min,
+                        bindData.copyTargetPos,
                         bindData.mirror,
                         bindData.rotation,
                         false,
