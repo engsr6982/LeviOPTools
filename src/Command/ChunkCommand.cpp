@@ -3,6 +3,7 @@
 #include "Command.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/deps/core/common/bedrock/typeid_t.h"
+#include "mc/enums/Mirror.h"
 #include "mc/server/commands/CommandOriginType.h"
 #include "mc/server/commands/CommandPosition.h"
 #include "mc/server/commands/CommandPositionFloat.h"
@@ -33,7 +34,7 @@ struct ArgFileName {
     string fileName;
 };
 
-struct ArgIdAndVec3 {
+struct ArgChunkSelsctCopy {
     int                  id;
     CommandPositionFloat pos;
 };
@@ -42,6 +43,34 @@ struct ArgCopyConfirm {
     int  id;
     int  dimentionId    = -1;
     bool ignoreEntities = false;
+};
+
+struct SaveStructure {
+    int    id;
+    string fileName;
+    bool   ignoreEntities = false;
+    bool   ignoreBlocks   = false;
+};
+
+struct PlaceStructure {
+    int                  id;
+    CommandPositionFloat pos;
+    bool                 ignoreEntities = false;
+    int                  dimentionId    = -1;
+};
+
+struct TransFormMirror {
+    int    id;
+    Mirror direction;
+};
+
+struct TransFormRotate {
+    int      id;
+    Rotation angle;
+};
+
+struct OnlyID {
+    int id;
 };
 
 void registerChunkCommand() {
@@ -198,7 +227,7 @@ void registerChunkCommand() {
             BoundingBox box(pos1, pos2);
             chunk::ChunkManager::checkAndFixLittelEndianCooridnates(box);
 
-            int id = chunk::BindData::getInstance().createBindData(box, param.dimentionId);
+            int id = chunk::BindData::getInstance().createBindData(box, param.dimentionId, true);
             if (id == -1) {
                 output.error("[Chunk] Failed to create bind data!"_tr());
                 return;
@@ -257,13 +286,13 @@ void registerChunkCommand() {
         }>();
 
     // tools chunk select copy <id> <vec3>
-    cmd.overload<ArgIdAndVec3>()
+    cmd.overload<ArgChunkSelsctCopy>()
         .text("chunk")
         .text("select")
         .text("copy")
         .required("id")
         .required("pos")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgIdAndVec3 const& param) {
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgChunkSelsctCopy const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -272,9 +301,9 @@ void registerChunkCommand() {
             );
             Vec3 pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
             if (chunk::BindData::getInstance().hasBindData(param.id)) {
-                auto& bindData         = chunk::BindData::getInstance().getBindData(param.id);
-                bindData.isOpenCopy    = true;
-                bindData.copyTargetPos = pos;
+                auto& bindData            = chunk::BindData::getInstance().getBindData(param.id);
+                bindData.canCopyStructure = true;
+                bindData.copyTargetPos    = pos;
                 output.success(
                     "[Chunk] Copy mode has been turned on.You can enter commands to mirror and rotate, then enter a command to confirm placement, or enter a command to cancel."_tr(
                     )
@@ -302,7 +331,7 @@ void registerChunkCommand() {
             );
             if (chunk::BindData::getInstance().hasBindData(param.id)) {
                 auto& bindData = chunk::BindData::getInstance().getBindData(param.id);
-                if (bindData.isOpenCopy) {
+                if (bindData.canCopyStructure) {
                     auto structure = chunk::ChunkManager::getStructureAt(bindData.box, bindData.dimentionId);
                     chunk::ChunkManager::placeStructure(
                         param.dimentionId == -1 ? bindData.dimentionId : param.dimentionId,
@@ -323,6 +352,138 @@ void registerChunkCommand() {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
         }>();
+
+
+    // McStructure
+
+    // tools chunk structure load <fileName>
+    cmd.overload<ArgFileName>()
+        .text("chunk")
+        .text("structure")
+        .text("load")
+        .required("fileName")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgFileName const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto structure = chunk::ChunkManager::getInstance().loadStructure(param.fileName);
+            if (structure) {
+                int id = chunk::BindData::getInstance().createBindData(std::move(structure), true);
+                if (id == -1) {
+                    output.error("[Chunk] Failed to create binding data!"_tr());
+                    return;
+                }
+                output.success("[Chunk] Load file {} successfully, operation id: {}"_tr(param.fileName, id));
+            } else {
+                output.error("[Chunk] Failed to load structure from file!"_tr());
+            }
+        }>();
+
+    // tools chunk structure save <id> <fileName> [ignoreBlocks] [ignoreEntities]
+    cmd.overload<SaveStructure>()
+        .text("chunk")
+        .text("structure")
+        .text("save")
+        .required("id")
+        .required("fileName")
+        .optional("ignoreBlocks")
+        .optional("ignoreEntities")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, SaveStructure const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (bdInstance.hasBindData(param.id)) {
+                auto& bindData = bdInstance.getBindData(param.id);
+                if (bindData.canSaveStructure) {
+                    auto structure = chunk::ChunkManager::getStructureAt(
+                        bindData.box,
+                        bindData.dimentionId,
+                        param.ignoreBlocks,
+                        param.ignoreEntities
+                    );
+                    bool isSuccess =
+                        chunk::ChunkManager::getInstance().saveStructure(param.fileName, std::move(structure));
+                    if (isSuccess) {
+                        bdInstance.removeBindData(param.id);
+                        output.success(
+                            "[Chunk] Save structure to file {} successful, operation id destroyed!"_tr(param.fileName)
+                        );
+                    } else {
+                        output.error("[Chunk] Failed to save structure!"_tr());
+                    }
+                } else {
+                    output.error(
+                        "[Chunk] The data bound to the current operation id is not allowed to save the structure, please check whether the current operation id has been constituency"_tr(
+                        )
+                    );
+                }
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
+
+    // tools chunk structure place <id> <pos> <dimentionId> [ignoreEntities]
+    cmd.overload<PlaceStructure>()
+        .text("chunk")
+        .text("structure")
+        .text("place")
+        .required("id")
+        .required("pos")
+        .required("dimentionId")
+        .optional("ignoreEntities")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, PlaceStructure const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (bdInstance.hasBindData(param.id)) {
+                auto& bindData = bdInstance.getBindData(param.id);
+                if (bindData.canPlaceStructure) {
+                    if (bindData.structure == nullptr) {
+                        output.error(
+                            "[Chunk] The structure data is not available, please load the structure file first!"_tr()
+                        );
+                        return;
+                    }
+                    chunk::ChunkManager::placeStructure(
+                        param.dimentionId,
+                        std::move(bindData.structure),
+                        origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos),
+                        bindData.mirror,
+                        bindData.rotation,
+                        false,
+                        param.ignoreEntities
+                    );
+                    bdInstance.removeBindData(param.id);
+                    output.success("[Chunk] Place structure successful, operation id destroyed!"_tr());
+                } else {
+                    output.error(
+                        "[Chunk] The data bound to the current operation id is not allowed to place the structure, please check whether the current operation id has been constituency"_tr(
+                        )
+                    );
+                }
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
+
+    // StructureTransform
+
+    // tools chunk transform mirror <id> <direction>
+
+    // tools chunk transform rotate <id> <angle>
+
+    // tools chunk cancel <id>
 }
 
 } // namespace tls::command

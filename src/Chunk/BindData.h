@@ -52,8 +52,11 @@ namespace tls::chunk {
 using string = std::string;
 
 struct BindDataItem {
+    bool canSaveStructure  = false; // 是否可以保存结构
+    bool canCopyStructure  = false; // 是否可以复制结构
+    bool canPlaceStructure = false; // 是否可以放置结构
+
     BoundingBox                        box;                          // 选择的区域
-    bool                               isOpenCopy = false;           // 是否打开复制模式
     Vec3                               copyTargetPos;                // 复制目标位置
     int                                dimentionId = 0;              // 维度ID
     Mirror                             mirror      = Mirror::None;   // 镜像模式
@@ -62,7 +65,15 @@ struct BindDataItem {
 
     ~BindDataItem() {}
     BindDataItem() {}
-    BindDataItem(BoundingBox box, int dimId) : box(box), dimentionId(dimId) {}
+
+    BindDataItem(BoundingBox box, int dimId, bool canSaveStructure_)
+    : box(box),
+      dimentionId(dimId),
+      canSaveStructure(canSaveStructure_) {}
+
+    BindDataItem(std::unique_ptr<StructureTemplate> structure, bool canPlaceStructure_)
+    : structure(std::move(structure)),
+      canPlaceStructure(canPlaceStructure_) {}
 };
 
 
@@ -90,7 +101,7 @@ public:
 
     inline bool hasBindData(const int& operatorId) { return bindData.find(operatorId) != bindData.end(); }
 
-    inline int createBindData(BoundingBox box, int dimId) {
+    inline int createBindData(BoundingBox box, int dimId, bool canSaveStructure) {
         int operatorId = getOperatorId();
         if (hasBindData(operatorId)) {
             operatorId = getOperatorId();
@@ -98,7 +109,19 @@ public:
         if (hasBindData(operatorId)) {
             return -1;
         }
-        bindData[operatorId] = std::make_unique<BindDataItem>(box, dimId);
+        bindData[operatorId] = std::make_unique<BindDataItem>(box, dimId, canSaveStructure);
+        return operatorId;
+    }
+
+    inline int createBindData(std::unique_ptr<StructureTemplate> structure, bool canPlaceStructure) {
+        int operatorId = getOperatorId();
+        if (hasBindData(operatorId)) {
+            operatorId = getOperatorId();
+        }
+        if (hasBindData(operatorId)) {
+            return -1;
+        }
+        bindData[operatorId] = std::make_unique<BindDataItem>(std::move(structure), canPlaceStructure);
         return operatorId;
     }
 
