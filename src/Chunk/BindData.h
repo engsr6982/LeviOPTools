@@ -53,7 +53,8 @@ using string = std::string;
 
 struct BindDataItem {
     BoundingBox                        box;                          // 选择的区域
-    bool                               isOpenCopy  = false;          // 是否打开复制模式
+    bool                               isOpenCopy = false;           // 是否打开复制模式
+    Vec3                               copyTargetPos;                // 复制目标位置
     int                                dimentionId = 0;              // 维度ID
     Mirror                             mirror      = Mirror::None;   // 镜像模式
     Rotation                           rotation    = Rotation::None; // 旋转角度

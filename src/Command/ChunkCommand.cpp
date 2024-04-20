@@ -33,6 +33,17 @@ struct ArgFileName {
     string fileName;
 };
 
+struct ArgIdAndVec3 {
+    int                  id;
+    CommandPositionFloat pos;
+};
+
+struct ArgCopyConfirm {
+    int  id;
+    int  dimentionId    = -1;
+    bool ignoreEntities = false;
+};
+
 void registerChunkCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
         config::cfg.command.tools.commandName,
@@ -242,6 +253,74 @@ void registerChunkCommand() {
                 output.success("[Chunk] Recovery successful!"_tr());
             } else {
                 output.error("[Chunk] Restore failed, please check and retry!"_tr());
+            }
+        }>();
+
+    // tools chunk select copy <id> <vec3>
+    cmd.overload<ArgIdAndVec3>()
+        .text("chunk")
+        .text("select")
+        .text("copy")
+        .required("id")
+        .required("pos")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgIdAndVec3 const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            Vec3 pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
+            if (chunk::BindData::getInstance().hasBindData(param.id)) {
+                auto& bindData         = chunk::BindData::getInstance().getBindData(param.id);
+                bindData.isOpenCopy    = true;
+                bindData.copyTargetPos = pos;
+                output.success(
+                    "[Chunk] Copy mode has been turned on.You can enter commands to mirror and rotate, then enter a command to confirm placement, or enter a command to cancel."_tr(
+                    )
+                );
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
+
+    // tools chunk select copy confirm <id> [ignoreEntities] [dimentionId]
+    cmd.overload<ArgCopyConfirm>()
+        .text("chunk")
+        .text("select")
+        .text("copy")
+        .text("confirm")
+        .required("id")
+        .optional("ignoreEntities")
+        .optional("dimentionId")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgCopyConfirm const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            if (chunk::BindData::getInstance().hasBindData(param.id)) {
+                auto& bindData = chunk::BindData::getInstance().getBindData(param.id);
+                if (bindData.isOpenCopy) {
+                    auto structure = chunk::ChunkManager::getStructureAt(bindData.box, bindData.dimentionId);
+                    chunk::ChunkManager::placeStructure(
+                        param.dimentionId == -1 ? bindData.dimentionId : param.dimentionId,
+                        std::move(structure),
+                        bindData.box.min,
+                        bindData.mirror,
+                        bindData.rotation,
+                        false,
+                        param.ignoreEntities
+                    );
+                    chunk::BindData::getInstance().removeBindData(param.id);
+                    output.success("[Chunk] Copy successful, operation id destroyed!"_tr());
+                } else {
+                    output.error("[Chunk] Copy mode is not turned on, please enter a command to turn on copy mode."_tr()
+                    );
+                }
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
         }>();
 }
