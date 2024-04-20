@@ -51,20 +51,24 @@ private:
 public:
     static ChunkManager& getInstance();
 
+
     // save and load chunk
     bool saveChunk(LevelChunk* chunk);
     bool loadChunk(LevelChunk* chunk);
     bool findChunkFile(const ChunkPos& pos, int dimensionId = 0);
+
 
     // save and load custom chunk data
     bool saveCustomData(string fileName, BoundingBox box, int dimensionId);
     bool loadCustomData(string fileName);
     bool findCustomDataFile(string fileName);
 
+
     // structure
-    bool                               saveStructure(std::unique_ptr<StructureTemplate> structure);
+    bool                               saveStructure(string fileName, std::unique_ptr<StructureTemplate> structure);
     std::unique_ptr<StructureTemplate> loadStructure(string fileName);
     bool                               findStructureFile(string fileName);
+
 
     // core save and load functions
     enum class FloderType : int { ChunkBackup = 1, CustomBackup = 2, Structure = 3 };
@@ -79,18 +83,25 @@ public:
     );
     std::unique_ptr<class CompoundTag> loadFile(string fileName, FloderType type, int dimensionId = -1);
     bool                               findFile(string fileName, FloderType type, int dimensionId = -1);
-    bool                               canLoadFile(string fileName, FloderType type, int dimensionId = -1);
-    bool                               canSaveFile(string fileName, FloderType type, int dimensionId = -1);
+
 
     // chunk tools functions
     static LevelChunk*  getChunkAt(const Vec3& pos, const Dimension& dimension);
     static const Block& getBlockAt(LevelChunk* chunk, const Vec3& pos);
 
     static std::unique_ptr<StructureTemplate> convertTagToStructure(const class CompoundTag& tag);
+
     static std::unique_ptr<class CompoundTag> convertStructureToTag(const StructureTemplate& structure);
+
     static std::unique_ptr<StructureTemplate>
     convertLevelChunkToStructure(LevelChunk* chunk, bool ignoreBlocks = false, bool ignoreEntities = false);
+
     static std::unique_ptr<class CompoundTag> convertBinaryNbtToTag(const string& binaryNbt);
+
+    static std::unique_ptr<StructureTemplate>
+    getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks = false, bool ignoreEntities = false);
+
+    static void checkAndFixLittelEndianCooridnates(BoundingBox& box);
 
     // structure place in world
     static void placeStructure(

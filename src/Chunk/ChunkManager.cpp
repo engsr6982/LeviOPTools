@@ -4,11 +4,15 @@
 #include "ll/api/service/Bedrock.h"
 #include "ll/api/service/Service.h"
 #include "mc/nbt/CompoundTag.h"
+#include "mc/nbt/IntTag.h"
+#include "mc/world/level/BlockPos.h"
 #include "mc/world/level/LevelListener.h"
 #include "mc/world/level/levelgen/structure/BoundingBox.h"
 #include "mc/world/level/levelgen/structure/StructureTemplate.h"
 #include <algorithm>
+#include <memory>
 #include <stdexcept>
+#include <tuple>
 
 
 namespace tls::chunk {
@@ -23,12 +27,14 @@ ChunkManager& ChunkManager::getInstance() {
 
 // save and load chunk
 bool ChunkManager::saveChunk(LevelChunk* chunk) {
-    auto tag      = ChunkManager::convertLevelChunkToStructure(chunk)->save();
+    if (chunk->isFullyLoaded() == false) return false;
+    auto tag      = ChunkManager::convertLevelChunkToStructure(chunk, false, true)->save();
     auto fileName = chunk->getPosition().toString() + ".chunk";
     return saveFile(fileName, std::move(tag), FloderType::ChunkBackup, chunk->getDimension().getDimensionId().id);
 }
 
 bool ChunkManager::loadChunk(LevelChunk* chunk) {
+    if (chunk->isFullyLoaded() == false) return false;
     auto chunkPos = chunk->getPosition();
     if (findChunkFile(chunkPos, chunk->getDimension().getDimensionId().id)) {
         auto tag = loadFile(
@@ -62,25 +68,60 @@ bool ChunkManager::findChunkFile(const ChunkPos& pos, int dimensionId) {
 
 // save and load custom chunk data
 bool ChunkManager::saveCustomData(string fileName, BoundingBox box, int dimensionId) {
-    fileName += ".custom";
-    return false; // TODO: save custom data
+    fileName                         += ".custom";
+    auto structure                    = getStructureAt(box, dimensionId, false, true);
+    auto tag                          = structure->save();
+    tag->at("levioptools_min_x")      = box.min.x;
+    tag->at("levioptools_min_y")      = box.min.y;
+    tag->at("levioptools_min_z")      = box.min.z;
+    tag->at("levioptools_dimension")  = dimensionId;
+    return saveFile(fileName, std::move(tag), FloderType::CustomBackup, dimensionId);
 }
 
 bool ChunkManager::loadCustomData(string fileName) {
     fileName += ".custom";
-    return false; // TODO: load custom data
+    if (findCustomDataFile(fileName)) {
+        auto tag = loadFile(fileName, FloderType::CustomBackup);
+        if (tag) {
+            auto& minX        = tag->at("levioptools_min_x").get<IntTag>().data;
+            auto& minY        = tag->at("levioptools_min_y").get<IntTag>().data;
+            auto& minZ        = tag->at("levioptools_min_z").get<IntTag>().data;
+            auto& dimensionId = tag->at("levioptools_dimension").get<IntTag>().data;
+
+            ChunkManager::placeStructure(
+                dimensionId,
+                ChunkManager::convertTagToStructure(*tag),
+                BlockPos{minX, minY, minZ},
+                Mirror::None,
+                Rotation::None,
+                false,
+                true
+            );
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ChunkManager::findCustomDataFile(string fileName) { return findFile(fileName, FloderType ::CustomBackup); }
 
 
 // structure
-bool ChunkManager::saveStructure(std::unique_ptr<StructureTemplate> structure) {
-    return false; // TODO: save structure
+bool ChunkManager::saveStructure(string fileName, std::unique_ptr<StructureTemplate> structure) {
+    fileName += ".mcstructure";
+    auto tag  = structure->save();
+    return saveFile(fileName, std::move(tag), FloderType::Structure, -1);
 }
 
 std::unique_ptr<StructureTemplate> ChunkManager::loadStructure(string fileName) {
-    return nullptr; // TODO: load structure
+    fileName += ".mcstructure";
+    if (findStructureFile(fileName)) {
+        auto tag = loadFile(fileName, FloderType::Structure);
+        if (tag) {
+            return ChunkManager::convertTagToStructure(*tag);
+        }
+    }
+    return nullptr;
 }
 
 bool ChunkManager::findStructureFile(string fileName) { return findFile(fileName, FloderType::Structure); }
@@ -108,10 +149,12 @@ void ChunkManager::initAllFolders() {
 }
 
 std::filesystem::path ChunkManager::getFilePath(string fileName, ChunkManager::FloderType type, int dimensionId) {
-    string typeStr = "";
+    string typeStr         = "";
+    bool   createDimFolder = false;
     switch (type) {
     case tls::chunk::ChunkManager::FloderType::ChunkBackup:
-        typeStr = "ChunkBackup";
+        createDimFolder = true;
+        typeStr         = "ChunkBackup";
         break;
     case tls::chunk::ChunkManager::FloderType::CustomBackup:
         typeStr = "CustomBackup";
@@ -123,7 +166,7 @@ std::filesystem::path ChunkManager::getFilePath(string fileName, ChunkManager::F
         std::runtime_error("Invalid folder type");
     }
     auto globalPath = tls::entry::getInstance().getSelf().getPluginDir() / "Chunk" / (typeStr);
-    if (dimensionId == -1) {
+    if (!createDimFolder) {
         return globalPath / (fileName);
     } else {
         auto dimPath = globalPath / (std::to_string(dimensionId));
@@ -227,6 +270,23 @@ ChunkManager::convertLevelChunkToStructure(LevelChunk* chunk, bool ignoreBlocks,
 
 std::unique_ptr<class CompoundTag> ChunkManager::convertBinaryNbtToTag(const string& binaryNbt) {
     return CompoundTag::fromBinaryNbt(binaryNbt)->clone();
+}
+
+std::unique_ptr<StructureTemplate>
+ChunkManager::getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks, bool ignoreEntities) {
+    return StructureTemplate::create(
+        "",
+        ll::service::getLevel()->getDimension(dimensionId)->getBlockSourceFromMainChunkSource(),
+        box,
+        ignoreBlocks,
+        ignoreEntities
+    );
+}
+
+void ChunkManager::checkAndFixLittelEndianCooridnates(BoundingBox& box) {
+    if (box.min > box.max) {
+        std::swap(box.min, box.max);
+    }
 }
 
 // structure place in world
