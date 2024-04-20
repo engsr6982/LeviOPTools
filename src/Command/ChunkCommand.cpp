@@ -70,8 +70,38 @@ struct TransFormRotate {
 };
 
 struct OnlyID {
-    int id;
+    int id = -1;
 };
+
+
+string TransFormArgToString(Mirror direction) {
+    switch (direction) {
+    case Mirror::X:
+        return "X";
+    case Mirror::Z:
+        return "Z";
+    case Mirror::XZ:
+        return "XZ";
+    case Mirror::None:
+        return "None";
+    default:
+        return "Unknown";
+    }
+}
+string TransFormArgToString(Rotation angle) {
+    switch (angle) {
+    case Rotation::None:
+        return "None";
+    case Rotation::Rotate90:
+        return "90";
+    case Rotation::Rotate180:
+        return "180";
+    case Rotation::Rotate270:
+        return "270";
+    default:
+        return "Unknown";
+    }
+}
 
 void registerChunkCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
@@ -545,6 +575,46 @@ void registerChunkCommand() {
                 output.success("[Chunk] Operation id {} canceled!"_tr(param.id));
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
+
+    // tools chunk operateid [id]
+    cmd.overload<OnlyID>()
+        .text("chunk")
+        .text("operateid")
+        .optional("id")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (param.id == -1) {
+                auto              allId = bdInstance.getAllBindDataOperatorId();
+                std::stringstream ss;
+                string            str;
+                copy(allId.begin(), allId.end(), std::ostream_iterator<int>(ss, ", "));
+                str = ss.str();
+                output.success("[Chunk] All operation ids: {}"_tr(str));
+            } else {
+                if (bdInstance.hasBindData(param.id)) {
+                    auto& bindData = bdInstance.getBindData(param.id);
+                    output.success("[Chunk] Serach operation id: {}"_tr(param.id));
+                    output.success("[Chunk] canSaveStructure: {}"_tr(bindData.canSaveStructure));
+                    output.success("[Chunk] canPlaceStructure: {}"_tr(bindData.canPlaceStructure));
+                    output.success("[Chunk] canCopyStructure: {}"_tr(bindData.canCopyStructure));
+                    output.success("[Chunk] LittelEndianCoordinates: {}"_tr(bindData.box.min.toString()));
+                    output.success("[Chunk] BigEndianCoordinates: {}"_tr(bindData.box.min.toString()));
+                    output.success("[Chunk] CopyTargetPos: {}"_tr(bindData.copyTargetPos.toString()));
+                    output.success("[Chunk] dimentionId: {}"_tr(bindData.dimentionId));
+                    output.success("[Chunk] Mirror: {}"_tr(TransFormArgToString(bindData.mirror)));
+                    output.success("[Chunk] Rotation: {}"_tr(TransFormArgToString(bindData.rotation)));
+                    output.success("[Chunk] hasStructure: {}"_tr(bindData.structure != nullptr));
+                } else {
+                    output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+                }
             }
         }>();
 }

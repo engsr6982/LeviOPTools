@@ -128,6 +128,14 @@ public:
     inline BindDataItem& getBindData(const int& operatorId) { return *bindData[operatorId]; }
 
     inline void removeBindData(const int& operatorId) { bindData.erase(operatorId); }
+
+    inline std::vector<int> getAllBindDataOperatorId() {
+        std::vector<int> operatorIds;
+        for (auto& [operatorId, bindDataItem] : bindData) {
+            operatorIds.push_back(operatorId);
+        }
+        return operatorIds;
+    }
 };
 
 
