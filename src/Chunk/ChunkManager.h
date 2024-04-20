@@ -57,8 +57,7 @@ public:
     bool findChunkFile(const ChunkPos& pos, int dimensionId = 0);
 
     // save and load custom chunk data
-    bool
-    saveCustomData(string fileName, std::unique_ptr<class CompoundTag> customData, BoundingBox box, int dimensionId);
+    bool saveCustomData(string fileName, BoundingBox box, int dimensionId);
     bool loadCustomData(string fileName);
     bool findCustomDataFile(string fileName);
 

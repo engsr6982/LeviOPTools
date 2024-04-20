@@ -1,5 +1,4 @@
 #include "ChunkManager.h"
-#include "ChunkDB.h"
 #include "Entry/Entry.h"
 #include "ll/api/i18n/i18n.h"
 #include "ll/api/service/Bedrock.h"
@@ -20,6 +19,7 @@ ChunkManager& ChunkManager::getInstance() {
     static ChunkManager instance;
     return instance;
 }
+
 
 // save and load chunk
 bool ChunkManager::saveChunk(LevelChunk* chunk) {
@@ -46,7 +46,7 @@ bool ChunkManager::loadChunk(LevelChunk* chunk) {
                     Mirror::None,
                     Rotation::None,
                     false,
-                    false
+                    true
                 );
                 return true;
             }
@@ -59,13 +59,9 @@ bool ChunkManager::findChunkFile(const ChunkPos& pos, int dimensionId) {
     return findFile(pos.toString() + ".chunk", FloderType::ChunkBackup, dimensionId);
 }
 
+
 // save and load custom chunk data
-bool ChunkManager::saveCustomData(
-    string                             fileName,
-    std::unique_ptr<class CompoundTag> customData,
-    BoundingBox                        box,
-    int                                dimensionId
-) {
+bool ChunkManager::saveCustomData(string fileName, BoundingBox box, int dimensionId) {
     fileName += ".custom";
     return false; // TODO: save custom data
 }
@@ -77,6 +73,7 @@ bool ChunkManager::loadCustomData(string fileName) {
 
 bool ChunkManager::findCustomDataFile(string fileName) { return findFile(fileName, FloderType ::CustomBackup); }
 
+
 // structure
 bool ChunkManager::saveStructure(std::unique_ptr<StructureTemplate> structure) {
     return false; // TODO: save structure
@@ -87,6 +84,7 @@ std::unique_ptr<StructureTemplate> ChunkManager::loadStructure(string fileName) 
 }
 
 bool ChunkManager::findStructureFile(string fileName) { return findFile(fileName, FloderType::Structure); }
+
 
 // core save and load functions
 void ChunkManager::initAllFolders() {
@@ -192,6 +190,7 @@ bool ChunkManager::findFile(string fileName, ChunkManager::FloderType type, int 
     auto filePath = getFilePath(fileName, type, dimensionId);
     return std::filesystem::exists(filePath);
 }
+
 
 // chunk tools functions
 LevelChunk* ChunkManager::getChunkAt(const Vec3& pos, const Dimension& dimension) {

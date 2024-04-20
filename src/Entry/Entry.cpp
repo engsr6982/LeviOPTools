@@ -7,7 +7,6 @@
 #include <memory>
 
 // my files
-#include "Chunk/ChunkDB.h"
 #include "Chunk/ChunkManager.h"
 #include "Command/Command.h"
 #include "Entry.h"
@@ -33,7 +32,6 @@ bool entry::load() {
     // load
     tls::config::loadConfig();
     tls::perms::initPermission();
-    tls::chunk::ChunkDB::getInstance().init();
     tls::chunk::ChunkManager::initAllFolders();
     logger.consoleLevel = tls::config::cfg.loggerLevel;
 
