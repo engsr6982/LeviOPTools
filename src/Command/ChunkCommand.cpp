@@ -480,10 +480,73 @@ void registerChunkCommand() {
     // StructureTransform
 
     // tools chunk transform mirror <id> <direction>
+    cmd.overload<TransFormMirror>()
+        .text("chunk")
+        .text("transform")
+        .text("mirror")
+        .required("id")
+        .required("direction")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TransFormMirror const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (bdInstance.hasBindData(param.id)) {
+                auto& bindData  = bdInstance.getBindData(param.id);
+                bindData.mirror = param.direction;
+                output.success("[Chunk] Mirror successful!"_tr());
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
 
     // tools chunk transform rotate <id> <angle>
+    cmd.overload<TransFormRotate>()
+        .text("chunk")
+        .text("transform")
+        .text("rotate")
+        .required("id")
+        .required("angle")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TransFormRotate const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (bdInstance.hasBindData(param.id)) {
+                auto& bindData    = bdInstance.getBindData(param.id);
+                bindData.rotation = param.angle;
+                output.success("[Chunk] Rotate successful!"_tr());
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
 
     // tools chunk cancel <id>
+    cmd.overload<OnlyID>()
+        .text("chunk")
+        .text("cancel")
+        .required("id")
+        .execute<[&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
+            CHECK_COMMAND_TYPE(
+                output,
+                origin.getOriginType(),
+                CommandOriginType::Player,
+                CommandOriginType::DedicatedServer
+            );
+            auto& bdInstance = chunk::BindData::getInstance();
+            if (bdInstance.hasBindData(param.id)) {
+                bdInstance.removeBindData(param.id);
+                output.success("[Chunk] Operation id {} canceled!"_tr(param.id));
+            } else {
+                output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
+            }
+        }>();
 }
 
 } // namespace tls::command
