@@ -7,6 +7,7 @@
 #include <memory>
 
 // my files
+#include "Chunk/ChunkManager.h"
 #include "Command/Command.h"
 #include "Entry.h"
 #include "File/Config.h"
@@ -28,12 +29,11 @@ bool entry::load() {
     ll::i18n::load(mSelf.getLangDir());
     using ll::i18n_literals::operator""_tr;
 
-    // load config and set logger level
+    // load
     tls::config::loadConfig();
-    logger.consoleLevel = tls::config::cfg.loggerLevel;
-
-    // load permission
     tls::perms::initPermission();
+    tls::chunk::ChunkManager::initAllFolders();
+    logger.consoleLevel = tls::config::cfg.loggerLevel;
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
@@ -57,7 +57,9 @@ bool entry::load() {
 bool entry::enable() {
     getSelf().getLogger().info("Enabling...");
 
-    tls::command::regCommand();
+    tls::command::registerCommand();
+    tls::command::registerChunkCommand();
+    tls::command::registerGamemodeCommand();
     tls::form::initMapping();
 
     return true;
@@ -65,6 +67,10 @@ bool entry::enable() {
 
 bool entry::disable() {
     getSelf().getLogger().info("Disabling...");
+
+    // TODO: 销毁注册的权限
+    // TODO: 销毁PermissionCore
+
     return true;
 }
 

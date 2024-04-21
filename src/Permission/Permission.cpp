@@ -46,6 +46,7 @@ void initPermission() {
     reg.registerPermission(PLUGIN_NAME, Permission::PlayerInfo, "player_info"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::CommandBlacklist, "command_blacklist"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::PotionGUI, "potion_gui"_tr());
+    reg.registerPermission(PLUGIN_NAME, Permission::ChunkOpertion, "chunk_opertion"_tr());
 
     tls::entry::getInstance().getSelf().getLogger().info(
         "Register permission success. Total permission count: {}"_tr(reg.getAllPermission(PLUGIN_NAME).size())

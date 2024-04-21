@@ -7,11 +7,11 @@
 
 namespace tls::config {
 
-S_Config cfg; // init Config
 
 #define CONFIG_FILE_NAME "Config.json"
 using ll::i18n_literals::operator""_tr;
 
+S_Config cfg; // init Config
 
 bool loadConfig() {
     auto& mSelf    = entry::entry::getInstance().getSelf();
