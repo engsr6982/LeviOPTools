@@ -30,7 +30,8 @@ enum Permission {
     BanGui,                   // 封禁GUI
     PlayerInfo,               // 玩家信息
     CommandBlacklist,         // 命令黑名单
-    PotionGUI                 // 药水GUI
+    PotionGUI,                // 药水GUI
+    ChunkOpertion,            // 区块操作
 };
 
 void initPermission();

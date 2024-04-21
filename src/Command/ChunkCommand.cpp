@@ -1,6 +1,10 @@
 #include "Chunk/BindData.h"
 #include "Chunk/ChunkManager.h"
 #include "Command.h"
+#include "Entry/PluginInfo.h"
+#include "Permission/Permission.h"
+#include "PermissionCore/PermissionCore.h"
+#include "PermissionCore/PermissionManager.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/deps/core/common/bedrock/typeid_t.h"
 #include "mc/enums/Mirror.h"
@@ -8,6 +12,7 @@
 #include "mc/server/commands/CommandPosition.h"
 #include "mc/server/commands/CommandPositionFloat.h"
 #include "mc/server/commands/CommandVersion.h"
+
 
 namespace tls::command {
 
@@ -103,6 +108,19 @@ string TransFormArgToString(Rotation angle) {
     }
 }
 
+#define CHECK_ChunkOperation_Permission(output, origin)                                                                \
+    {                                                                                                                  \
+        if (origin.getOriginType() == CommandOriginType::Player) {                                                     \
+            auto* player = static_cast<Player*>(origin.getEntity());                                                   \
+            if (!player) return output.error("[Chunk] Failed to get player entity!"_tr());                             \
+            auto core = perm::PermissionManager::getInstance().getPermissionCore(PLUGIN_NAME);                         \
+            if (core) {                                                                                                \
+                if (core->checkUserPermission(player->getUuid().asString().c_str(), perms::ChunkOpertion) == false)    \
+                    return output.error("[Chunk] You don't have permission to use this command!"_tr());                \
+            } else return output.error("[Chunk] Failed to get permission core!"_tr());                                 \
+        }                                                                                                              \
+    }
+
 void registerChunkCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
         config::cfg.command.tools.commandName,
@@ -112,6 +130,7 @@ void registerChunkCommand() {
     // tools chunk debug
     cmd.overload().text("chunk").text("debug").execute<[&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
+        CHECK_ChunkOperation_Permission(output, origin);
         try {
             auto* player = static_cast<Player*>(origin.getEntity());
             if (!player) {
@@ -150,6 +169,7 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
 
             Vec3 pos;
             pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
@@ -199,6 +219,7 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
 
             Vec3 pos;
             pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
@@ -252,6 +273,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             Vec3        pos1 = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos1);
             Vec3        pos2 = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos2);
             BoundingBox box(pos1, pos2);
@@ -279,6 +302,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             if (chunk::BindData::getInstance().hasBindData(param.id)) {
                 auto& bindData  = chunk::BindData::getInstance().getBindData(param.id);
                 bool  isSuccess = chunk::ChunkManager::getInstance()
@@ -307,6 +332,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             bool isSuccess = chunk::ChunkManager::getInstance().loadCustomData(param.fileName);
             if (isSuccess) {
                 output.success("[Chunk] Recovery successful!"_tr());
@@ -329,6 +356,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             Vec3 pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
             if (chunk::BindData::getInstance().hasBindData(param.id)) {
                 auto& bindData            = chunk::BindData::getInstance().getBindData(param.id);
@@ -359,6 +388,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             if (chunk::BindData::getInstance().hasBindData(param.id)) {
                 auto& bindData = chunk::BindData::getInstance().getBindData(param.id);
                 if (bindData.canCopyStructure) {
@@ -399,6 +430,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto structure = chunk::ChunkManager::getInstance().loadStructure(param.fileName);
             if (structure) {
                 int id = chunk::BindData::getInstance().createBindData(std::move(structure), true);
@@ -428,6 +461,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (bdInstance.hasBindData(param.id)) {
                 auto& bindData = bdInstance.getBindData(param.id);
@@ -475,6 +510,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (bdInstance.hasBindData(param.id)) {
                 auto& bindData = bdInstance.getBindData(param.id);
@@ -523,6 +560,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (bdInstance.hasBindData(param.id)) {
                 auto& bindData  = bdInstance.getBindData(param.id);
@@ -547,6 +586,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (bdInstance.hasBindData(param.id)) {
                 auto& bindData    = bdInstance.getBindData(param.id);
@@ -569,6 +610,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (bdInstance.hasBindData(param.id)) {
                 bdInstance.removeBindData(param.id);
@@ -590,6 +633,8 @@ void registerChunkCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
+            CHECK_ChunkOperation_Permission(output, origin);
+
             auto& bdInstance = chunk::BindData::getInstance();
             if (param.id == -1) {
                 auto              allId = bdInstance.getAllBindDataOperatorId();
