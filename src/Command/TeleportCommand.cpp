@@ -42,7 +42,7 @@ void registerTeleportCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
-            if (checkPlayerPermission(origin, output, perms::Teleport)) {
+            if (!checkPlayerPermission(origin, output, perms::Teleport)) {
                 output.error("You don't have permission to use this command!"_tr());
                 return;
             }
@@ -88,7 +88,7 @@ void registerTeleportCommand() {
                 CommandOriginType::Player,
                 CommandOriginType::DedicatedServer
             );
-            if (checkPlayerPermission(origin, output, perms::Teleport)) {
+            if (!checkPlayerPermission(origin, output, perms::Teleport)) {
                 output.error("You don't have permission to use this command!"_tr());
                 return;
             }
