@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/engsr6982/LeviOPTools",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "info": {
         "name": "LeviOPTools",
         "description": "OP管理工具",
@@ -14,7 +14,7 @@
             "tools"
         ]
     },
-    "asset_url": "https://github.com/engsr6982/LeviOPTools/releases/download/v0.2.0/LeviOPTools-windows-x64.zip",
+    "asset_url": "https://github.com/engsr6982/LeviOPTools/releases/download/v0.3.0/LeviOPTools-windows-x64.zip",
     "prerequisites": {
         "github.com/LiteLDev/LeviLamina": "0.11.x",
         "github.com/engsr6982/PermissionCore": "0.6.x"

@@ -4,4 +4,4 @@
 #define PLUGIN_VERSION_MINOR    1                                  // 次版本号
 #define PLUGIN_VERSION_REVISION 0                                  // 修订号
 
-#define PLUGIN_TARGET_BDS_PROTOCOL_VERSION 649 // BDS协议版本
+#define PLUGIN_TARGET_BDS_PROTOCOL_VERSION 662 // BDS协议版本
