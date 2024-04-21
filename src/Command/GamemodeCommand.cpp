@@ -105,7 +105,7 @@ void registerGamemodeCommand() {
             config::cfg.command.gm.commandDescription
         );
         // gm <int> [player]
-        tools.overload<GameMode_Int>().required("gameType").optional("player").execute<Gm_Int_CallBack>();
+        gm.overload<GameMode_Int>().required("gameType").optional("player").execute<Gm_Int_CallBack>();
 
         // gm <s|c|a|d> [player]
         gm.overload<GameMode_String_Brief>()
