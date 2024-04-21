@@ -11,6 +11,7 @@ std::unordered_map<std::string, std::function<void(Player&)>> mapping;
 
 bool initMapping() {
     mapping["kickPlayer"] = kickPlayer;
+    mapping["killPlayer"] = killPlayer;
     return true;
 }
 

@@ -8,6 +8,13 @@
             "imageType": "url",
             "callbackType": "function",
             "callbackRun": "kickPlayer"
+        },
+        {
+            "title": "killPlayer",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "killPlayer"
         }
     ]
 }

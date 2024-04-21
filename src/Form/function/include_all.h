@@ -99,6 +99,7 @@ using ll::i18n_literals::operator""_tr;
 
 void kickPlayer(Player& player);
 
+void killPlayer(Player& player);
 
 // Helper functions
 
