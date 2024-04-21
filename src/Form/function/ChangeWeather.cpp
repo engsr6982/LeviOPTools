@@ -49,11 +49,27 @@ void changeWeather(Player& player) {
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
         if (!dt) return sendMsg(pl, "Cancelled");
 
+#ifdef DEBUG
+        auto& logger = tls::entry::getInstance().getSelf().getLogger();
+        for (auto [name, result] : *dt) {
+            static auto logDebugResult = [&](const ll::form::CustomFormElementResult& var) {
+                if (std::holds_alternative<uint64_t>(var)) {
+                    logger.warn("CustomForm callback {} = {}", name, std::get<uint64_t>(var));
+                } else if (std::holds_alternative<double>(var)) {
+                    logger.warn("CustomForm callback {} = {}", name, std::get<double>(var));
+                } else if (std::holds_alternative<std::string>(var)) {
+                    logger.warn("CustomForm callback {} = {}", name, std::get<std::string>(var));
+                }
+            };
+            logDebugResult(result);
+        }
+#endif
+
         auto level = ll::service::getLevel();
         if (!level) return sendMsg(pl, "Failed to get level");
 
-        int  selectedWeather = std::get<uint64_t>(dt->at("weather")); // weather: 0: None, 1: Clear, 2: Rain, 3: Thunder
-        bool advanced        = std::get<uint64_t>(dt->at("advanced")); // advanced: false
+        auto selectedWeather = std::get<uint64_t>(dt->at("weather")); // weather: 0: None, 1: Clear, 2: Rain, 3: Thunder
+        auto advanced        = std::get<uint64_t>(dt->at("advanced")); // advanced: false
 
         // change args
         int   random         = 20 * (ll::random_utils::rand(600) + 300);
@@ -66,8 +82,8 @@ void changeWeather(Player& player) {
             rainLevel      = std::get<double>(dt->at("rainLevel"));
             lightningLevel = std::get<double>(dt->at("lightningLevel"));
 
-            int rTime = std::get<uint64_t>(dt->at("rainTime"));
-            int lTime = std::get<uint64_t>(dt->at("lightningTime"));
+            auto rTime = std::get<uint64_t>(dt->at("rainTime"));
+            auto lTime = std::get<uint64_t>(dt->at("lightningTime"));
 
             rainTime      = rTime == -1 ? random : rTime; // check is random
             lightningTime = lTime == -1 ? random : lTime;
