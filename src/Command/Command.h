@@ -78,6 +78,7 @@ using ll::command::CommandRegistrar;
 void registerCommand();
 void registerChunkCommand();
 void registerGamemodeCommand();
+void registerTeleportCommand();
 
 // ------------------------------ structs ----------------------------------
 

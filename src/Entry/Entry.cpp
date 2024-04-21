@@ -31,7 +31,6 @@ bool entry::load() {
 
     // load
     tls::config::loadConfig();
-    tls::perms::initPermission();
     tls::chunk::ChunkManager::initAllFolders();
     logger.consoleLevel = tls::config::cfg.loggerLevel;
 
@@ -60,7 +59,9 @@ bool entry::enable() {
     tls::command::registerCommand();
     tls::command::registerChunkCommand();
     tls::command::registerGamemodeCommand();
+    tls::command::registerTeleportCommand();
     tls::form::initMapping();
+    tls::perms::initPermission();
 
     return true;
 }
