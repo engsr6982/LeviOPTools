@@ -1,6 +1,9 @@
 #include "Api/Api.h"
 #include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
+#include "Permission/Permission.h"
+#include "PermissionCore/PermissionCore.h"
+#include "PermissionCore/PermissionManager.h"
 #include "ll/api/i18n/I18n.h"
 #include "ll/api/service/Bedrock.h"
 #include "ll/api/service/PlayerInfo.h"
@@ -94,10 +97,22 @@ using namespace ll::form;
 using string = std::string;
 using ll::i18n_literals::operator""_tr;
 
+void kickPlayer(Player& player);
+
+
+// Helper functions
+
 inline void sendMsg(Player& player, const std::string& msg) {
     player.sendMessage("§6[§a" + string(PLUGIN_NAME) + "§6]§b " + msg);
 }
 
-void kickPlayer(Player& player);
+#define AutoCheckPermission(player, permission)                                                                        \
+    {                                                                                                                  \
+        if (perm::PermissionManager::getInstance()                                                                     \
+                .getPermissionCore(PLUGIN_NAME)                                                                        \
+                ->checkUserPermission(player.getUuid().asString().c_str(), permission)                                 \
+            == false)                                                                                                  \
+            return sendMsg(player, "No permissions, this function requires permission '{}'"_tr((int)permission));      \
+    }
 
 } // namespace tls::form

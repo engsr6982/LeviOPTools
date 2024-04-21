@@ -7,9 +7,10 @@
 namespace tls::form {
 
 void kickPlayer(Player& player) {
-    CustomForm fm;
+    AutoCheckPermission(player, perms::KickPlayer);
 
-    fm.setTitle("LeviOProTools - Kick Player");
+    CustomForm fm;
+    fm.setTitle("LeviOProTools - Kick Player"_tr());
 
     auto level = ll::service::getLevel();
     if (level.has_value()) {
