@@ -1,0 +1,13 @@
+{
+    "title": "LeviOPTools",
+    "content": "Welcome to LeviOPTools, customize this page to go to documentation for tutorials!",
+    "buttons": [
+        {
+            "title": "kickPlayer",
+            "imageUrl": "https://lse.liteldev.com/img/logo.png",
+            "imageType": "url",
+            "callbackType": "function",
+            "callbackRun": "kickPlayer"
+        }
+    ]
+}

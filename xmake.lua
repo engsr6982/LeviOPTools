@@ -17,7 +17,7 @@ end
 -- 描述 PermissionCore 包
 package("PermissionCore")
     set_urls("https://github.com/engsr6982/PermissionCore/releases/download/$(version)/SDK-PermissionCore.zip")
-    add_versions("v0.6.2", "a4a7edbc8b60290910affbcc76f6a983d86d2ec1b440bda48bdca7f4a41cb176")
+    add_versions("v0.7.0", "c8625d7991957e7f46350b87e2c6358047b06dabefd865399d65e1a70760d01b")
     add_includedirs("include/")
     on_install(function (package)
         os.cp("*", package:installdir())

@@ -102,6 +102,13 @@ function pack_plugin(target,plugin_define)
             os.cp(oripdbfile, pdbfile)
         end
 
+        -- copy lang files
+        local langdir = path.join(os.projectdir(), "assets", "lang")
+        os.cp(langdir, outputdir)
+        -- copy form files
+        local formdir = path.join(os.projectdir(), "assets", "form")
+        os.cp(formdir, outputdir)
+
         formattedmanifest = string_formatter(manifest, plugin_define)
         io.writefile(manifestfile,formattedmanifest)
         cprint("${bright green}[Plugin Packer]: ${reset}plugin already generated to " .. outputdir)
