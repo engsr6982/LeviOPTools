@@ -8,6 +8,7 @@
 #include "ll/api/service/Bedrock.h"
 #include "ll/api/service/PlayerInfo.h"
 #include "ll/api/service/ServerInfo.h"
+#include "ll/api/utils/RandomUtils.h"
 #include "mc/certificates/WebToken.h"
 #include "mc/dataloadhelper/DataLoadHelper.h"
 #include "mc/dataloadhelper/DefaultDataLoadHelper.h"
@@ -98,10 +99,13 @@ using string = std::string;
 using ll::i18n_literals::operator""_tr;
 
 void kickPlayer(Player& player);
-
 void killPlayer(Player& player);
 
-// Helper functions
+void changeWeather(Player& player);
+void changeTime(Player& player);
+
+
+// ======================== Helper functions ========================
 
 inline void sendMsg(Player& player, const std::string& msg) {
     player.sendMessage("§6[§a" + string(PLUGIN_NAME) + "§6]§b " + msg);

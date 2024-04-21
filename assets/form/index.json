@@ -15,6 +15,20 @@
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "killPlayer"
+        },
+        {
+            "title": "changeWeather",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "changeWeather"
+        },
+        {
+            "title": "changeTime",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "changeTime"
         }
     ]
 }
