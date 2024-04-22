@@ -74,34 +74,32 @@ void changeGameRule(Player& player) {
 
         // build the form
         for (auto& rule : list) {
-            string trsn = getTr(rule.mName); // translate the rule name
-                                             // string trsn = rule.mName;
-#ifdef DEBUG
-            std::cout << "Source: " << rule.mName << " | Translated: " << trsn << std::endl;
-#endif
-
-            if (rule.getType() == GameRule::Type::Bool) {
-                fm.appendToggle( // bool => toggle
-                    rule.mName,
-                    string(trsn),
-                    rule.getBool()
-                );
-            } else if (rule.getType() == GameRule::Type::Int) {
-                fm.appendInput( // int => input
-                    rule.mName,
-                    string(trsn),
-                    "int",
-                    std::to_string(rule.getInt())
-                );
-            } else if (rule.getType() == GameRule::Type::Float) {
-                fm.appendInput( // float => input
-                    rule.mName,
-                    string(trsn),
-                    "float",
-                    std::to_string(rule.getFloat())
-                );
-            } else { // unknown type => ignore
-                tls::entry::getInstance().getSelf().getLogger().warn("Unparsable game rules: {}"_tr(rule.getName()));
+            try {
+                if (rule.getType() == GameRule::Type::Bool) {
+                    fm.appendToggle( // bool => toggle
+                        rule.mName,
+                        getTr(rule.mName),
+                        rule.getBool()
+                    );
+                } else if (rule.getType() == GameRule::Type::Int) {
+                    fm.appendInput( // int => input
+                        rule.mName,
+                        getTr(rule.mName),
+                        "int",
+                        std::to_string(rule.getInt())
+                    );
+                } else if (rule.getType() == GameRule::Type::Float) {
+                    fm.appendInput( // float => input
+                        rule.mName,
+                        getTr(rule.mName),
+                        "float",
+                        std::to_string(rule.getFloat())
+                    );
+                } else { // unknown type => ignore
+                    logger.warn("Unparsable game rules: {}"_tr(rule.getName()));
+                }
+            } catch (...) {
+                logger.error("Failed to build game rule form"_tr());
             }
         }
 
@@ -109,14 +107,10 @@ void changeGameRule(Player& player) {
             try {
                 if (!dt) return sendMsg(pl, "form cancelled");
                 DebugFormCallBack(dt);
-            } catch (const std::system_error& e) {
-                logger.error("In Form Callback, System Error: {}"_tr(e.what()));
             } catch (...) {
                 logger.error("Failed to handle Game Rule Form Callback"_tr());
             }
         });
-    } catch (const std::system_error& e) {
-        logger.error("System Error: {}"_tr(e.what()));
     } catch (...) {
         logger.error("Failed to Build and Send Game Rule Form"_tr());
     }

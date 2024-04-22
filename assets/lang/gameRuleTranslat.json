@@ -31,7 +31,7 @@
     "showTags": "showTags",
     "freezeDamage": "freezeDamage",
     "projectilesCanBreakBlocks": "projectilesCanBreakBlocks",
-    "spawnRadius": "spawnRadius",
+    "spawnRadius": "重生半径",
     "maxCommandChainLength": "maxCommandChainLength",
     "randomTickSpeed": "randomTickSpeed"
 }

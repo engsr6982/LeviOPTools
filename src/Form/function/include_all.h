@@ -126,44 +126,37 @@ inline void sendMsg(Player& player, const std::string& msg) {
             return sendMsg(player, "No permissions, this function requires permission '{}'"_tr((int)permission));      \
     }
 
+
+inline void DebugFormCallBack(const ll::form::CustomFormResult& dt) {
 #ifdef DEBUG
-
-#define DebugFormCallBack(dt)                                                                                          \
-    {                                                                                                                  \
-        std::cout << "\033[0m\033[1;35m"                                                                               \
-                  << "======================================================================================"          \
-                  << "\033[0m" << std::endl;                                                                           \
-        for (auto [name, result] : *dt) {                                                                              \
-            static auto logDebugResult = [&](const ll::form::CustomFormElementResult& var) {                           \
-                if (std::holds_alternative<uint64_t>(var)) {                                                           \
-                    std::cout << "\033[0m\033[1;33m"                                                                   \
-                              << "[CustomForm Debug] "                                                                 \
-                              << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<uint64_t>(var)     \
-                              << "    \033[0m\033[1;36muint64_t"                                                       \
-                              << "\033[0m" << std::endl;                                                               \
-                } else if (std::holds_alternative<double>(var)) {                                                      \
-                    std::cout << "\033[0m\033[1;33m"                                                                   \
-                              << "[CustomForm Debug] "                                                                 \
-                              << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<double>(var)       \
-                              << "    \033[0m\033[1;36mdouble"                                                         \
-                              << "\033[0m" << std::endl;                                                               \
-                } else if (std::holds_alternative<std::string>(var)) {                                                 \
-                    std::cout << "\033[0m\033[1;33m"                                                                   \
-                              << "[CustomForm Debug] "                                                                 \
-                              << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<std::string>(var)  \
-                              << "    \033[0m\033[1;36mstring"                                                         \
-                              << "\033[0m" << std::endl;                                                               \
-                }                                                                                                      \
-            };                                                                                                         \
-            logDebugResult(result);                                                                                    \
-        }                                                                                                              \
+    std::cout << "\033[0m\033[1;35m"
+              << "======================================================================================"
+              << "\033[0m" << std::endl;
+    for (auto [name, result] : *dt) {
+        static auto logDebugResult = [&](const ll::form::CustomFormElementResult& var) {
+            if (std::holds_alternative<uint64_t>(var)) {
+                std::cout << "\033[0m\033[1;33m"
+                          << "[CustomForm Debug] "
+                          << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<uint64_t>(var)
+                          << "    \033[0m\033[1;36muint64_t"
+                          << "\033[0m" << std::endl;
+            } else if (std::holds_alternative<double>(var)) {
+                std::cout << "\033[0m\033[1;33m"
+                          << "[CustomForm Debug] "
+                          << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<double>(var)
+                          << "    \033[0m\033[1;36mdouble"
+                          << "\033[0m" << std::endl;
+            } else if (std::holds_alternative<std::string>(var)) {
+                std::cout << "\033[0m\033[1;33m"
+                          << "[CustomForm Debug] "
+                          << "\033[0m\033[1;32m" << name << "\033[0m\033[1;35m    " << std::get<std::string>(var)
+                          << "    \033[0m\033[1;36mstring"
+                          << "\033[0m" << std::endl;
+            }
+        };
+        logDebugResult(result);
     }
-
-#else
-
-#define DebugFormCallBack(dt)
-
 #endif
-
+}
 
 } // namespace tls::form
