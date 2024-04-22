@@ -1,15 +1,4 @@
 #include "Api.h"
-#include <ll/api/service/Bedrock.h>
-#include <ll/api/service/ServerInfo.h>
-#include <ll/api/service/Service.h>
-#include <ll/api/service/ServiceManager.h>
-#include <mc/common/wrapper/optional_ref.h>
-#include <mc/server/commands/CommandContext.h>
-#include <mc/server/commands/MinecraftCommands.h>
-#include <mc/server/commands/PlayerCommandOrigin.h>
-#include <mc/world/Minecraft.h>
-#include <mc/world/actor/player/Player.h>
-#include <mc/world/level/Command.h>
 
 
 namespace tls::api {
