@@ -12,7 +12,6 @@
 #include <unordered_map>
 #include <variant>
 
-
 namespace tls::form {
 
 string getTr(string rule) {
@@ -59,21 +58,12 @@ string getTr(string rule) {
 
 string joinErrorParameters(std::vector<string> mErrorParameters) {
     if (mErrorParameters.empty()) return "";
-
     return std::accumulate(
         std::next(mErrorParameters.begin()),
         mErrorParameters.end(),
         mErrorParameters[0],
-        [](const string& a, const string& b) -> string { return a + "\n" + b; }
+        [](const string& a, const string& b) -> string { return a + "  |  " + b; }
     );
-}
-
-bool isFloat(const std::string& str) {
-    float value    = 0.0f;
-    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
-
-    // 检查转换是否成功，并且整个字符串都被解析
-    return ec == std::errc() && ptr == str.data() + str.size();
 }
 
 void changeGameRule(Player& player) {
@@ -112,13 +102,6 @@ void changeGameRule(Player& player) {
                         "int",
                         std::to_string(rule.getInt())
                     );
-                } else if (rule.mType == GameRule::Type::Float) {
-                    fm.appendInput( // float => input
-                        string(rule.mName),
-                        getTr(rule.mName),
-                        "float",
-                        std::to_string(rule.getFloat())
-                    );
                 } else { // unknown type => ignore
                     logger.warn("Unparsable game rules: {}"_tr(rule.getName()));
                 }
@@ -133,14 +116,13 @@ void changeGameRule(Player& player) {
             try {
                 DebugFormCallBack(dt);
 
-                auto level = ll::service::getLevel();
-                if (level.has_value() == false) return sendMsg(pl, "Failed to get level Ptr"_tr());
-
-                for (auto [key, value] : *dt) {
+                // 由于未知问题，这里无法正常工作，暂时注释掉（错误原因：访问冲突）
+                /* for (auto [key, value] : *dt) {
                     try {
-                        const GameRuleId id = level->getGameRules().nameToGameRuleIndex(key);
+                        const GameRuleId cid = ll::service::getLevel()->getGameRules().nameToGameRuleIndex(key);
+                        GameRuleId&      id  = const_cast<GameRuleId&>(cid);
                         if (id.value == static_cast<int>(GameRules::GameRulesIndex::InvalidGameRule)
-                            || level->getGameRules().hasRule(id) == false) {
+                            || ll::service::getLevel()->getGameRules().hasRule(id) == false) {
                             logger.warn("Invalid game rule: {}"_tr(key));
                             continue;
                         }
@@ -152,7 +134,7 @@ void changeGameRule(Player& player) {
                         if (std::holds_alternative<uint64_t>(value)) {
                             // bool
                             int bl = std::get<uint64_t>(value);
-                            level->getGameRules().setRule(
+                            ll::service::getLevel()->getGameRules().setRule(
                                 id,
                                 bl == 0 ? false : true,
                                 false,
@@ -165,11 +147,13 @@ void changeGameRule(Player& player) {
                             string str = std::get<string>(value);
                             if (isFloat(str)) {
                                 float fl = string2Float(str);
-                                level->getGameRules()
+                                ll::service::getLevel()
+                                    ->getGameRules()
                                     .setRule(id, fl, false, pValueValidated, pValueChanged, errorOutput);
                             } else {
                                 int in = string2Int(str);
-                                level->getGameRules()
+                                ll::service::getLevel()
+                                    ->getGameRules()
                                     .setRule(id, in, false, pValueValidated, pValueChanged, errorOutput);
                             }
                         } else {
@@ -182,9 +166,76 @@ void changeGameRule(Player& player) {
                     } catch (...) {
                         logger.error("Error setting game rule: {}"_tr(key));
                     }
+                } */
+
+                // 备用方案：遍历规则列表，逐个设置
+                const auto& list = ll::service::getLevel()->getGameRules().getRules();
+
+                for (auto& rule : list) {
+                    try {
+                        if (dt->find(rule.mName) != dt->end()) {
+
+                            bool*                      pValidated  = new bool(false);
+                            GameRule::ValidationError* errorOutput = new GameRule::ValidationError();
+                            errorOutput->mSuccess                  = false;
+
+                            if (std::holds_alternative<uint64_t>(dt->at(rule.mName))) {
+                                // bool
+                                bool bl = std::get<uint64_t>(dt->at(rule.mName)) == 0 ? false : true;
+                                if (rule.getBool() == bl) continue;
+                                GameRule& r = const_cast<GameRule&>(rule);
+                                r.setBool(bl, pValidated, errorOutput);
+                            } else if (std::holds_alternative<string>(dt->at(rule.mName))) {
+                                // int
+                                string str = std::get<string>(dt->at(rule.mName));
+                                int    in  = string2Int(str);
+                                // clang-format off
+                                #ifdef DEBUG
+                                logger.warn("[Debug] rule: {}, string value: {}"_tr(getTr(rule.getName()), str));
+                                logger.warn("[Debug] rule: {}, int value: {}"_tr(getTr(rule.getName()), in));
+                                logger.warn("[Debug] rule: {}, is changed: {}"_tr(getTr(rule.getName()), rule.getInt() != in));
+                                #endif
+                                // clang-format on
+                                if (rule.getInt() == in) continue;
+                                GameRule& r = const_cast<GameRule&>(rule);
+                                r.setInt(in, pValidated, errorOutput);
+                            } else {
+                                logger.warn("Invalid value type for game rule: {}"_tr(getTr(rule.getName())));
+                            }
+
+                            // error processing
+                            if (pValidated == 0) {
+                                logger.warn("[McAPI] Game rule '{}' validation failed, return value: '{}'"_tr(
+                                    getTr(rule.getName()),
+                                    bool(pValidated)
+                                ));
+                            }
+                            if (errorOutput->mSuccess == false)
+                                logger.warn("[McAPI] Failed to modify game rules '{}', return value: '{}'"_tr(
+                                    getTr(rule.getName()),
+                                    errorOutput->mSuccess
+                                ));
+                            if (errorOutput->mErrorDescription.empty() == false)
+                                logger.warn("[McAPI] Rules of the game: '{}', Description of the error: '{}'"_tr(
+                                    getTr(rule.getName()),
+                                    errorOutput->mErrorDescription
+                                ));
+                            if (errorOutput->mErrorParameters.empty() == false)
+                                logger.warn("[McAPI] Game rules: '{}', error parameters: '{}'"_tr(
+                                    getTr(rule.getName()),
+                                    joinErrorParameters(errorOutput->mErrorParameters)
+                                ));
+
+                            // destroy pointers
+                            delete pValidated;
+                            delete errorOutput;
+                        }
+                    } catch (...) {
+                        logger.error("Error setting game rule: {}"_tr(getTr(rule.getName())));
+                    }
                 }
 
-                auto packet = level->getGameRules().createAllGameRulesPacket();
+                auto packet = ll::service::getLevel()->getGameRules().createAllGameRulesPacket();
                 ll::service::getLevel()->forEachPlayer([&](Player& p) {
                     packet->sendTo(p);
                     return true;
