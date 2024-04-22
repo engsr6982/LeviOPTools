@@ -29,6 +29,13 @@
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "changeTime"
+        },
+        {
+            "title": "changeGameRule",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "changeGameRule"
         }
     ]
 }

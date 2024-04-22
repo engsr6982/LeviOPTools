@@ -104,6 +104,8 @@ void killPlayer(Player& player);
 void changeWeather(Player& player);
 void changeTime(Player& player);
 
+void changeGameRule(Player& player);
+
 
 // ======================== Helper functions ========================
 

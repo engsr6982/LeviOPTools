@@ -4,10 +4,10 @@
 using string = std::string;
 
 struct S_Config {
-    int    version     = 2;
-    int    loggerLevel = 4;
-    string language    = "zh_CN";
-
+    int    version                  = 3;
+    int    loggerLevel              = 4;
+    string language                 = "zh_CN";
+    string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
     struct S_Command {
         struct S_Tools {
             string commandName        = "tools";

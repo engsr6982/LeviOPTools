@@ -35,7 +35,7 @@ void initPermission() {
     reg.registerPermission(PLUGIN_NAME, Permission::Teleport, "teleport"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::CleanDropItem, "clean_drop_item"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::ChangeGameMode, "change_game_mode"_tr());
-    reg.registerPermission(PLUGIN_NAME, Permission::ChangeWorldRule, "change_world_rule"_tr());
+    reg.registerPermission(PLUGIN_NAME, Permission::ChangeGameRule, "change_game_rule"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::GetBlockOrItem, "get_block_or_item"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::Terminal, "terminal"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::SendMessageToPlayer, "send_message_to_player"_tr());

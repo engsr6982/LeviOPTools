@@ -10,10 +10,11 @@ namespace tls::form {
 std::unordered_map<std::string, std::function<void(Player&)>> mapping;
 
 bool initMapping() {
-    mapping["kickPlayer"]    = kickPlayer;
-    mapping["killPlayer"]    = killPlayer;
-    mapping["changeWeather"] = changeWeather;
-    mapping["changeTime"]    = changeTime;
+    mapping["kickPlayer"]     = kickPlayer;
+    mapping["killPlayer"]     = killPlayer;
+    mapping["changeWeather"]  = changeWeather;
+    mapping["changeTime"]     = changeTime;
+    mapping["changeGameRule"] = changeGameRule;
     return true;
 }
 

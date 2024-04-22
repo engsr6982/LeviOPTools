@@ -20,7 +20,7 @@ enum Permission {
     Teleport                 = 9,  // 传送
     CleanDropItem            = 10, // 清理掉落物品
     ChangeGameMode           = 11, // 更改游戏模式
-    ChangeWorldRule          = 12, // 更改世界规则
+    ChangeGameRule          = 12, // 更改世界规则
     GetBlockOrItem           = 13, // 获取方块或物品
     Terminal                 = 14, // 终端
     SendMessageToPlayer      = 15, // 发送消息给玩家
