@@ -16,7 +16,7 @@ void changeWeather(Player& player) {
     );
     // quick changes
     std::vector<string> weatherList = {"none"_tr(), "clean"_tr(), "rain"_tr(), "thunder"_tr()};
-    fm.appendStepSlider("weather", "| none | clean | rain | thunder |"_tr(), weatherList, 0);
+    fm.appendStepSlider("weather", "| none | clean | rain | thunder |\nSelected:"_tr(), weatherList, 0);
 
 
     // advanced changes
@@ -48,28 +48,13 @@ void changeWeather(Player& player) {
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
         if (!dt) return sendMsg(pl, "Cancelled");
-
-#ifdef DEBUG
-        auto& logger = tls::entry::getInstance().getSelf().getLogger();
-        for (auto [name, result] : *dt) {
-            static auto logDebugResult = [&](const ll::form::CustomFormElementResult& var) {
-                if (std::holds_alternative<uint64_t>(var)) {
-                    logger.warn("CustomForm callback {} = {}", name, std::get<uint64_t>(var));
-                } else if (std::holds_alternative<double>(var)) {
-                    logger.warn("CustomForm callback {} = {}", name, std::get<double>(var));
-                } else if (std::holds_alternative<std::string>(var)) {
-                    logger.warn("CustomForm callback {} = {}", name, std::get<std::string>(var));
-                }
-            };
-            logDebugResult(result);
-        }
-#endif
+        DebugFormCallBack(dt);
 
         auto level = ll::service::getLevel();
         if (!level) return sendMsg(pl, "Failed to get level");
 
-        auto selectedWeather = std::get<uint64_t>(dt->at("weather")); // weather: 0: None, 1: Clear, 2: Rain, 3: Thunder
-        auto advanced        = std::get<uint64_t>(dt->at("advanced")); // advanced: false
+        string selectedWeather = std::get<string>(dt->at("weather")); // weather: 0: None, 1: Clear, 2: Rain, 3: Thunder
+        int    advanced        = std::get<uint64_t>(dt->at("advanced")); // advanced: false
 
         // change args
         int   random         = 20 * (ll::random_utils::rand(600) + 300);
@@ -79,31 +64,27 @@ void changeWeather(Player& player) {
         int   lightningTime  = random;
 
         if (advanced) {
-            rainLevel      = std::get<double>(dt->at("rainLevel"));
-            lightningLevel = std::get<double>(dt->at("lightningLevel"));
+            rainLevel      = string2Float(std::get<string>(dt->at("rainLevel")));
+            lightningLevel = string2Float(std::get<string>(dt->at("lightningLevel")));
 
-            auto rTime = std::get<uint64_t>(dt->at("rainTime"));
-            auto lTime = std::get<uint64_t>(dt->at("lightningTime"));
+            int rTime = string2Int(std::get<string>(dt->at("rainTime")));
+            int lTime = string2Int(std::get<string>(dt->at("lightningTime")));
 
             rainTime      = rTime == -1 ? random : rTime; // check is random
             lightningTime = lTime == -1 ? random : lTime;
         } else {
-            switch (selectedWeather) {
-            case 2: // Rain
+            if (selectedWeather == "rain"_tr()) { // rain
                 rainLevel      = 1.0;
                 rainTime       = random;
                 lightningLevel = 0.0;
                 lightningTime  = random;
-                break;
-            case 3: // Thunder
+            } else if (selectedWeather == "thunder"_tr()) { // thunder
                 rainLevel      = 1065353216.0;
                 rainTime       = random;
                 lightningLevel = 1065353216.0;
                 lightningTime  = random;
-                break;
-            default: // clear and none
-                break;
             }
+            // else: clear and none
         }
 
         level->updateWeather(rainLevel, rainTime, lightningLevel, lightningTime);
