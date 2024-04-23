@@ -2,7 +2,7 @@
 
 namespace tls::form {
 
-void usePlayerIdentitySay(Player& player) {
+void usePlayerIdentityExecute(Player& player) {
     AutoCheckPermission(player, perms::UsePlayerIdentityExecute);
 
     CustomForm fm;
