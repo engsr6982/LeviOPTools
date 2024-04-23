@@ -4,6 +4,7 @@
 #include "Permission/Permission.h"
 #include "PermissionCore/PermissionCore.h"
 #include "PermissionCore/PermissionManager.h"
+#include "Utils/Utils.h"
 #include "ll/api/i18n/I18n.h"
 #include "ll/api/service/Bedrock.h"
 #include "ll/api/service/PlayerInfo.h"
@@ -97,6 +98,7 @@ namespace tls::form {
 using namespace ll::form;
 using string = std::string;
 using ll::i18n_literals::operator""_tr;
+using namespace tls::utils;
 
 void kickPlayer(Player& player);
 void killPlayer(Player& player);
@@ -105,17 +107,11 @@ void changeWeather(Player& player);
 void changeTime(Player& player);
 
 void changeGameRule(Player& player);
+void terminal(Player& player);
 
 
 // ======================== Helper functions ========================
 
-inline int    string2Int(const string& str) { return std::stoi(str); }
-inline float  string2Float(const string& str) { return std::stof(str); }
-inline double string2Double(const string& str) { return std::stod(str); }
-
-inline void sendMsg(Player& player, const std::string& msg) {
-    player.sendMessage("§6[§a" + string(PLUGIN_NAME) + "§6]§b " + msg);
-}
 
 #define AutoCheckPermission(player, permission)                                                                        \
     {                                                                                                                  \

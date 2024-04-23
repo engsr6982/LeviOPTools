@@ -5,6 +5,7 @@
 #include "Permission/Permission.h"
 #include "PermissionCore/PermissionCore.h"
 #include "PermissionCore/PermissionManager.h"
+#include "Utils/Utils.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/deps/core/common/bedrock/typeid_t.h"
 #include "mc/enums/Mirror.h"
@@ -637,11 +638,8 @@ void registerChunkCommand() {
 
             auto& bdInstance = chunk::BindData::getInstance();
             if (param.id == -1) {
-                auto              allId = bdInstance.getAllBindDataOperatorId();
-                std::stringstream ss;
-                string            str;
-                copy(allId.begin(), allId.end(), std::ostream_iterator<int>(ss, ", "));
-                str = ss.str();
+                auto   allId = bdInstance.getAllBindDataOperatorId();
+                string str   = tls::utils::join(allId, ", ");
                 output.success("[Chunk] All operation ids: {}"_tr(str));
             } else {
                 if (bdInstance.hasBindData(param.id)) {

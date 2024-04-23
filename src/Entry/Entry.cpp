@@ -36,12 +36,7 @@ bool entry::load() {
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
-    logger.info("Version: {}.{}.{} for Levilamina and BDS Protocol {}"_tr(
-        PLUGIN_VERSION_MAJOR,
-        PLUGIN_VERSION_MINOR,
-        PLUGIN_VERSION_REVISION,
-        PLUGIN_TARGET_BDS_PROTOCOL_VERSION
-    ));
+    logger.info("Support Bedrock Dedicated Server Protocol {}"_tr(PLUGIN_TARGET_BDS_PROTOCOL_VERSION));
     // check server protocol version
     if (ll::getServerProtocolVersion() != PLUGIN_TARGET_BDS_PROTOCOL_VERSION) {
         logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. "_tr());

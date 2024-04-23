@@ -7,7 +7,7 @@
 
 namespace tls::perms {
 
-enum Permission {
+enum Permission : int {
     Unknown                  = 0,  // 未知
     indexForm                = 1,  // 首页
     KickPlayer               = 2,  // 踢出玩家

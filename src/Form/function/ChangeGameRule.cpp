@@ -21,7 +21,8 @@ string getTr(string rule) {
     try {
         if (trList.empty()) {
             // load translations
-            std::filesystem::path path = mSelf.getPluginDir() / tls::config::cfg.gameRuleTranslatFilePath; // json file
+            std::filesystem::path path =
+                mSelf.getPluginDir() / tls::config::cfg.function.gameRuleTranslatFilePath; // json file
             if (std::filesystem::exists(path)) {
                 auto json = nlohmann::json::parse(std::ifstream(path));
                 for (auto& [key, value] : json.items()) {
@@ -56,15 +57,6 @@ string getTr(string rule) {
     }
 }
 
-string joinErrorParameters(std::vector<string> mErrorParameters) {
-    if (mErrorParameters.empty()) return "";
-    return std::accumulate(
-        std::next(mErrorParameters.begin()),
-        mErrorParameters.end(),
-        mErrorParameters[0],
-        [](const string& a, const string& b) -> string { return a + "  |  " + b; }
-    );
-}
 
 void changeGameRule(Player& player) {
     AutoCheckPermission(player, perms::ChangeGameRule);
@@ -223,7 +215,7 @@ void changeGameRule(Player& player) {
                             if (errorOutput->mErrorParameters.empty() == false)
                                 logger.warn("[McAPI] Game rules: '{}', error parameters: '{}'"_tr(
                                     getTr(rule.getName()),
-                                    joinErrorParameters(errorOutput->mErrorParameters)
+                                    join(errorOutput->mErrorParameters)
                                 ));
 
                             // destroy pointers

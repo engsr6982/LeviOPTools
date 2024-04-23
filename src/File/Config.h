@@ -4,10 +4,9 @@
 using string = std::string;
 
 struct S_Config {
-    int    version                  = 3;
-    int    loggerLevel              = 4;
-    string language                 = "zh_CN";
-    string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
+    int    version     = 4;
+    int    loggerLevel = 4;
+    string language    = "zh_CN";
     struct S_Command {
         struct S_Tools {
             string commandName        = "tools";
@@ -19,6 +18,10 @@ struct S_Config {
             string commandDescription = "LeviOPTools GM";
         } gm;
     } command;
+    struct S_Function {
+        string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
+        int    terminalCacheSize        = 20;
+    } function;
 };
 
 namespace tls::config {

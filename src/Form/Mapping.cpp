@@ -15,6 +15,7 @@ bool initMapping() {
     mapping["changeWeather"]  = changeWeather;
     mapping["changeTime"]     = changeTime;
     mapping["changeGameRule"] = changeGameRule;
+    mapping["terminal"]       = terminal;
     return true;
 }
 
