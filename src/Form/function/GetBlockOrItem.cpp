@@ -68,6 +68,12 @@ std::vector<JsonItem> loadJson() {
 
 void give(Player& player, string itemType, int count = 1, int lightLevel = 0) {
     try {
+        // clang-format off
+        #ifdef DEBUG
+        tls::entry::getInstance().getSelf().getLogger().info("give | itemType: {}, count: {}, lightLevel: {}", itemType, count, lightLevel);
+        #endif
+        // clang-format on
+
         // check start with minecraft:
         if (itemType.find("minecraft:") == std::string::npos) itemType = "minecraft:" + itemType;
 
@@ -99,13 +105,19 @@ void give(Player& player, string itemType, int count = 1, int lightLevel = 0) {
 
 void inputCount(Player& player, string itemType) {
     try {
+        // clang-format off
+        #ifdef DEBUG
+        tls::entry::getInstance().getSelf().getLogger().info("inputCount | itemType: {}", itemType);
+        #endif
+        // clang-format on
         CustomForm fm;
         fm.setTitle("LeviOPTools - Input Count"_tr());
 
         fm.appendLabel("Select Input Count"_tr());
 
         // 数量
-        fm.appendInput("count", "Enter the required quantity", "integer", "1");
+        // fm.appendInput("count", "Enter the required quantity", "integer", "1");
+        fm.appendSlider("count", "Slide to select the amount to be given that has been selected: ", 1, 64);
 
         // 光照等级
         if (itemType == "light_block" || itemType == "minecraft:light_block") {
@@ -127,10 +139,18 @@ void inputCount(Player& player, string itemType) {
         });
         fm.appendDropdown("target", "Selection of targets to be given"_tr(), options, currentPlayer);
 
-        fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
+        fm.sendTo(player, [itemType](Player& pl, CustomFormResult const& dt, FormCancelReason) {
             if (!dt) return sendMsg(pl, "Canceled"_tr());
+            DebugFormCallBack(dt);
 
-            int count = string2Int(std::get<string>(dt->at("count")));
+            // clang-format off
+            #ifdef DEBUG
+            tls::entry::getInstance().getSelf().getLogger().info("inputCount.lambda | itemType: {}", itemType);
+            #endif
+            // clang-format on
+
+            // int count = string2Int(std::get<string>(dt->at("count")));
+            int count = std::get<double>(dt->at("count"));
 
             string targetStr = std::get<string>(dt->at("target"));
 
@@ -171,13 +191,13 @@ void getBlockOrItem(Player& player) {
             #ifdef DEBUG
             tls::entry::getInstance().getSelf().getLogger().info("Name: {}, Type: {}, ImageType: {}, ImageUrl: {}", it.name, it.type, it.imageType, it.imageUrl);
             #endif
-            string imageType = it.imageType; // copy to local variable to avoid error
+            string itemType = it.type; // copy to local variable to avoid error
             if (it.imageType == "url" || it.imageType == "path") {
-                fm.appendButton(it.name, it.imageUrl, it.imageType, [&imageType](Player& pl) {
-                    inputCount(pl, imageType);
+                fm.appendButton(it.name, it.imageUrl, it.imageType, [itemType](Player& pl) {
+                    inputCount(pl, itemType);
                 });
             } else {
-                fm.appendButton(it.name, [&imageType](Player& pl) { inputCount(pl, imageType); });
+                fm.appendButton(it.name, [itemType](Player& pl) { inputCount(pl, itemType); });
             }
         } catch (...) {
             tls::entry::getInstance().getSelf().getLogger().error("Failed to build button for item: {}", it.name);
