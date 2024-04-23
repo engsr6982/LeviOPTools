@@ -4,7 +4,7 @@
 #include "Entry/PluginInfo.h"
 #include "File/file.h"
 #include "Form/Mapping.h"
-
+#include "Utils/Utils.h"
 
 #include <functional>
 #include <ll/api/form/CustomForm.h>
@@ -82,11 +82,11 @@ void index(Player& player, std::filesystem::path filePath) {
                         return mapping[button.callbackRun](player);
                     }
                     logger.error("Unsupported function parameters: {}"_tr(button.callbackRun));
-                    player.sendMessage("The plugin error is due to the error in the console"_tr());
+                    tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
                     break;
                 default:
                     logger.error("Unsupported callbackType: {}"_tr(button.callbackType));
-                    player.sendMessage("The plugin error is due to the error in the console"_tr());
+                    tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
                     break;
                 }
             };
@@ -106,7 +106,7 @@ void index(Player& player, std::filesystem::path filePath) {
 
         fm.sendTo(player);
     } else {
-        player.sendMessage("The plugin error is due to the error in the console"_tr());
+        tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
         logger.error("Plugin error, unable to read or find file \"{}\""_tr(filePath));
     }
 }

@@ -1,4 +1,5 @@
 #include "Command.h"
+#include "Utils/Utils.h"
 
 namespace tls::command {
 
@@ -48,7 +49,7 @@ void registerCommand() {
             for (Player* target : *item) {
                 if (target) {
                     target->kill();
-                    player.sendMessage("try kill player: {}"_tr(target->getRealName()));
+                    tls::utils::sendMsg(player, "try kill player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -71,7 +72,7 @@ void registerCommand() {
             for (Player* target : *item) {
                 if (target) {
                     target->disconnect(param.message.empty() ? "server disconnect" : param.message);
-                    player.sendMessage("try kick player: {}"_tr(target->getRealName()));
+                    tls::utils::sendMsg(player, "try kick player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -96,7 +97,7 @@ void registerCommand() {
                     LevelChunkPacket pkt  = LevelChunkPacket();
                     pkt.mCacheEnabled     = true;
                     target->sendNetworkPacket(pkt);
-                    player.sendMessage("try crash player: {}"_tr(name));
+                    tls::utils::sendMsg(player, "try crash player: {}"_tr(name));
                 }
             }
         }>();
@@ -130,7 +131,7 @@ void registerCommand() {
                             return true;
                         });
                     }
-                    player.sendMessage("try talkas player: {}"_tr(target->getRealName()));
+                    tls::utils::sendMsg(player, "try talkas player: {}"_tr(target->getRealName()));
                 }
             }
         }>();
@@ -155,7 +156,7 @@ void registerCommand() {
                     return true;
                 });
             }
-            player.sendMessage("try broadcast message: {}"_tr(param.message));
+            tls::utils::sendMsg(player, "try broadcast message: {}"_tr(param.message));
         }>();
 
     // tools setmaxplayers <int>
