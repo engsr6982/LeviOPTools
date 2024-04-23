@@ -67,82 +67,91 @@ std::vector<JsonItem> loadJson() {
 
 
 void give(Player& player, string itemType, int count = 1, int lightLevel = 0) {
-    // check start with minecraft:
-    if (itemType.find("minecraft:") == std::string::npos) itemType = "minecraft:" + itemType;
+    try {
+        // check start with minecraft:
+        if (itemType.find("minecraft:") == std::string::npos) itemType = "minecraft:" + itemType;
 
-    ItemStack* it = new ItemStack{itemType, count};
+        ItemStack* it = new ItemStack{itemType, count};
 
-    // clang-format off
-    #ifdef DEBUG
-    auto nbt = it->save();
-    auto&  list = nbt->mTags;
-    for (auto& [k, v] : list) {
-        std::cout << "Key: " << k << std::endl;
-    }
-    #endif
-    // clang-format on
-
-    if (itemType == "light_block" || itemType == "minecraft:light_block") {
-        tls::entry::getInstance().getSelf().getLogger().warn("Light block not supported yet");
-    }
-
-    bool result = player.add(*it);
-    if (!result) player.drop(*it, false);
-    player.sendInventory(true);
-    player.refreshInventory();
-}
-
-void inputCount(Player& player, string itemType) {
-    CustomForm fm;
-    fm.setTitle("LeviOPTools - Input Count"_tr());
-
-    fm.appendLabel("Select Input Count"_tr());
-
-    // 数量
-    fm.appendInput("count", "Enter the required quantity", "integer", "1");
-
-    // 光照等级
-    if (itemType == "light_block" || itemType == "minecraft:light_block") {
-        fm.appendStepSlider(
-            "level",
-            "level: (0~15)\nSelected"_tr(),
-            std::vector<
-                std::string>{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}
-        );
-    }
-
-    // 目标玩家
-    std::vector<std::string> options;
-    int                      currentPlayer = 0;
-    ll::service::getLevel()->forEachPlayer([&options, &currentPlayer, &player](Player& pl) {
-        options.push_back(pl.getRealName());
-        if (pl.getRealName() == player.getRealName()) currentPlayer = options.size() - 1;
-        return true;
-    });
-    fm.appendDropdown("target", "Selection of targets to be given"_tr(), options, currentPlayer);
-
-    fm.sendTo(player, [itemType](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "Canceled"_tr());
-
-        int count = string2Int(std::get<string>(dt->at("count")));
-
-        string targetStr = std::get<string>(dt->at("target"));
-
-        Player* target = nullptr;
-
-        if (targetStr == pl.getRealName()) target = &pl;
-        else target = ll::service::getLevel()->getPlayer(targetStr);
-
-        if (!target) return sendMsg(pl, "Invalid target"_tr());
+        // clang-format off
+        #ifdef DEBUG
+        auto nbt = it->save();
+        auto&  list = nbt->mTags;
+        for (auto& [k, v] : list) {
+            std::cout << "Key: " << k << std::endl;
+        }
+        #endif
+        // clang-format on
 
         if (itemType == "light_block" || itemType == "minecraft:light_block") {
-            int level = string2Int(std::get<string>(dt->at("level")));
-            give(*target, itemType, count, level);
-            return;
+            tls::entry::getInstance().getSelf().getLogger().warn("Light block not supported yet");
         }
 
-        give(*target, itemType, count);
-    });
+        bool result = player.add(*it);
+        if (!result) player.drop(*it, false);
+        player.sendInventory(true);
+        player.refreshInventory();
+    } catch (...) {
+        tls::entry::getInstance().getSelf().getLogger().error("Failed in give");
+    }
+}
+
+
+void inputCount(Player& player, string itemType) {
+    try {
+        CustomForm fm;
+        fm.setTitle("LeviOPTools - Input Count"_tr());
+
+        fm.appendLabel("Select Input Count"_tr());
+
+        // 数量
+        fm.appendInput("count", "Enter the required quantity", "integer", "1");
+
+        // 光照等级
+        if (itemType == "light_block" || itemType == "minecraft:light_block") {
+            fm.appendStepSlider(
+                "level",
+                "level: (0~15)\nSelected"_tr(),
+                std::vector<
+                    std::string>{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}
+            );
+        }
+
+        // 目标玩家
+        std::vector<std::string> options;
+        int                      currentPlayer = 0;
+        ll::service::getLevel()->forEachPlayer([&options, &currentPlayer, &player](Player& pl) {
+            options.push_back(pl.getRealName());
+            if (pl.getRealName() == player.getRealName()) currentPlayer = options.size() - 1;
+            return true;
+        });
+        fm.appendDropdown("target", "Selection of targets to be given"_tr(), options, currentPlayer);
+
+        fm.sendTo(player, [itemType](Player& pl, CustomFormResult const& dt, FormCancelReason) {
+            if (!dt) return sendMsg(pl, "Canceled"_tr());
+
+            int count = string2Int(std::get<string>(dt->at("count")));
+
+            string targetStr = std::get<string>(dt->at("target"));
+
+            Player* target = nullptr;
+
+            if (targetStr == pl.getRealName()) target = &pl;
+            else target = ll::service::getLevel()->getPlayer(targetStr);
+
+            if (!target) return sendMsg(pl, "Invalid target"_tr());
+
+            if (itemType == "light_block" || itemType == "minecraft:light_block") {
+                int level = string2Int(std::get<string>(dt->at("level")));
+                give(*target, itemType, count, level);
+                return;
+            }
+
+            give(*target, itemType, count);
+        });
+    } catch (...) {
+        tls::entry::getInstance().getSelf().getLogger().error("Failed in inputCount");
+    }
 }
 
 
@@ -155,12 +164,19 @@ void getBlockOrItem(Player& player) {
     fm.setContent("Click button to get block or item"_tr());
 
     auto items = loadJson();
+    if (items.empty()) return sendMsg(player, "No item or block found"_tr());
     for (auto& it : items) {
         try {
+            // clang-format off
+            #ifdef DEBUG
+            tls::entry::getInstance().getSelf().getLogger().info("Name: {}, Type: {}, ImageType: {}, ImageUrl: {}", it.name, it.type, it.imageType, it.imageUrl);
+            #endif
             if (it.imageType == "url" || it.imageType == "path") {
-                fm.appendButton(it.name, it.imageUrl, it.imageType, [&it](Player& pl) { inputCount(pl, it.type); });
+                fm.appendButton(it.name, it.imageUrl, it.imageType, [&it](Player& pl) {
+                    inputCount(pl, string(it.type));
+                });
             } else {
-                fm.appendButton(it.name, [&it](Player& pl) { inputCount(pl, it.type); });
+                fm.appendButton(it.name, [&it](Player& pl) { inputCount(pl, string(it.type)); });
             }
         } catch (...) {
             tls::entry::getInstance().getSelf().getLogger().error("Failed to build button for item: {}", it.name);
