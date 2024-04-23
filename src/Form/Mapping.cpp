@@ -22,6 +22,7 @@ bool initMapping() {
     mapping["usePlayerIdentitySay"]     = usePlayerIdentitySay;
     mapping["usePlayerIdentityExecute"] = usePlayerIdentityExecute;
     mapping["motdManagement"]           = motdManagement;
+    mapping["getBlockOrItem"]           = getBlockOrItem;
     return true;
 }
 

@@ -10,6 +10,13 @@
             "callbackRun": "kickPlayer"
         },
         {
+            "title": "getBlockOrItem",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "getBlockOrItem"
+        },
+        {
             "title": "motdManagement",
             "imageUrl": "",
             "imageType": "",

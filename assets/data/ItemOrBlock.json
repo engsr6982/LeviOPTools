@@ -1,0 +1,38 @@
+[
+    {
+        "name": "§l命令方块",
+        "imageType": "path",
+        "imageUrl": "textures/ui/creator_glyph_color",
+        "type": "command_block"
+    },
+    {
+        "name": "§l屏障方块",
+        "imageType": "path",
+        "imageUrl": "textures/blocks/barrier",
+        "type": "barrier"
+    },
+    {
+        "name": "§l边界方块",
+        "imageType": "path",
+        "imageUrl": "textures/blocks/border",
+        "type": "border_block"
+    },
+    {
+        "name": "§l结构方块",
+        "imageType": "path",
+        "imageUrl": "textures/blocks/structure_block",
+        "type": "structure_block"
+    },
+    {
+        "name": "§l结构空位",
+        "imageType": "path",
+        "imageUrl": "textures/blocks/structure_void",
+        "type": "structure_void"
+    },
+    {
+        "name": "§l光源方块",
+        "imageType": "path",
+        "imageUrl": "textures/items/light_block_15",
+        "type": "light_block"
+    }
+]

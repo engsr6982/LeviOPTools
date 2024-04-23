@@ -115,6 +115,8 @@ void usePlayerIdentitySay(Player& player);
 void usePlayerIdentityExecute(Player& player);
 void motdManagement(Player& player);
 
+void getBlockOrItem(Player& player);
+
 // ======================== Helper functions ========================
 
 
