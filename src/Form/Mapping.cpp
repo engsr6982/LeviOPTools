@@ -16,6 +16,7 @@ bool initMapping() {
     mapping["changeTime"]     = changeTime;
     mapping["changeGameRule"] = changeGameRule;
     mapping["terminal"]       = terminal;
+    mapping["crashClient"]    = crashClient;
     return true;
 }
 

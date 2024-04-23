@@ -10,6 +10,13 @@
             "callbackRun": "kickPlayer"
         },
         {
+            "title": "crashClient",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "crashClient"
+        },
+        {
             "title": "killPlayer",
             "imageUrl": "",
             "imageType": "",

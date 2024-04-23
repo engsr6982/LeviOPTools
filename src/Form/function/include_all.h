@@ -109,6 +109,8 @@ void changeTime(Player& player);
 void changeGameRule(Player& player);
 void terminal(Player& player);
 
+void crashClient(Player& player);
+
 
 // ======================== Helper functions ========================
 
