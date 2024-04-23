@@ -10,11 +10,18 @@
             "callbackRun": "kickPlayer"
         },
         {
-            "title": "crashClient",
+            "title": "broadCastMessage",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
-            "callbackRun": "crashClient"
+            "callbackRun": "broadCastMessage"
+        },
+        {
+            "title": "crashPlayerClient",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "crashPlayerClient"
         },
         {
             "title": "killPlayer",

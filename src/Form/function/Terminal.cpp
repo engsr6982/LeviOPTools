@@ -37,6 +37,7 @@ void terminal(Player& player) {
 
     fm.sendTo(player, [](Player& pl, CustomFormResult const& dt, FormCancelReason) {
         if (!dt) return sendMsg(pl, "Canceled"_tr());
+        DebugFormCallBack(dt);
 
         string input = std::get<string>(dt->at("input"));
 

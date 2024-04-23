@@ -2,7 +2,7 @@
 
 namespace tls::form {
 
-void crashClient(Player& player) {
+void crashPlayerClient(Player& player) {
     AutoCheckPermission(player, perms::CrashPlayerClient);
 
     CustomForm fm;
@@ -23,6 +23,8 @@ void crashClient(Player& player) {
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
         if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        DebugFormCallBack(dt);
+
         for (auto const& [name, value] : *dt) {
             if (std::holds_alternative<uint64_t>(value)) {
                 auto isTrue = std::get<uint64_t>(value);

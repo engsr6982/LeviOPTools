@@ -24,6 +24,7 @@ void kickPlayer(Player& player) {
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
         if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        DebugFormCallBack(dt);
         string reason = std::get<string>(dt->at("reason"));
         for (auto const& [name, value] : *dt) {
             if (std::holds_alternative<uint64_t>(value)) {

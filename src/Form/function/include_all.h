@@ -109,8 +109,8 @@ void changeTime(Player& player);
 void changeGameRule(Player& player);
 void terminal(Player& player);
 
-void crashClient(Player& player);
-
+void crashPlayerClient(Player& player);
+void broadCastMessage(Player& player);
 
 // ======================== Helper functions ========================
 
