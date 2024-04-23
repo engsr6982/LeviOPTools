@@ -113,13 +113,13 @@ void inputCount(Player& player, string itemType) {
                 "level",
                 "level: (0~15)\nSelected"_tr(),
                 std::vector<
-                    std::string>{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}
+                    string>{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}
             );
         }
 
         // 目标玩家
-        std::vector<std::string> options;
-        int                      currentPlayer = 0;
+        std::vector<string> options;
+        int                 currentPlayer = 0;
         ll::service::getLevel()->forEachPlayer([&options, &currentPlayer, &player](Player& pl) {
             options.push_back(pl.getRealName());
             if (pl.getRealName() == player.getRealName()) currentPlayer = options.size() - 1;
@@ -127,7 +127,7 @@ void inputCount(Player& player, string itemType) {
         });
         fm.appendDropdown("target", "Selection of targets to be given"_tr(), options, currentPlayer);
 
-        fm.sendTo(player, [itemType](Player& pl, CustomFormResult const& dt, FormCancelReason) {
+        fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
             if (!dt) return sendMsg(pl, "Canceled"_tr());
 
             int count = string2Int(std::get<string>(dt->at("count")));
@@ -171,12 +171,13 @@ void getBlockOrItem(Player& player) {
             #ifdef DEBUG
             tls::entry::getInstance().getSelf().getLogger().info("Name: {}, Type: {}, ImageType: {}, ImageUrl: {}", it.name, it.type, it.imageType, it.imageUrl);
             #endif
+            string imageType = it.imageType; // copy to local variable to avoid error
             if (it.imageType == "url" || it.imageType == "path") {
-                fm.appendButton(it.name, it.imageUrl, it.imageType, [&it](Player& pl) {
-                    inputCount(pl, string(it.type));
+                fm.appendButton(it.name, it.imageUrl, it.imageType, [&imageType](Player& pl) {
+                    inputCount(pl, imageType);
                 });
             } else {
-                fm.appendButton(it.name, [&it](Player& pl) { inputCount(pl, string(it.type)); });
+                fm.appendButton(it.name, [&imageType](Player& pl) { inputCount(pl, imageType); });
             }
         } catch (...) {
             tls::entry::getInstance().getSelf().getLogger().error("Failed to build button for item: {}", it.name);
