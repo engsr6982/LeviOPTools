@@ -111,6 +111,7 @@ void terminal(Player& player);
 
 void crashPlayerClient(Player& player);
 void broadCastMessage(Player& player);
+void usePlayerIdentitySay(Player& player);
 
 // ======================== Helper functions ========================
 

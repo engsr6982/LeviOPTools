@@ -10,6 +10,13 @@
             "callbackRun": "kickPlayer"
         },
         {
+            "title": "usePlayerIdentitySay",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "usePlayerIdentitySay"
+        },
+        {
             "title": "broadCastMessage",
             "imageUrl": "",
             "imageType": "",
