@@ -21,6 +21,8 @@ struct S_Config {
     struct S_Function {
         string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
         int    terminalCacheSize        = 20;
+        bool   enableMotd               = true;
+        int    motdShowTime             = 30;
     } function;
 };
 

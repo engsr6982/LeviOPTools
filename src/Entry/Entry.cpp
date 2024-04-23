@@ -12,6 +12,7 @@
 #include "Entry.h"
 #include "File/Config.h"
 #include "Form/Mapping.h"
+#include "Motd/Motd.h"
 #include "Permission/Permission.h"
 #include "PluginInfo.h"
 
@@ -57,6 +58,7 @@ bool entry::enable() {
     tls::command::registerTeleportCommand();
     tls::form::initMapping();
     tls::perms::initPermission();
+    tls::motd::initMotd();
 
     return true;
 }

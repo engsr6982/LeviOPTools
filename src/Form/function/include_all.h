@@ -113,6 +113,7 @@ void crashPlayerClient(Player& player);
 void broadCastMessage(Player& player);
 void usePlayerIdentitySay(Player& player);
 void usePlayerIdentityExecute(Player& player);
+void motdManagement(Player& player);
 
 // ======================== Helper functions ========================
 

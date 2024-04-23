@@ -10,6 +10,13 @@
             "callbackRun": "kickPlayer"
         },
         {
+            "title": "motdManagement",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "motdManagement"
+        },
+        {
             "title": "usePlayerIdentityExecute",
             "imageUrl": "",
             "imageType": "",

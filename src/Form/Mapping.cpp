@@ -1,3 +1,4 @@
+#pragma once
 #include "Mapping.h"
 #include "function/include_all.h"
 #include "mc/world/actor/player/Player.h"
@@ -20,6 +21,7 @@ bool initMapping() {
     mapping["broadCastMessage"]         = broadCastMessage;
     mapping["usePlayerIdentitySay"]     = usePlayerIdentitySay;
     mapping["usePlayerIdentityExecute"] = usePlayerIdentityExecute;
+    mapping["motdManagement"]           = motdManagement;
     return true;
 }
 
