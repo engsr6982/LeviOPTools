@@ -1,10 +1,11 @@
 #include "Api.h"
 #include "mc/server/commands/CommandOutput.h"
 
-namespace tls::Api {
+namespace tls::api {
 
-RunCmdEx runCmdEx(const string& cmd) {
-    RunCmdEx result;
+RunCmdExOutput runCmdEx(const string& cmd) {
+    RunCmdExOutput result;
+    result.input = cmd;
 
     auto origin =
         ServerCommandOrigin("Server", ll::service::getLevel()->asServer(), CommandPermissionLevel::Internal, 0);

@@ -36,6 +36,13 @@
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "changeGameRule"
+        },
+        {
+            "title": "terminal",
+            "imageUrl": "",
+            "imageType": "",
+            "callbackType": "function",
+            "callbackRun": "terminal"
         }
     ]
 }

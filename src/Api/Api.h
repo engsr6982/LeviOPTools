@@ -42,14 +42,15 @@
 
 using string = std::string;
 
-struct RunCmdEx {
+namespace tls::api {
+
+struct RunCmdExOutput {
+    string input;
     bool   success = false;
     string output;
 };
 
-namespace tls::api {
-
-bool     runCmd(Player& player, const string& cmd); // player
-RunCmdEx runCmdEx(const string& cmd);               // console
+bool           runCmd(Player& player, const string& cmd); // player
+RunCmdExOutput runCmdEx(const string& cmd);               // console
 
 } // namespace tls::api
