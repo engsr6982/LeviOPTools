@@ -86,9 +86,10 @@ void motdManagement(Player& player) {
     SimpleForm fm;
     fm.setTitle("LeviOPTools Motd Management"_tr());
 
-    fm.appendButton("Create New Line"_tr(), [](Player&) {
+    fm.appendButton("Create New Line"_tr(), [](Player& pl) {
         motd::motd_list.push_back("New Line"_tr());
         motd::saveMotd();
+        motdManagement(pl);
     });
 
     for (int i = 0; i < motd::motd_list.size(); ++i) {

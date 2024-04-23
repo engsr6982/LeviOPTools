@@ -16,11 +16,7 @@ using namespace ll::schedule;
 using namespace ll::chrono_literals;
 using ll::chrono_literals::operator""_tick;
 
-
-inline ll::schedule::ServerTimeScheduler motdScheduler;
-
-inline static std::vector<string> motd_list;
-inline static int                 index = 0;
+extern std::vector<string> motd_list;
 
 void loadMotd();
 void saveMotd();
