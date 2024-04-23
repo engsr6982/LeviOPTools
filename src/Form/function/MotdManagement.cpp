@@ -43,6 +43,7 @@ void EditMotd(Player& player, int index) {
 
         motd::motd_list[index] = value;
 
+        motd::saveMotd();
         showMotd(pl, index);
     });
 }
@@ -55,13 +56,22 @@ void showMotd(Player& player, int index) {
 
     fm.appendButton("Edit"_tr(), [index](Player& pl) { EditMotd(pl, index); });
 
-    fm.appendButton("Move Up"_tr(), [index](Player&) { moveVectorItem(MoveUp, index); });
+    fm.appendButton("Move Up"_tr(), [index](Player& pl) {
+        moveVectorItem(MoveUp, index);
+        motd::saveMotd();
+        motdManagement(pl);
+    });
 
-    fm.appendButton("Move Down"_tr(), [index](Player&) { moveVectorItem(MoveDown, index); });
+    fm.appendButton("Move Down"_tr(), [index](Player& pl) {
+        moveVectorItem(MoveDown, index);
+        motd::saveMotd();
+        motdManagement(pl);
+    });
 
-    fm.appendButton("Delete"_tr(), [index](Player&) {
+    fm.appendButton("Delete"_tr(), [index](Player& pl) {
         motd::motd_list.erase(motd::motd_list.begin() + index);
         motd::saveMotd();
+        motdManagement(pl);
     });
 
     fm.appendButton("Return"_tr(), [](Player& pl) { motdManagement(pl); });
