@@ -1,6 +1,6 @@
 on:
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: windows-latest
@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: xmake-io/github-action-setup-xmake@v1
-      
+
       - uses: actions/cache@v4
         with:
           path: |
