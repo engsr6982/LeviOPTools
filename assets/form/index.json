@@ -3,84 +3,84 @@
     "content": "Welcome to LeviOPTools, customize this page to go to documentation for tutorials!",
     "buttons": [
         {
-            "title": "kickPlayer",
+            "title": "踢出玩家",
             "imageUrl": "https://lse.liteldev.com/img/logo.png",
             "imageType": "url",
             "callbackType": "function",
             "callbackRun": "kickPlayer"
         },
         {
-            "title": "getBlockOrItem",
+            "title": "获取方块或物品",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "getBlockOrItem"
         },
         {
-            "title": "motdManagement",
+            "title": "Motd管理",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "motdManagement"
         },
         {
-            "title": "usePlayerIdentityExecute",
+            "title": "以玩家身份执行命令",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "usePlayerIdentityExecute"
         },
         {
-            "title": "usePlayerIdentitySay",
+            "title": "以玩家身份说话",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "usePlayerIdentitySay"
         },
         {
-            "title": "broadCastMessage",
+            "title": "广播消息",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "broadCastMessage"
         },
         {
-            "title": "crashPlayerClient",
+            "title": "崩溃玩家客户端",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "crashPlayerClient"
         },
         {
-            "title": "killPlayer",
+            "title": "杀死玩家",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "killPlayer"
         },
         {
-            "title": "changeWeather",
+            "title": "更改天气",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "changeWeather"
         },
         {
-            "title": "changeTime",
+            "title": "更改时间",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "changeTime"
         },
         {
-            "title": "changeGameRule",
+            "title": "更改游戏规则",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
             "callbackRun": "changeGameRule"
         },
         {
-            "title": "terminal",
+            "title": "终端",
             "imageUrl": "",
             "imageType": "",
             "callbackType": "function",
