@@ -10,7 +10,7 @@ void kickPlayer(Player& player) {
     AutoCheckPermission(player, perms::KickPlayer);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - Kick Player"_tr());
+    fm.setTitle("LeviOPTools - Kick Player"_tr());
 
     auto level = ll::service::getLevel();
     if (level.has_value()) {

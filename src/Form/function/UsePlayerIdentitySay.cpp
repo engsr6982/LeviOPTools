@@ -6,7 +6,7 @@ void usePlayerIdentitySay(Player& player) {
     AutoCheckPermission(player, perms::UsePlayerIdentitySay);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - Use Player Identity Say"_tr());
+    fm.setTitle("LeviOPTools - Use Player Identity Say"_tr());
 
     auto level = ll::service::getLevel();
     if (level.has_value()) {

@@ -6,7 +6,7 @@ void crashPlayerClient(Player& player) {
     AutoCheckPermission(player, perms::CrashPlayerClient);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - Crash Client"_tr());
+    fm.setTitle("LeviOPTools - Crash Client"_tr());
 
     fm.appendLabel(
         "This feature can directly crash the player's client, this feature may not work on platforms such as Win10."_tr(

@@ -6,7 +6,7 @@ void usePlayerIdentityExecute(Player& player) {
     AutoCheckPermission(player, perms::UsePlayerIdentityExecute);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - Use Player Identity Execute"_tr());
+    fm.setTitle("LeviOPTools - Use Player Identity Execute"_tr());
 
     auto level = ll::service::getLevel();
     if (level.has_value()) {

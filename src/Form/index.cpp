@@ -82,11 +82,11 @@ void index(Player& player, std::filesystem::path filePath) {
                         return mapping[button.callbackRun](player);
                     }
                     logger.error("Unsupported function parameters: {}"_tr(button.callbackRun));
-                    tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
+                    tls::utils::sendMsg(player, "Plugin error, go to the console for the cause of the error"_tr());
                     break;
                 default:
                     logger.error("Unsupported callbackType: {}"_tr(button.callbackType));
-                    tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
+                    tls::utils::sendMsg(player, "Plugin error, go to the console for the cause of the error"_tr());
                     break;
                 }
             };
@@ -106,7 +106,7 @@ void index(Player& player, std::filesystem::path filePath) {
 
         fm.sendTo(player);
     } else {
-        tls::utils::sendMsg(player, "The plugin error is due to the error in the console"_tr());
+        tls::utils::sendMsg(player, "Plugin error, go to the console for the cause of the error"_tr());
         logger.error("Plugin error, unable to read or find file \"{}\""_tr(filePath));
     }
 }

@@ -6,7 +6,7 @@ void killPlayer(Player& player) {
     AutoCheckPermission(player, perms::KillPlayer);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - Kill Player"_tr());
+    fm.setTitle("LeviOPTools - Kill Player"_tr());
 
     fm.appendLabel("This feature can kill any player, regardless of game mode."_tr());
 

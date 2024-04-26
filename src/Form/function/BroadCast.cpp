@@ -6,7 +6,7 @@ void broadCastMessage(Player& player) {
     AutoCheckPermission(player, perms::BroadCastMessage);
 
     CustomForm fm;
-    fm.setTitle("LeviOProTools - BroadCast"_tr());
+    fm.setTitle("LeviOPTools - BroadCast"_tr());
 
     auto level = ll::service::getLevel();
     if (level.has_value()) {
