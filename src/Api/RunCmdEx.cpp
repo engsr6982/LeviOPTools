@@ -1,5 +1,8 @@
 #include "Api.h"
+#include "mc/locale/I18n.h"
+#include "mc/locale/Localization.h"
 #include "mc/server/commands/CommandOutput.h"
+
 
 namespace tls::api {
 
@@ -21,7 +24,9 @@ RunCmdExOutput runCmdEx(const string& cmd) {
         if (command) {
             command->run(origin, output);
             for (auto msg : output.getMessages()) {
-                outputStr = outputStr.append(I18n::get(msg.getMessageId(), msg.getParams())).append("\n");
+                string tmp;
+                getI18n().getCurrentLanguage()->get(msg.getMessageId(), tmp, msg.getParams());
+                outputStr += tmp.append("\n");
             }
             if (output.getMessages().size()) {
                 outputStr.pop_back();
