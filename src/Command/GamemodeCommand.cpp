@@ -83,21 +83,21 @@ void registerGamemodeCommand() {
         config::cfg.command.tools.commandDescription
     );
     // tools gm <int> [player]
-    tools.overload<GameMode_Int>().text("gm").required("gameType").optional("player").execute<Gm_Int_CallBack>();
+    tools.overload<GameMode_Int>().text("gm").required("gameType").optional("player").execute(Gm_Int_CallBack);
 
     // tools gm <s|c|a|d> [player]
     tools.overload<GameMode_String_Brief>()
         .text("gm")
         .required("gameType")
         .optional("player")
-        .execute<Gm_String_Brief_CallBack>();
+        .execute(Gm_String_Brief_CallBack);
 
     // tools gm <GameType> [player]
     tools.overload<GameMode_String_Full>()
         .text("gm")
         .required("gameType")
         .optional("player")
-        .execute<Gm_String_Full_CallBack>();
+        .execute(Gm_String_Full_CallBack);
 
     if (config::cfg.command.gm.enable) {
         auto& gm = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
@@ -105,16 +105,13 @@ void registerGamemodeCommand() {
             config::cfg.command.gm.commandDescription
         );
         // gm <int> [player]
-        gm.overload<GameMode_Int>().required("gameType").optional("player").execute<Gm_Int_CallBack>();
+        gm.overload<GameMode_Int>().required("gameType").optional("player").execute(Gm_Int_CallBack);
 
         // gm <s|c|a|d> [player]
-        gm.overload<GameMode_String_Brief>()
-            .required("gameType")
-            .optional("player")
-            .execute<Gm_String_Brief_CallBack>();
+        gm.overload<GameMode_String_Brief>().required("gameType").optional("player").execute(Gm_String_Brief_CallBack);
 
         // gm <GameType> [player]
-        gm.overload<GameMode_String_Full>().required("gameType").optional("player").execute<Gm_String_Full_CallBack>();
+        gm.overload<GameMode_String_Full>().required("gameType").optional("player").execute(Gm_String_Full_CallBack);
     }
 }
 

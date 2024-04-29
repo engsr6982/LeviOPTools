@@ -14,7 +14,7 @@ void registerCommand() {
     );
 
     // tools
-    cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
+    cmd.overload().execute([&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
         if (!checkPlayerPermission(origin, output, tls::perms::indexForm)) {
             output.error("You don't have permission to use this command!"_tr());
@@ -23,20 +23,18 @@ void registerCommand() {
         Actor* entity = origin.getEntity();
         auto&  player = *static_cast<Player*>(entity); // entity* => Player&
         tls::form::index(player);
-    }>();
+    });
 
     // tools reload
-    cmd.overload().text("reload").execute<[&](CommandOrigin const& origin, CommandOutput& output) {
+    cmd.overload().text("reload").execute([&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::DedicatedServer);
         tls::config::loadConfig();
         output.success("Config reloaded!"_tr());
-    }>();
+    });
 
     // tools kill <Player>
-    cmd.overload<Arg_Player>()
-        .text("kill")
-        .required("player")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
+    cmd.overload<Arg_Player>().text("kill").required("player").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::KillPlayer)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -52,14 +50,12 @@ void registerCommand() {
                     tls::utils::sendMsg(player, "try kill player: {}"_tr(target->getRealName()));
                 }
             }
-        }>();
+        }
+    );
 
     // tools kick <Player> [Msg]
-    cmd.overload<Args_Player_Msg>()
-        .text("kick")
-        .required("player")
-        .optional("message")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Player_Msg const& param) {
+    cmd.overload<Args_Player_Msg>().text("kick").required("player").optional("message").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, Args_Player_Msg const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::KickPlayer)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -75,13 +71,12 @@ void registerCommand() {
                     tls::utils::sendMsg(player, "try kick player: {}"_tr(target->getRealName()));
                 }
             }
-        }>();
+        }
+    );
 
     // tools crash <Player>
-    cmd.overload<Arg_Player>()
-        .text("crash")
-        .required("player")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
+    cmd.overload<Arg_Player>().text("crash").required("player").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, Arg_Player const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::CrashPlayerClient)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -100,14 +95,12 @@ void registerCommand() {
                     tls::utils::sendMsg(player, "try crash player: {}"_tr(name));
                 }
             }
-        }>();
+        }
+    );
 
     // tools talkas <Player> <msg>
-    cmd.overload<Args_Player_Msg>()
-        .text("talkas")
-        .required("player")
-        .required("message")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Args_Player_Msg const& param) {
+    cmd.overload<Args_Player_Msg>().text("talkas").required("player").required("message").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, Args_Player_Msg const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::UsePlayerIdentitySay)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -134,13 +127,14 @@ void registerCommand() {
                     tls::utils::sendMsg(player, "try talkas player: {}"_tr(target->getRealName()));
                 }
             }
-        }>();
+        }
+    );
 
     // tools broadcast <msg>
     cmd.overload<Arg_Msg>()
         .text("broadcast")
         .required("message")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, Arg_Msg const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, Arg_Msg const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::BroadCastMessage)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -157,13 +151,13 @@ void registerCommand() {
                 });
             }
             tls::utils::sendMsg(player, "try broadcast message: {}"_tr(param.message));
-        }>();
+        });
 
     // tools setmaxplayers <int>
     cmd.overload<SetServerMaxPlayers>()
         .text("setmaxplayers")
         .required("maxPlayers")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, SetServerMaxPlayers const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, SetServerMaxPlayers const& param) {
             CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
             if (!checkPlayerPermission(origin, output, tls::perms::SetServerMaxPlayer)) {
                 output.error("You don't have permission to use this command!"_tr());
@@ -173,7 +167,7 @@ void registerCommand() {
             int back = ll::service::getServerNetworkHandler()->setMaxNumPlayers(param.maxPlayers);
             ll::service::getServerNetworkHandler()->updateServerAnnouncement();
             output.success("Max players set to {}, previous value is {}"_tr(param.maxPlayers, back));
-        }>();
+        });
 }
 
 } // namespace tls::command

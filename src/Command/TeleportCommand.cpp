@@ -35,7 +35,7 @@ void registerTeleportCommand() {
         .text("teleport")
         .required("player")
         .optional("target")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TeleportToPlayer const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, TeleportToPlayer const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -73,7 +73,7 @@ void registerTeleportCommand() {
                     output.error("You have to choose a target player!"_tr());
                 }
             }
-        }>();
+        });
 
     // tools teleport <player> <x> <y> <z> [dimension]
     tools.overload<TeleportToPosition>()
@@ -81,7 +81,7 @@ void registerTeleportCommand() {
         .required("player")
         .required("pos")
         .optional("dimension")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TeleportToPosition const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, TeleportToPosition const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -107,7 +107,7 @@ void registerTeleportCommand() {
                 );
                 output.success("Teleported {} to {}!"_tr(p->getRealName(), pos.toString()));
             }
-        }>();
+        });
 }
 
 } // namespace tls::command

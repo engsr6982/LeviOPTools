@@ -129,7 +129,7 @@ void registerChunkCommand() {
     );
 
     // tools chunk debug
-    cmd.overload().text("chunk").text("debug").execute<[&](CommandOrigin const& origin, CommandOutput& output) {
+    cmd.overload().text("chunk").text("debug").execute([&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);
         CHECK_ChunkOperation_Permission(output, origin);
         try {
@@ -155,7 +155,7 @@ void registerChunkCommand() {
         } catch (...) {
             output.error("[Chunk] unknown error!"_tr());
         }
-    }>();
+    });
 
     // tools chunk backup [Vec3] <dimentionId>
     cmd.overload<ArgPosAndDimid>()
@@ -163,7 +163,7 @@ void registerChunkCommand() {
         .text("backup")
         .optional("pos")
         .required("dimentionId")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgPosAndDimid const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgPosAndDimid const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -205,7 +205,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Failed to backup chunk!"_tr());
             }
-        }>();
+        });
 
     // tools chunk restore [Vec3] <dimentionId>
     cmd.overload<ArgPosAndDimid>()
@@ -213,7 +213,7 @@ void registerChunkCommand() {
         .text("restore")
         .optional("pos")
         .required("dimentionId")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgPosAndDimid const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgPosAndDimid const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -255,7 +255,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Failed to restore chunk!"_tr());
             }
-        }>();
+        });
 
 
     // 选区相关命令
@@ -267,7 +267,7 @@ void registerChunkCommand() {
         .required("pos1")
         .required("pos2")
         .required("dimentionId")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgSelectPos const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgSelectPos const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -287,7 +287,7 @@ void registerChunkCommand() {
                 return;
             }
             output.success("[Chunk] Your id for this operation {}"_tr(id));
-        }>();
+        });
 
     // tools chunk select backup <id> <fileName>
     cmd.overload<ArgSelectBackup>()
@@ -296,7 +296,7 @@ void registerChunkCommand() {
         .text("backup")
         .required("id")
         .required("fileName")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgSelectBackup const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgSelectBackup const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -318,7 +318,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
     // tools chunk select restore <id> <fileName>
     cmd.overload<ArgFileName>()
@@ -326,7 +326,7 @@ void registerChunkCommand() {
         .text("select")
         .text("restore")
         .required("fileName")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgFileName const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgFileName const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -341,16 +341,11 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Restore failed, please check and retry!"_tr());
             }
-        }>();
+        });
 
     // tools chunk select copy <id> <vec3>
-    cmd.overload<ArgChunkSelsctCopy>()
-        .text("chunk")
-        .text("select")
-        .text("copy")
-        .required("id")
-        .required("pos")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgChunkSelsctCopy const& param) {
+    cmd.overload<ArgChunkSelsctCopy>().text("chunk").text("select").text("copy").required("id").required("pos").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, ArgChunkSelsctCopy const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -371,7 +366,8 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        }
+    );
 
     // tools chunk select copy confirm <id> [ignoreEntities] [dimentionId]
     cmd.overload<ArgCopyConfirm>()
@@ -382,7 +378,7 @@ void registerChunkCommand() {
         .required("id")
         .optional("ignoreEntities")
         .optional("dimentionId")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgCopyConfirm const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgCopyConfirm const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -413,7 +409,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
 
     // McStructure
@@ -424,7 +420,7 @@ void registerChunkCommand() {
         .text("structure")
         .text("load")
         .required("fileName")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, ArgFileName const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, ArgFileName const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -444,7 +440,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Failed to load structure from file!"_tr());
             }
-        }>();
+        });
 
     // tools chunk structure save <id> <fileName> [ignoreBlocks] [ignoreEntities]
     cmd.overload<SaveStructure>()
@@ -455,7 +451,7 @@ void registerChunkCommand() {
         .required("fileName")
         .optional("ignoreBlocks")
         .optional("ignoreEntities")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, SaveStructure const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, SaveStructure const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -493,7 +489,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
     // tools chunk structure place <id> <pos> <dimentionId> [ignoreEntities]
     cmd.overload<PlaceStructure>()
@@ -504,7 +500,7 @@ void registerChunkCommand() {
         .required("pos")
         .required("dimentionId")
         .optional("ignoreEntities")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, PlaceStructure const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, PlaceStructure const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -543,7 +539,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
     // StructureTransform
 
@@ -554,7 +550,7 @@ void registerChunkCommand() {
         .text("mirror")
         .required("id")
         .required("direction")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TransFormMirror const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, TransFormMirror const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -571,7 +567,7 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
     // tools chunk transform rotate <id> <angle>
     cmd.overload<TransFormRotate>()
@@ -580,7 +576,7 @@ void registerChunkCommand() {
         .text("rotate")
         .required("id")
         .required("angle")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, TransFormRotate const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, TransFormRotate const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -597,14 +593,11 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        });
 
     // tools chunk cancel <id>
-    cmd.overload<OnlyID>()
-        .text("chunk")
-        .text("cancel")
-        .required("id")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
+    cmd.overload<OnlyID>().text("chunk").text("cancel").required("id").execute(
+        [&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -620,14 +613,15 @@ void registerChunkCommand() {
             } else {
                 output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
             }
-        }>();
+        }
+    );
 
     // tools chunk operateid [id]
     cmd.overload<OnlyID>()
         .text("chunk")
         .text("operateid")
         .optional("id")
-        .execute<[&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
+        .execute([&](CommandOrigin const& origin, CommandOutput& output, OnlyID const& param) {
             CHECK_COMMAND_TYPE(
                 output,
                 origin.getOriginType(),
@@ -659,7 +653,7 @@ void registerChunkCommand() {
                     output.error("[Chunk] Invalid action id '{}', no access to bound data"_tr(param.id));
                 }
             }
-        }>();
+        });
 }
 
 } // namespace tls::command
