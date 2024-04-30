@@ -108,6 +108,9 @@ function pack_plugin(target,plugin_define)
         -- copy form files
         local formdir = path.join(os.projectdir(), "assets", "form")
         os.cp(formdir, outputdir)
+        -- copy data files
+        local datadir = path.join(os.projectdir(), "assets", "data")
+        os.cp(datadir, outputdir)
 
         formattedmanifest = string_formatter(manifest, plugin_define)
         io.writefile(manifestfile,formattedmanifest)
