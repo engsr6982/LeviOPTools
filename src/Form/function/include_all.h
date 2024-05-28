@@ -122,7 +122,7 @@ void getBlockOrItem(Player& player);
 
 #define AutoCheckPermission(player, permission)                                                                        \
     {                                                                                                                  \
-        if (perm::PermissionManager::getInstance()                                                                     \
+        if (pmc::PermissionManager::getInstance()                                                                     \
                 .getPermissionCore(PLUGIN_NAME)                                                                        \
                 ->checkUserPermission(player.getUuid().asString().c_str(), permission)                                 \
             == false)                                                                                                  \

@@ -15,13 +15,13 @@ namespace tls::perms {
 using ll::i18n_literals::operator""_tr;
 
 void initPermission() {
-    perm::AutoRegisterCoreToManager(PLUGIN_NAME);
+    pmc::AutoRegisterCoreToManager(PLUGIN_NAME);
 
-    if (perm::PermissionManager::getInstance().hasRegisterPermissionCore(PLUGIN_NAME) == false) {
+    if (pmc::PermissionManager::getInstance().hasRegisterPermissionCore(PLUGIN_NAME) == false) {
         std::runtime_error("Plugin fatal error: PermissionCore register failed."_tr());
     }
 
-    auto& reg = perm::PermissionRegister::getInstance();
+    auto& reg = pmc::PermissionRegister::getInstance();
 
     reg.registerPermission(PLUGIN_NAME, Permission::Unknown, "unknown"_tr());
     reg.registerPermission(PLUGIN_NAME, Permission::indexForm, "index_form"_tr());

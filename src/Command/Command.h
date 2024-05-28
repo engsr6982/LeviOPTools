@@ -125,7 +125,7 @@ inline bool checkPlayerPermission(CommandOrigin const& origin, CommandOutput& ou
     Actor* entity = origin.getEntity();
     if (entity) {
         auto& player = *static_cast<Player*>(entity);
-        return perm::PermissionManager::getInstance()
+        return pmc::PermissionManager::getInstance()
             .getPermissionCore(PLUGIN_NAME)
             ->checkUserPermission(player.getUuid().asString().c_str(), permission);
     } else {
