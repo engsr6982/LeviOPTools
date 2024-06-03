@@ -1,4 +1,5 @@
 #include "include_all.h"
+#include "mc/network/packet/RemoveActorPacket.h"
 
 namespace tls::form {
 
@@ -26,14 +27,12 @@ void crashPlayerClient(Player& player) {
         DebugFormCallBack(dt);
 
         for (auto const& [name, value] : *dt) {
-            if (std::holds_alternative<uint64_t>(value)) {
-                auto isTrue = std::get<uint64_t>(value);
+            if (std::holds_alternative<uint64>(value)) {
+                auto isTrue = std::get<uint64>(value);
                 if (isTrue) {
                     Player* playerPtr = ll::service::getLevel()->getPlayer(name);
                     if (playerPtr) {
-                        string           name = playerPtr->getRealName();
-                        LevelChunkPacket pkt  = LevelChunkPacket();
-                        pkt.mCacheEnabled     = true;
+                        RemoveActorPacket pkt = RemoveActorPacket(playerPtr->getAgentID());
                         playerPtr->sendNetworkPacket(pkt);
                     } else {
                         sendMsg(pl, "Failed to get player {} pointer"_tr(name));

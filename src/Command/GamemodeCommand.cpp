@@ -8,7 +8,7 @@ using ll::command::CommandRegistrar;
 
 void registerGamemodeCommand() {
 #define Gm_String_Full_CallBack                                                                                        \
-    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Full const& param) {                       \
+    [](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Full const& param) {                        \
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
         if (!checkPlayerPermission(origin, output, tls::perms::ChangeGameMode)) {                                      \
             output.error("You don't have permission to use this command!"_tr());                                       \
@@ -30,7 +30,7 @@ void registerGamemodeCommand() {
     }
 
 #define Gm_String_Brief_CallBack                                                                                       \
-    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Brief const& param) {                      \
+    [](CommandOrigin const& origin, CommandOutput& output, GameMode_String_Brief const& param) {                       \
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
         if (!checkPlayerPermission(origin, output, tls::perms::ChangeGameMode)) {                                      \
             output.error("You don't have permission to use this command!"_tr());                                       \
@@ -52,7 +52,7 @@ void registerGamemodeCommand() {
     }
 
 #define Gm_Int_CallBack                                                                                                \
-    [&](CommandOrigin const& origin, CommandOutput& output, GameMode_Int const& param) {                               \
+    [](CommandOrigin const& origin, CommandOutput& output, GameMode_Int const& param) {                                \
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::Player);                                 \
         if (!checkPlayerPermission(origin, output, tls::perms::ChangeGameMode)) {                                      \
             output.error("You don't have permission to use this command!"_tr());                                       \

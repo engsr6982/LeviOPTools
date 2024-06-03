@@ -1,3 +1,4 @@
+#pragma once
 #include "Entry/PluginInfo.h"
 #include "mc/world/actor/player/Player.h"
 #include <iostream>

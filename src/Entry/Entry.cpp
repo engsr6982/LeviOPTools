@@ -11,7 +11,6 @@
 #include "Command/Command.h"
 #include "Entry.h"
 #include "File/Config.h"
-#include "Form/Mapping.h"
 #include "Motd/Motd.h"
 #include "Permission/Permission.h"
 #include "PluginInfo.h"
@@ -37,15 +36,6 @@ bool entry::load() {
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
-    logger.info("Support Bedrock Dedicated Server Protocol {}"_tr(PLUGIN_TARGET_BDS_PROTOCOL_VERSION));
-    // check server protocol version
-    if (ll::getServerProtocolVersion() != PLUGIN_TARGET_BDS_PROTOCOL_VERSION) {
-        logger.warn("The bedrock server protocol version does not match, which can lead to unexpected errors. "_tr());
-        logger.warn("Current protocol version {}  Adaptation protocol version {}"_tr(
-            ll::getServerProtocolVersion(),
-            PLUGIN_TARGET_BDS_PROTOCOL_VERSION
-        ));
-    }
     return true;
 }
 
@@ -56,7 +46,6 @@ bool entry::enable() {
     tls::command::registerChunkCommand();
     tls::command::registerGamemodeCommand();
     tls::command::registerTeleportCommand();
-    tls::form::initMapping();
     tls::perms::initPermission();
     tls::motd::initMotd();
 
@@ -65,9 +54,6 @@ bool entry::enable() {
 
 bool entry::disable() {
     getSelf().getLogger().info("Disabling...");
-
-    // TODO: 销毁注册的权限
-    // TODO: 销毁PermissionCore
 
     return true;
 }

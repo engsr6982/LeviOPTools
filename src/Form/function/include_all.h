@@ -29,6 +29,7 @@
 #include "mc/network/packet/BossEventPacket.h"
 #include "mc/network/packet/LevelChunkPacket.h"
 #include "mc/network/packet/ModalFormRequestPacket.h"
+#include "mc/network/packet/RemoveActorPacket.h"
 #include "mc/network/packet/RemoveObjectivePacket.h"
 #include "mc/network/packet/ScorePacketInfo.h"
 #include "mc/network/packet/SetDisplayObjectivePacket.h"
@@ -122,7 +123,7 @@ void getBlockOrItem(Player& player);
 
 #define AutoCheckPermission(player, permission)                                                                        \
     {                                                                                                                  \
-        if (pmc::PermissionManager::getInstance()                                                                     \
+        if (pmc::PermissionManager::getInstance()                                                                      \
                 .getPermissionCore(PLUGIN_NAME)                                                                        \
                 ->checkUserPermission(player.getUuid().asString().c_str(), permission)                                 \
             == false)                                                                                                  \
