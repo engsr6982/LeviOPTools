@@ -6,7 +6,7 @@ add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
 add_requires(
-    "levilamina 0.12.3",
+    "levilamina 0.13.0",
     "PermissionCore"
 )
 
@@ -17,7 +17,7 @@ end
 -- 描述 PermissionCore 包
 package("PermissionCore")
     set_urls("https://github.com/engsr6982/PermissionCore/releases/download/$(version)/SDK-PermissionCore.zip")
-    add_versions("v0.9.0", "451d378aa2b71f57079740e082a2e2ec38cdac5711acc0d475350299213d9f55")
+    add_versions("v0.10.0", "5628f9cde26e509bc97789c60284f03e3069afbf830bcdc5f5e24710be9384ca")
     add_includedirs("include/")
     on_install(function (package)
         os.cp("*", package:installdir())
@@ -35,7 +35,7 @@ target("LeviOPTools") -- Change this to your plugin name.
         "/w44738",
         "/w45204"
     )
-    add_defines("NOMINMAX", "UNICODE")
+    add_defines("NOMINMAX", "UNICODE", "_HAS_CXX23=1")
     add_files("src/**.cpp")
     add_includedirs("src")
 
