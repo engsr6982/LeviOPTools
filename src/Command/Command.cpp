@@ -1,6 +1,8 @@
 #include "Command.h"
 #include "Utils/Utils.h"
+#include "mc/enums/TextPacketType.h"
 #include "mc/network/packet/RemoveActorPacket.h"
+#include "mc/network/packet/TextPacket.h"
 
 namespace tls::command {
 
@@ -112,12 +114,11 @@ void registerCommand() {
             auto item = param.player.results(origin).data;
             for (Player* target : *item) {
                 if (target) {
-                    TextPacket pkt = TextPacket::createChat(
-                        target->getName(),
-                        param.message.empty() ? "" : param.message,
-                        target->getXuid(),
-                        ""
-                    );
+                    TextPacket pkt{};
+                    pkt.mType    = TextPacketType::Chat;
+                    pkt.mAuthor  = target->getName();
+                    pkt.mMessage = param.message.empty() ? "" : param.message;
+                    pkt.mXuid    = target->getXuid();
                     if (ll::service::getLevel().has_value()) {
                         ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
                             player.sendNetworkPacket(pkt); // send to all player
@@ -143,7 +144,10 @@ void registerCommand() {
             Actor* entity = origin.getEntity();
             auto&  player = *static_cast<Player*>(entity);
             // processing
-            TextPacket pkt = TextPacket::createChat("Server", param.message.empty() ? "" : param.message, "", "");
+            TextPacket pkt{};
+            pkt.mType    = TextPacketType::Chat;
+            pkt.mMessage = param.message.empty() ? "" : param.message;
+            pkt.mAuthor  = "Server";
             if (ll::service::getLevel().has_value()) {
                 ll::service::getLevel()->forEachPlayer([&pkt](Player& player) {
                     player.sendNetworkPacket(pkt); // send to all player

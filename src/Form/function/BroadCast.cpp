@@ -1,4 +1,5 @@
 #include "include_all.h"
+#include "mc/enums/TextPacketType.h"
 
 namespace tls::form {
 
@@ -24,7 +25,11 @@ void broadCastMessage(Player& player) {
 
         string Message = std::get<string>(dt->at("Message"));
 
-        TextPacket pkt = TextPacket::createChat("Server", Message, "", "");
+        TextPacket pkt{};
+        pkt.mType    = TextPacketType::Chat;
+        pkt.mAuthor  = "Server";
+        pkt.mMessage = Message;
+
         for (auto const& [name, value] : *dt) {
             if (std::holds_alternative<uint64_t>(value)) {
                 auto isTrue = std::get<uint64_t>(value);

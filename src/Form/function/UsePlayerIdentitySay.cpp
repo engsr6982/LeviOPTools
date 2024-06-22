@@ -1,4 +1,5 @@
 #include "include_all.h"
+#include "mc/enums/TextPacketType.h"
 
 namespace tls::form {
 
@@ -30,8 +31,11 @@ void usePlayerIdentitySay(Player& player) {
                 if (isTrue) {
                     Player* playerPtr = ll::service::getLevel()->getPlayer(name);
                     if (playerPtr) {
-                        TextPacket pkt =
-                            TextPacket::createChat(playerPtr->getRealName(), Message, playerPtr->getXuid(), "");
+                        TextPacket pkt{};
+                        pkt.mType    = TextPacketType::Chat;
+                        pkt.mMessage = Message;
+                        pkt.mXuid    = playerPtr->getXuid();
+                        pkt.mAuthor  = playerPtr->getRealName();
                         playerPtr->sendNetworkPacket(pkt); // send to all player
                     } else {
                         sendMsg(pl, "Failed to get player {} pointer"_tr(name));
