@@ -18,7 +18,7 @@
     "functionCommandLimit": "通过funtion命令执行命令的最大数量",
     "keepInventory": "玩家死亡后是否保留物品和经验",
     "maxCommandChainLength": "最大连锁命令方块涟长度",
-    "mobGriefing": "死亡是否能改变、破坏方块及捡起物品",
+    "mobGriefing": "生物破坏",
     "naturalRegeneration": "玩家是否能在饥饿值足够时自然恢复生命值",
     "playersSleepingPercentage": "玩家睡觉跳过夜晚需要的人数百分比",
     "projectilesCanBreakBlocks": "投射物是否可以破坏方块",
