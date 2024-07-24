@@ -1,7 +1,7 @@
 #include <ll/api/Logger.h>
 #include <ll/api/i18n/I18n.h>
-#include <ll/api/plugin/NativePlugin.h>
-#include <ll/api/plugin/RegisterHelper.h>
+#include <ll/api/mod/NativeMod.h>
+#include <ll/api/mod/RegisterHelper.h>
 #include <ll/api/service/ServerInfo.h>
 #include <ll/api/service/Service.h>
 #include <memory>
@@ -60,4 +60,4 @@ bool entry::disable() {
 
 } // namespace tls
 
-LL_REGISTER_PLUGIN(tls::entry, tls::instance);
+LL_REGISTER_MOD(tls::entry, tls::instance);

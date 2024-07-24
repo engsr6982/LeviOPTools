@@ -6,7 +6,7 @@ add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 -- add_requires("levilamina develop") to use develop version
 -- please note that you should add bdslibrary yourself if using dev version
 add_requires(
-    "levilamina 0.13.0",
+    "levilamina 0.13.4",
     "PermissionCore"
 )
 
@@ -17,7 +17,7 @@ end
 -- 描述 PermissionCore 包
 package("PermissionCore")
     set_urls("https://github.com/engsr6982/PermissionCore/releases/download/$(version)/SDK-PermissionCore.zip")
-    add_versions("v0.10.0", "5628f9cde26e509bc97789c60284f03e3069afbf830bcdc5f5e24710be9384ca")
+    add_versions("v0.10.1", "c626fa4ff421e5e3a2b84986f9135fa6e1961c65746ca7147601993629e379fc")
     add_includedirs("include/")
     on_install(function (package)
         os.cp("*", package:installdir())

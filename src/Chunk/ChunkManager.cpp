@@ -129,7 +129,7 @@ bool ChunkManager::findStructureFile(string fileName) { return findFile(fileName
 
 // core save and load functions
 void ChunkManager::initAllFolders() {
-    auto pluginDir       = tls::entry::getInstance().getSelf().getPluginDir();
+    auto pluginDir       = tls::entry::getInstance().getSelf().getModDir();
     auto globalChunkDir  = pluginDir / "Chunk";
     auto ChunBackupDir   = globalChunkDir / "ChunkBackup";
     auto CustomBackupDir = globalChunkDir / "CustomBackup";
@@ -165,7 +165,7 @@ std::filesystem::path ChunkManager::getFilePath(string fileName, ChunkManager::F
     default:
         std::runtime_error("Invalid folder type");
     }
-    auto globalPath = tls::entry::getInstance().getSelf().getPluginDir() / "Chunk" / (typeStr);
+    auto globalPath = tls::entry::getInstance().getSelf().getModDir() / "Chunk" / (typeStr);
     if (!createDimFolder) {
         return globalPath / (fileName);
     } else {

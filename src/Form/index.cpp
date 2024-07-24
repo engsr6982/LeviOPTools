@@ -75,7 +75,7 @@ void index(Player& player, std::filesystem::path filePath) {
                     tls::api::runCmd(player, button.callbackRun);
                     break;
                 case "form"_h:
-                    index(player, mSelf.getPluginDir() / "form" / button.callbackRun);
+                    index(player, mSelf.getModDir() / "form" / button.callbackRun);
                     break;
                 case "function"_h:
                     if (mapping.find(button.callbackRun) != mapping.end()) {
@@ -111,7 +111,7 @@ void index(Player& player, std::filesystem::path filePath) {
     }
 }
 void index(Player& player) {
-    auto filePath = entry::entry::getInstance().getSelf().getPluginDir() / "form" / "index.json";
+    auto filePath = entry::entry::getInstance().getSelf().getModDir() / "form" / "index.json";
     return index(player, filePath);
 }
 
