@@ -1,29 +1,32 @@
 #include "File/Config.h"
+#include "Utils/Mc.h"
 #include "include_all.h"
 #include "ll/api/form/CustomForm.h"
+#include <cstddef>
 #include <vector>
 
 namespace tls::form {
 
-static std::vector<string> logs;
+static std::vector<string> mLogs;
 
-void formatOutput(tls::api::RunCmdExOutput& output) {
-    output.input = "> " + output.input;
-    if (output.success) output.output = "§a§l●§r " + output.output + "§r";
-    else output.output = "§4§l●§r §c" + output.output + "§r";
+/**
+ * @brief 格式化并追加到日志中
+ * @param result 命令执行结果
+ * @param cmd 命令
+ */
+void FormatAndAppendToLogs(std::pair<bool, std::string> const& result, std::string const& cmd) {
+    if (mLogs.size() >= (size_t)config::cfg.function.terminalCacheSize) mLogs.erase(mLogs.begin());
+
+    // format
+    string formatedInput = "> " + cmd;
+
+    string formatedOutput;
+    if (result.first) formatedOutput = "§a§l●§r " + result.second + "§r";
+    else formatedOutput = "§4§l●§r §c" + result.second + "§r";
+
+    mLogs.push_back(formatedInput + "\n" + formatedOutput);
 }
 
-void addLog(tls::api::RunCmdExOutput& output) {
-    // 插入日志到末尾
-    // 检查是否超过最大长度，超过去除最早的日志，直到符合长度要求
-    if (logs.size() >= tls::config::cfg.function.terminalCacheSize) logs.erase(logs.begin());
-
-    // 格式化输出
-    formatOutput(output);
-
-    string log = output.input + "\n" + output.output;
-    logs.push_back(log);
-}
 
 void terminal(Player& player) {
     AutoCheckPermission(player, perms::Terminal);
@@ -31,7 +34,7 @@ void terminal(Player& player) {
     CustomForm fm;
     fm.setTitle("LeviOPTools - Terminal");
 
-    fm.appendLabel(Utils::join(logs, "\n"));
+    fm.appendLabel(Utils::join(mLogs, "\n"));
 
     fm.appendInput("input", "Terminal >"_tr(), "string");
 
@@ -44,8 +47,8 @@ void terminal(Player& player) {
         if (input.empty() || input == "") return Utils::sendMsg(pl, "Empty input"_tr());
 
         // execute command
-        auto output = tls::api::runCmdEx(input);
-        addLog(output);
+        auto output = mc::executeCommandEx(input);
+        FormatAndAppendToLogs(output, input);
         terminal(pl);
     });
 }

@@ -1,11 +1,11 @@
 #include "Form/index.h"
-#include "Api/Api.h"
 #include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
 #include "File/file.h"
 #include "Form/Mapping.h"
 #include "Utils/Utils.h"
 
+#include "Utils/Mc.h"
 #include <functional>
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
@@ -72,7 +72,7 @@ void index(Player& player, std::filesystem::path filePath) {
                 using namespace ll::hash_literals;
                 switch (doHash(button.callbackType)) {
                 case "cmd"_h:
-                    tls::api::runCmd(player, button.callbackRun);
+                    mc::executeCommand(player, button.callbackRun);
                     break;
                 case "form"_h:
                     index(player, mSelf.getModDir() / "form" / button.callbackRun);

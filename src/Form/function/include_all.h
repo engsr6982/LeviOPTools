@@ -1,4 +1,3 @@
-#include "Api/Api.h"
 #include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
 #include "Permission/Permission.h"
@@ -21,7 +20,6 @@
 #include "mc/enums/ScorePacketType.h"
 #include "mc/enums/TextPacketType.h"
 #include "mc/enums/d_b_helpers/Category.h"
-#include "mc/nbt/ListTag.h"
 #include "mc/network/ConnectionRequest.h"
 #include "mc/network/MinecraftPackets.h"
 #include "mc/network/NetworkIdentifier.h"

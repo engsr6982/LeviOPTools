@@ -1,4 +1,6 @@
+#include "Utils/Mc.h"
 #include "include_all.h"
+
 
 namespace tls::form {
 
@@ -30,7 +32,7 @@ void usePlayerIdentityExecute(Player& player) {
                 if (isTrue) {
                     Player* playerPtr = ll::service::getLevel()->getPlayer(name);
                     if (playerPtr) {
-                        tls::api::runCmd(*playerPtr, Command);
+                        mc::executeCommand(*playerPtr, Command);
                     } else {
                         Utils::sendMsg(pl, "Failed to get player {} pointer"_tr(name));
                     }
