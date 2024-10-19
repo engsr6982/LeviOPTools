@@ -47,11 +47,11 @@ void changeWeather(Player& player) {
     );
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "Cancelled");
+        if (!dt) return Utils::sendMsg(pl, "Cancelled");
         DebugFormCallBack(dt);
 
         auto level = ll::service::getLevel();
-        if (!level) return sendMsg(pl, "Failed to get level");
+        if (!level) return Utils::sendMsg(pl, "Failed to get level");
 
         string selectedWeather = std::get<string>(dt->at("weather")); // weather: 0: None, 1: Clear, 2: Rain, 3: Thunder
         int    advanced        = std::get<uint64_t>(dt->at("advanced")); // advanced: false
@@ -64,11 +64,11 @@ void changeWeather(Player& player) {
         int   lightningTime  = random;
 
         if (advanced) {
-            rainLevel      = string2Float(std::get<string>(dt->at("rainLevel")));
-            lightningLevel = string2Float(std::get<string>(dt->at("lightningLevel")));
+            rainLevel      = Utils::string2Float(std::get<string>(dt->at("rainLevel")));
+            lightningLevel = Utils::string2Float(std::get<string>(dt->at("lightningLevel")));
 
-            int rTime = string2Int(std::get<string>(dt->at("rainTime")));
-            int lTime = string2Int(std::get<string>(dt->at("lightningTime")));
+            int rTime = Utils::string2Int(std::get<string>(dt->at("rainTime")));
+            int lTime = Utils::string2Int(std::get<string>(dt->at("lightningTime")));
 
             rainTime      = rTime == -1 ? random : rTime; // check is random
             lightningTime = lTime == -1 ? random : lTime;
@@ -88,7 +88,7 @@ void changeWeather(Player& player) {
         }
 
         level->updateWeather(rainLevel, rainTime, lightningLevel, lightningTime);
-        sendMsg(pl, "Operation completed");
+        Utils::sendMsg(pl, "Operation completed");
     });
 }
 

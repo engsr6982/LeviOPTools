@@ -20,7 +20,7 @@ void broadCastMessage(Player& player) {
     fm.appendInput("Message", "Message"_tr(), "string");
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "form cancelled"_tr());
         DebugFormCallBack(dt);
 
         string Message = std::get<string>(dt->at("Message"));
@@ -38,12 +38,12 @@ void broadCastMessage(Player& player) {
                     if (playerPtr) {
                         playerPtr->sendNetworkPacket(pkt); // send to all player
                     } else {
-                        sendMsg(pl, "Failed to get player {} pointer"_tr(name));
+                        Utils::sendMsg(pl, "Failed to get player {} pointer"_tr(name));
                     }
                 }
             }
         }
-        sendMsg(pl, "Operation completed"_tr());
+        Utils::sendMsg(pl, "Operation completed"_tr());
     });
 }
 

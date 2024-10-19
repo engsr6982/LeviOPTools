@@ -37,7 +37,7 @@ void EditMotd(Player& player, int index) {
     fm.appendInput("value", "Input new motd content"_tr(), "string", motd::motd_list[index]);
 
     fm.sendTo(player, [index](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "Canceled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "Canceled"_tr());
 
         string value = std::get<string>(dt->at("value"));
 

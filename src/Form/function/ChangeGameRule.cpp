@@ -67,7 +67,7 @@ void changeGameRule(Player& player) {
 
         // Get the level
         auto level = ll::service::getLevel();
-        if (level.has_value() == false) return sendMsg(player, "Failed to get level Ptr"_tr());
+        if (level.has_value() == false) return Utils::sendMsg(player, "Failed to get level Ptr"_tr());
 
         // Get the game rules
         GameRules&                     rules = level->getGameRules();
@@ -103,7 +103,7 @@ void changeGameRule(Player& player) {
         }
 
         fm.sendTo(player, [](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-            if (!dt) return sendMsg(pl, "form cancelled");
+            if (!dt) return Utils::sendMsg(pl, "form cancelled");
             auto& logger = tls::entry::getInstance().getSelf().getLogger();
             try {
                 DebugFormCallBack(dt);
@@ -138,12 +138,12 @@ void changeGameRule(Player& player) {
                             // int or float
                             string str = std::get<string>(value);
                             if (isFloat(str)) {
-                                float fl = string2Float(str);
+                                float fl =  Utils::string2Float(str);
                                 ll::service::getLevel()
                                     ->getGameRules()
                                     .setRule(id, fl, false, pValueValidated, pValueChanged, errorOutput);
                             } else {
-                                int in = string2Int(str);
+                                int in =  Utils::string2Int(str);
                                 ll::service::getLevel()
                                     ->getGameRules()
                                     .setRule(id, in, false, pValueValidated, pValueChanged, errorOutput);
@@ -180,7 +180,7 @@ void changeGameRule(Player& player) {
                             } else if (std::holds_alternative<string>(dt->at(rule.mName))) {
                                 // int
                                 string str = std::get<string>(dt->at(rule.mName));
-                                int    in  = string2Int(str);
+                                int    in  = Utils::string2Int(str);
                                 // clang-format off
                                 #ifdef DEBUG
                                 logger.warn("[Debug] rule: {}, string value: {}"_tr(getTr(rule.getName()), str));
@@ -215,7 +215,7 @@ void changeGameRule(Player& player) {
                             if (errorOutput->mErrorParameters.empty() == false)
                                 logger.warn("[McAPI] Game rules: '{}', error parameters: '{}'"_tr(
                                     getTr(rule.getName()),
-                                    join(errorOutput->mErrorParameters)
+                                    Utils::join(errorOutput->mErrorParameters)
                                 ));
 
                             // destroy pointers
@@ -232,7 +232,7 @@ void changeGameRule(Player& player) {
                     packet->sendTo(p);
                     return true;
                 });
-                sendMsg(pl, "Operation completed!"_tr());
+                Utils::sendMsg(pl, "Operation completed!"_tr());
             } catch (...) {
                 logger.error("Error executing form callback"_tr());
             }

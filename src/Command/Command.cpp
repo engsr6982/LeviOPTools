@@ -50,7 +50,7 @@ void registerCommand() {
             for (Player* target : *item) {
                 if (target) {
                     target->kill();
-                    tls::utils::sendMsg(player, "try kill player: {}"_tr(target->getRealName()));
+                    tls::Utils::sendMsg(player, "try kill player: {}"_tr(target->getRealName()));
                 }
             }
         }
@@ -71,7 +71,7 @@ void registerCommand() {
             for (Player* target : *item) {
                 if (target) {
                     target->disconnect(param.message.empty() ? "server disconnect" : param.message);
-                    tls::utils::sendMsg(player, "try kick player: {}"_tr(target->getRealName()));
+                    tls::Utils::sendMsg(player, "try kick player: {}"_tr(target->getRealName()));
                 }
             }
         }
@@ -94,7 +94,7 @@ void registerCommand() {
                     string            name = target->getRealName();
                     RemoveActorPacket pkt  = RemoveActorPacket(target->getAgentID());
                     target->sendNetworkPacket(pkt);
-                    tls::utils::sendMsg(player, "try crash player: {}"_tr(name));
+                    tls::Utils::sendMsg(player, "try crash player: {}"_tr(name));
                 }
             }
         }
@@ -125,7 +125,7 @@ void registerCommand() {
                             return true;
                         });
                     }
-                    tls::utils::sendMsg(player, "try talkas player: {}"_tr(target->getRealName()));
+                    tls::Utils::sendMsg(player, "try talkas player: {}"_tr(target->getRealName()));
                 }
             }
         }
@@ -154,7 +154,7 @@ void registerCommand() {
                     return true;
                 });
             }
-            tls::utils::sendMsg(player, "try broadcast message: {}"_tr(param.message));
+            tls::Utils::sendMsg(player, "try broadcast message: {}"_tr(param.message));
         });
 
     // tools setmaxplayers <int>

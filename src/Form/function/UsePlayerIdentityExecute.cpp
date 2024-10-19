@@ -19,7 +19,7 @@ void usePlayerIdentityExecute(Player& player) {
     fm.appendInput("Command", "Command"_tr(), "string");
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "form cancelled"_tr());
         DebugFormCallBack(dt);
 
         string Command = std::get<string>(dt->at("Command"));
@@ -32,12 +32,12 @@ void usePlayerIdentityExecute(Player& player) {
                     if (playerPtr) {
                         tls::api::runCmd(*playerPtr, Command);
                     } else {
-                        sendMsg(pl, "Failed to get player {} pointer"_tr(name));
+                        Utils::sendMsg(pl, "Failed to get player {} pointer"_tr(name));
                     }
                 }
             }
         }
-        sendMsg(pl, "Operation completed"_tr());
+        Utils::sendMsg(pl, "Operation completed"_tr());
     });
 }
 

@@ -4,39 +4,54 @@
 #include <iostream>
 #include <numeric>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 
-namespace tls::utils {
-
 using string = std::string;
 
-inline int    string2Int(const string& str) { return std::stoi(str); }
-inline float  string2Float(const string& str) { return std::stof(str); }
-inline double string2Double(const string& str) { return std::stod(str); }
+namespace tls {
 
-inline void sendMsg(Player& player, const std::string& msg) {
-    player.sendMessage("§6[§a" + string(PLUGIN_NAME) + "§6]§b " + msg);
-}
+class Utils {
+public:
+    Utils()                        = delete;
+    Utils(Utils const&)            = delete;
+    Utils& operator=(Utils const&) = delete;
+    Utils(Utils&&)                 = delete;
+    Utils& operator=(Utils&&)      = delete;
 
-inline string join(std::vector<string> vec, const string splitter = ",") {
-    if (vec.empty()) return "";
-    return std::accumulate(
-        std::next(vec.begin()),
-        vec.end(),
-        vec[0],
-        [splitter](const string& a, const string& b) -> string { return a + splitter + b; }
-    );
-}
 
-inline string join(std::vector<int> vec, const string splitter = ",") {
-    if (vec.empty()) return "";
-    return std::accumulate(
-        std::next(vec.begin()),
-        vec.end(),
-        std::to_string(vec[0]),
-        [splitter](const string& a, const int& b) -> string { return a + splitter + std::to_string(b); }
-    );
-}
+    template <typename T>
+    static string join(std::vector<T> const& vec, string const& splitter = ", ") {
+        if (vec.empty()) return "";
 
-} // namespace tls::utils
+        if constexpr (std::is_same<T, string>::value) {
+            // string
+            return std::accumulate(
+                std::next(vec.begin()),
+                vec.end(),
+                vec[0],
+                [splitter](string const& a, T const& b) -> string { return a + splitter + b; }
+            );
+
+        } else {
+            // other
+            return std::accumulate(
+                std::next(vec.begin()),
+                vec.end(),
+                std::to_string(vec[0]),
+                [splitter](string const& a, T const& b) -> string { return a + splitter + std::to_string(b); }
+            );
+        }
+    }
+
+    static int   string2Int(string const& str) { return std::stoi(str); }
+    static float string2Float(string const& str) { return std::stof(str); }
+
+    static void sendMsg(Player& player, std::string const& msg) {
+        player.sendMessage("§6[§a" + string(PLUGIN_NAME) + "§6]§b " + msg);
+    }
+};
+
+
+} // namespace tls

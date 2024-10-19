@@ -22,6 +22,7 @@
 // ll
 #include "ll/api/service/Bedrock.h"
 #include <ll/api/Logger.h>
+#include <ll/api/Utils/HashUtils.h>
 #include <ll/api/command/Command.h>
 #include <ll/api/command/CommandHandle.h>
 #include <ll/api/command/CommandRegistrar.h>
@@ -30,7 +31,7 @@
 #include <ll/api/service/Bedrock.h>
 #include <ll/api/service/PlayerInfo.h>
 #include <ll/api/service/Service.h>
-#include <ll/api/utils/HashUtils.h>
+
 
 // mc
 #include "mc/common/wrapper/optional_ref.h"

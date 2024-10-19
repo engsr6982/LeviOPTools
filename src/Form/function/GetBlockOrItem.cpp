@@ -140,7 +140,7 @@ void inputCount(Player& player, string itemType) {
         fm.appendDropdown("target", "Selection of targets to be given"_tr(), options, currentPlayer);
 
         fm.sendTo(player, [itemType](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-            if (!dt) return sendMsg(pl, "Canceled"_tr());
+            if (!dt) return Utils::sendMsg(pl, "Canceled"_tr());
             DebugFormCallBack(dt);
 
             // clang-format off
@@ -149,7 +149,7 @@ void inputCount(Player& player, string itemType) {
             #endif
             // clang-format on
 
-            // int count = string2Int(std::get<string>(dt->at("count")));
+            // int count =  Utils::string2Int(std::get<string>(dt->at("count")));
             int count = std::get<double>(dt->at("count"));
 
             string targetStr = std::get<string>(dt->at("target"));
@@ -159,10 +159,10 @@ void inputCount(Player& player, string itemType) {
             if (targetStr == pl.getRealName()) target = &pl;
             else target = ll::service::getLevel()->getPlayer(targetStr);
 
-            if (!target) return sendMsg(pl, "Invalid target"_tr());
+            if (!target) return Utils::sendMsg(pl, "Invalid target"_tr());
 
             if (itemType == "light_block" || itemType == "minecraft:light_block") {
-                int level = string2Int(std::get<string>(dt->at("level")));
+                int level = Utils::string2Int(std::get<string>(dt->at("level")));
                 give(*target, itemType, count, level);
                 return;
             }
@@ -184,7 +184,7 @@ void getBlockOrItem(Player& player) {
     fm.setContent("Click button to get block or item"_tr());
 
     auto items = loadJson();
-    if (items.empty()) return sendMsg(player, "No item or block found"_tr());
+    if (items.empty()) return Utils::sendMsg(player, "No item or block found"_tr());
     for (auto& it : items) {
         try {
             // clang-format off

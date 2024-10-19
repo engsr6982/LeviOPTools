@@ -114,7 +114,7 @@ string TransFormArgToString(Rotation angle) {
         if (origin.getOriginType() == CommandOriginType::Player) {                                                     \
             auto* player = static_cast<Player*>(origin.getEntity());                                                   \
             if (!player) return output.error("[Chunk] Failed to get player entity!"_tr());                             \
-            auto core = pmc::PermissionManager::getInstance().getPermissionCore(PLUGIN_NAME);                         \
+            auto core = pmc::PermissionManager::getInstance().getPermissionCore(PLUGIN_NAME);                          \
             if (core) {                                                                                                \
                 if (core->checkUserPermission(player->getUuid().asString().c_str(), perms::ChunkOpertion) == false)    \
                     return output.error("[Chunk] You don't have permission to use this command!"_tr());                \
@@ -633,7 +633,7 @@ void registerChunkCommand() {
             auto& bdInstance = chunk::BindData::getInstance();
             if (param.id == -1) {
                 auto   allId = bdInstance.getAllBindDataOperatorId();
-                string str   = tls::utils::join(allId, ", ");
+                string str   = tls::Utils::join(allId, ", ");
                 output.success("[Chunk] All operation ids: {}"_tr(str));
             } else {
                 if (bdInstance.hasBindData(param.id)) {

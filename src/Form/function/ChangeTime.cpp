@@ -47,16 +47,16 @@ void changeTime(Player& player) {
     );
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(player, "Canceled"_tr());
+        if (!dt) return Utils::sendMsg(player, "Canceled"_tr());
         DebugFormCallBack(dt);
 
         int time     = 0;
         int advanced = std::get<uint64_t>(dt->at("advanced"));
-        int custom   = string2Int(std::get<string>(dt->at("custom")));
+        int custom   = Utils::string2Int(std::get<string>(dt->at("custom")));
 
         if (advanced == 0) time = toTime(std::get<string>(dt->at("time")));  // quick change
         else if (custom < 2147483648 && custom > -2147483648) time = custom; // advanced change
-        else return sendMsg(pl, "Invalid input"_tr());                       // invalid input
+        else return Utils::sendMsg(pl, "Invalid input"_tr());                // invalid input
 
         SetTimePacket pkg; // build packet to update clients
         pkg.mTime = time;
@@ -65,7 +65,7 @@ void changeTime(Player& player) {
             pkg.sendTo(p); // broadcast packet to all players
             return true;
         });
-        sendMsg(pl, "Operation completed"_tr());
+        Utils::sendMsg(pl, "Operation completed"_tr());
     });
 }
 

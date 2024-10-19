@@ -31,17 +31,17 @@ void terminal(Player& player) {
     CustomForm fm;
     fm.setTitle("LeviOPTools - Terminal");
 
-    fm.appendLabel(join(logs, "\n"));
+    fm.appendLabel(Utils::join(logs, "\n"));
 
     fm.appendInput("input", "Terminal >"_tr(), "string");
 
     fm.sendTo(player, [](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "Canceled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "Canceled"_tr());
         DebugFormCallBack(dt);
 
         string input = std::get<string>(dt->at("input"));
 
-        if (input.empty() || input == "") return sendMsg(pl, "Empty input"_tr());
+        if (input.empty() || input == "") return Utils::sendMsg(pl, "Empty input"_tr());
 
         // execute command
         auto output = tls::api::runCmdEx(input);

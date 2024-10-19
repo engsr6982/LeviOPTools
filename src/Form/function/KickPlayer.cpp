@@ -23,7 +23,7 @@ void kickPlayer(Player& player) {
     fm.appendInput("reason", "Kick Reason"_tr(), "string");
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "form cancelled"_tr());
         DebugFormCallBack(dt);
         string reason = std::get<string>(dt->at("reason"));
         for (auto const& [name, value] : *dt) {
@@ -35,12 +35,12 @@ void kickPlayer(Player& player) {
                         reason += " "; // 修复传入empty字符串导致玩家断开连接但依然停留在假的世界中
                         playerPtr->disconnect(reason);
                     } else {
-                        sendMsg(pl, "Failed to get player {} pointer"_tr(name));
+                        Utils::sendMsg(pl, "Failed to get player {} pointer"_tr(name));
                     }
                 }
             }
         }
-        sendMsg(pl, "Operation completed"_tr());
+        Utils::sendMsg(pl, "Operation completed"_tr());
     });
 }
 

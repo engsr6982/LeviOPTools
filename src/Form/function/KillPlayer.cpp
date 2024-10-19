@@ -19,7 +19,7 @@ void killPlayer(Player& player) {
     }
 
     fm.sendTo(player, [&](Player& pl, CustomFormResult const& dt, FormCancelReason) {
-        if (!dt) return sendMsg(pl, "form cancelled"_tr());
+        if (!dt) return Utils::sendMsg(pl, "form cancelled"_tr());
         DebugFormCallBack(dt);
 
         for (auto const& [name, value] : *dt) {
@@ -30,12 +30,12 @@ void killPlayer(Player& player) {
                     if (playerPtr) {
                         playerPtr->kill();
                     } else {
-                        sendMsg(pl, "Failed to get player {} pointer"_tr(name));
+                        Utils::sendMsg(pl, "Failed to get player {} pointer"_tr(name));
                     }
                 }
             }
         }
-        sendMsg(pl, "Operation completed"_tr());
+        Utils::sendMsg(pl, "Operation completed"_tr());
     });
 }
 
