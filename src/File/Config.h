@@ -22,7 +22,7 @@ struct S_Config {
         string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
         int    terminalCacheSize        = 20;
         bool   enableMotd               = true;
-        int    motdShowTime             = 30;
+        int    motdShowTime             = 30; // motd 切换时间 单位秒
     } function;
 };
 
