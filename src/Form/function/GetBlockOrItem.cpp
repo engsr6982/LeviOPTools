@@ -75,27 +75,14 @@ void give(Player& player, string itemType, int count = 1, int lightLevel = 0) {
         // clang-format on
 
         // check start with minecraft:
-        if (itemType.find("minecraft:") == std::string::npos) itemType = "minecraft:" + itemType;
+        if (!itemType.starts_with("minecraft:")) itemType = "minecraft:" + itemType;
 
-        ItemStack* it = new ItemStack{itemType, count};
+        ItemStack* it = new ItemStack{itemType, count, lightLevel};
 
-        // clang-format off
-        #ifdef DEBUG
-        auto nbt = it->save();
-        auto&  list = nbt->mTags;
-        for (auto& [k, v] : list) {
-            std::cout << "Key: " << k << std::endl;
-        }
-        #endif
-        // clang-format on
-
-        if (itemType == "light_block" || itemType == "minecraft:light_block") {
-            tls::entry::getInstance().getSelf().getLogger().warn("Light block not supported yet");
+        if (!player.add(*it)) {
+            player.drop(*it, false);
         }
 
-        bool result = player.add(*it);
-        if (!result) player.drop(*it, false);
-        player.sendInventory(true);
         player.refreshInventory();
     } catch (...) {
         tls::entry::getInstance().getSelf().getLogger().error("Failed in give");
