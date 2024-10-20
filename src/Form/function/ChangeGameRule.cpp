@@ -1,4 +1,4 @@
-#include "File/Config.h"
+#include "Config/Config.h"
 #include "include_all.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/network/packet/GameRulesChangedPacket.h"

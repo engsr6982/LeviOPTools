@@ -9,11 +9,12 @@
 // my files
 #include "Chunk/ChunkManager.h"
 #include "Command/Command.h"
+#include "Config/Config.h"
 #include "Entry.h"
-#include "File/Config.h"
 #include "Motd/Motd.h"
 #include "Permission/Permission.h"
 #include "PluginInfo.h"
+
 
 
 namespace tls {

@@ -1,6 +1,6 @@
 #pragma once
 // my
-#include "File/Config.h"
+#include "Config/Config.h"
 #include "Form/index.h"
 #include <Entry/PluginInfo.h>
 

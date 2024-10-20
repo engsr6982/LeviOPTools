@@ -1,4 +1,4 @@
-#include "File/Config.h"
+#include "Config/Config.h"
 #include "Motd/Motd.h"
 #include "include_all.h"
 #include "ll/api/form/CustomForm.h"
