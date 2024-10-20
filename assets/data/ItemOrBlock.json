@@ -3,78 +3,91 @@
         "name": "§l命令方块",
         "imageType": "path",
         "imageUrl": "textures/ui/creator_glyph_color",
-        "type": "command_block"
+        "type": "command_block",
+        "aux": 0
     },
     {
         "name": "§l屏障方块",
         "imageType": "path",
         "imageUrl": "textures/blocks/barrier",
-        "type": "barrier"
+        "type": "barrier",
+        "aux": 0
     },
     {
         "name": "§l边界方块",
         "imageType": "path",
         "imageUrl": "textures/blocks/border",
-        "type": "border_block"
+        "type": "border_block",
+        "aux": 0
     },
     {
         "name": "§l结构方块",
         "imageType": "path",
         "imageUrl": "textures/blocks/structure_block",
-        "type": "structure_block"
+        "type": "structure_block",
+        "aux": 0
     },
     {
         "name": "§l结构空位",
         "imageType": "path",
         "imageUrl": "textures/blocks/structure_void",
-        "type": "structure_void"
+        "type": "structure_void",
+        "aux": 0
     },
     {
         "name": "§l光源方块",
         "imageType": "path",
         "imageUrl": "textures/items/light_block_15",
-        "type": "light_block"
+        "type": "light_block",
+        "aux": 0
     },
     {
         "name": "§l隐形基岩",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:invisible_bedrock"
+        "type": "minecraft:invisible_bedrock",
+        "aux": 0
     },
     {
         "name": "§l下界反应核",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:netherreactor"
+        "type": "minecraft:netherreactor",
+        "aux": 0
     },
     {
         "name": "§l发光的黑曜石",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:glowingobsidian"
+        "type": "minecraft:glowingobsidian",
+        "aux": 0
     },
     {
         "name": "§l摄像机",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:camera"
+        "type": "minecraft:camera",
+        "aux": 0
     },
     {
         "name": "§l拼图方块",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:jigsaw"
+        "type": "minecraft:jigsaw",
+        "aux": 0
     },
     {
         "name": "§c客户端请求占位符方块",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:client_request_placeholder_block"
+        "type": "minecraft:client_request_placeholder_block",
+        "aux": 0
     },
     {
         "name": "§l切石机",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:stonecutter"
+        "type": "minecraft:stonecutter",
+        "aux": 0
     }
 ]
