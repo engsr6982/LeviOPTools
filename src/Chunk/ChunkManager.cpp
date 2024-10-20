@@ -1,4 +1,5 @@
 #include "ChunkManager.h"
+#include "Chunk/BindData.h"
 #include "Entry/Entry.h"
 #include "ll/api/i18n/i18n.h"
 #include "ll/api/service/Bedrock.h"
@@ -27,15 +28,15 @@ ChunkManager& ChunkManager::getInstance() {
 
 // save and load chunk
 bool ChunkManager::saveChunk(LevelChunk* chunk) {
-    if (chunk->isFullyLoaded() == false) return false;
+    if (!chunk->isFullyLoaded()) return false;
     auto tag      = ChunkManager::convertLevelChunkToStructure(chunk, false, true)->save();
     auto fileName = chunk->getPosition().toString() + ".chunk";
     return saveFile(fileName, std::move(tag), FloderType::ChunkBackup, chunk->getDimension().getDimensionId().id);
 }
 
 bool ChunkManager::loadChunk(LevelChunk* chunk) {
-    if (chunk->isFullyLoaded() == false) return false;
-    auto chunkPos = chunk->getPosition();
+    if (!chunk->isFullyLoaded()) return false;
+    ChunkPos const& chunkPos = chunk->getPosition();
     if (findChunkFile(chunkPos, chunk->getDimension().getDimensionId().id)) {
         auto tag = loadFile(
             chunkPos.toString() + ".chunk",
@@ -67,21 +68,21 @@ bool ChunkManager::findChunkFile(const ChunkPos& pos, int dimensionId) {
 
 
 // save and load custom chunk data
-bool ChunkManager::saveCustomData(string fileName, BoundingBox box, int dimensionId) {
-    fileName                         += ".custom";
-    auto structure                    = getStructureAt(box, dimensionId, false, true);
-    auto tag                          = structure->save();
-    tag->at("levioptools_min_x")      = box.min.x;
-    tag->at("levioptools_min_y")      = box.min.y;
-    tag->at("levioptools_min_z")      = box.min.z;
-    tag->at("levioptools_dimension")  = dimensionId;
-    return saveFile(fileName, std::move(tag), FloderType::CustomBackup, dimensionId);
+bool ChunkManager::saveCustomData(string const& fileName, BoundingBox const& box, int dimensionId) {
+    string fixedFileName             = fileName + ".custom";
+    auto   structure                 = getStructureAt(box, dimensionId, false, true);
+    auto   tag                       = structure->save();
+    tag->at("levioptools_min_x")     = box.min.x;
+    tag->at("levioptools_min_y")     = box.min.y;
+    tag->at("levioptools_min_z")     = box.min.z;
+    tag->at("levioptools_dimension") = dimensionId;
+    return saveFile(fixedFileName, std::move(tag), FloderType::CustomBackup, dimensionId);
 }
 
-bool ChunkManager::loadCustomData(string fileName) {
-    fileName += ".custom";
-    if (findCustomDataFile(fileName)) {
-        auto tag = loadFile(fileName, FloderType::CustomBackup);
+bool ChunkManager::loadCustomData(string const& fileName) {
+    string fixedFileName = fileName + ".custom";
+    if (findCustomDataFile(fixedFileName)) {
+        auto tag = loadFile(fixedFileName, FloderType::CustomBackup);
         if (tag) {
             auto& minX        = tag->at("levioptools_min_x").get<IntTag>().data;
             auto& minY        = tag->at("levioptools_min_y").get<IntTag>().data;
@@ -103,20 +104,18 @@ bool ChunkManager::loadCustomData(string fileName) {
     return false;
 }
 
-bool ChunkManager::findCustomDataFile(string fileName) { return findFile(fileName, FloderType ::CustomBackup); }
+bool ChunkManager::findCustomDataFile(string const& fileName) { return findFile(fileName, FloderType ::CustomBackup); }
 
 
 // structure
-bool ChunkManager::saveStructure(string fileName, std::unique_ptr<StructureTemplate> structure) {
-    fileName += ".mcstructure";
-    auto tag  = structure->save();
-    return saveFile(fileName, std::move(tag), FloderType::Structure, -1);
+bool ChunkManager::saveStructure(string const& fileName, std::unique_ptr<StructureTemplate> structure) {
+    return saveFile(fileName + ".mcstructure", structure->save(), FloderType::Structure, -1);
 }
 
-std::unique_ptr<StructureTemplate> ChunkManager::loadStructure(string fileName) {
-    fileName += ".mcstructure";
-    if (findStructureFile(fileName)) {
-        auto tag = loadFile(fileName, FloderType::Structure);
+std::unique_ptr<StructureTemplate> ChunkManager::loadStructure(string const& fileName) {
+    string fixedFileName = fileName + ".mcstructure";
+    if (findStructureFile(fixedFileName)) {
+        auto tag = loadFile(fixedFileName, FloderType::Structure);
         if (tag) {
             return ChunkManager::convertTagToStructure(*tag);
         }
@@ -124,7 +123,7 @@ std::unique_ptr<StructureTemplate> ChunkManager::loadStructure(string fileName) 
     return nullptr;
 }
 
-bool ChunkManager::findStructureFile(string fileName) { return findFile(fileName, FloderType::Structure); }
+bool ChunkManager::findStructureFile(string const& fileName) { return findFile(fileName, FloderType::Structure); }
 
 
 // core save and load functions
@@ -178,10 +177,10 @@ std::filesystem::path ChunkManager::getFilePath(string fileName, ChunkManager::F
 }
 
 bool ChunkManager::saveFile(
-    string                             fileName,
-    std::unique_ptr<class CompoundTag> tag,
-    ChunkManager::FloderType           type,
-    int                                dimensionId
+    string                       fileName,
+    std::unique_ptr<CompoundTag> tag,
+    ChunkManager::FloderType     type,
+    int                          dimensionId
 ) {
     try {
         if (tag == nullptr) {
@@ -199,8 +198,7 @@ bool ChunkManager::saveFile(
     }
 }
 
-std::unique_ptr<class CompoundTag>
-ChunkManager::loadFile(string fileName, ChunkManager::FloderType type, int dimensionId) {
+std::unique_ptr<CompoundTag> ChunkManager::loadFile(string fileName, ChunkManager::FloderType type, int dimensionId) {
     try {
         if (findFile(fileName, type, dimensionId)) {
             auto          filePath = getFilePath(fileName, type, dimensionId);
@@ -235,25 +233,18 @@ bool ChunkManager::findFile(string fileName, ChunkManager::FloderType type, int 
 }
 
 
-// chunk tools functions
+// static
 LevelChunk* ChunkManager::getChunkAt(const Vec3& pos, const Dimension& dimension) {
-    BlockSource& blockSource = dimension.getBlockSourceFromMainChunkSource();
-    BlockPos     blockPos{pos.x, pos.y, pos.z};
-    LevelChunk*  levelChunk = blockSource.getChunkAt(blockPos);
-    return levelChunk;
+    return dimension.getBlockSourceFromMainChunkSource().getChunkAt(pos);
 }
-
 const Block& ChunkManager::getBlockAt(LevelChunk* chunk, const Vec3& pos) {
-    ChunkBlockPos cbp = ChunkBlockPos(pos, chunk->getDimension().getMinHeight());
-    Block const&  bl  = chunk->getBlock(cbp);
-    return bl;
+    return chunk->getBlock(ChunkBlockPos(pos, chunk->getDimension().getMinHeight()));
 }
 
-std::unique_ptr<StructureTemplate> ChunkManager::convertTagToStructure(const class CompoundTag& tag) {
+std::unique_ptr<StructureTemplate> ChunkManager::convertTagToStructure(const CompoundTag& tag) {
     return StructureTemplate::create("", tag);
 }
-
-std::unique_ptr<class CompoundTag> ChunkManager::convertStructureToTag(const StructureTemplate& structure) {
+std::unique_ptr<CompoundTag> ChunkManager::convertStructureToTag(const StructureTemplate& structure) {
     return structure.save();
 }
 
@@ -268,12 +259,12 @@ ChunkManager::convertLevelChunkToStructure(LevelChunk* chunk, bool ignoreBlocks,
     );
 }
 
-std::unique_ptr<class CompoundTag> ChunkManager::convertBinaryNbtToTag(const string& binaryNbt) {
+std::unique_ptr<CompoundTag> ChunkManager::convertBinaryNbtToTag(const string& binaryNbt) {
     return CompoundTag::fromBinaryNbt(binaryNbt)->clone();
 }
 
 std::unique_ptr<StructureTemplate>
-ChunkManager::getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks, bool ignoreEntities) {
+ChunkManager::getStructureAt(BoundingBox const& box, int dimensionId, bool ignoreBlocks, bool ignoreEntities) {
     try {
         return StructureTemplate::create(
             "",
@@ -295,29 +286,23 @@ ChunkManager::getStructureAt(BoundingBox box, int dimensionId, bool ignoreBlocks
     }
 }
 
-void ChunkManager::checkAndFixLittelEndianCooridnates(BoundingBox& box) {
-    // Checking small end coordinates and large end coordinates
-    // Y-axis is given to box.max.y if it is big, or box.min.y if it is small.
-    if (box.min.y > box.max.y) {
-        std::swap(box.min.y, box.max.y);
-    }
-    // Checking the x and z axis
+void ChunkManager::checkAndFixMinMax(BoundingBox& box) {
     if (box.min.x > box.max.x) {
         std::swap(box.min.x, box.max.x);
+    }
+    if (box.min.y > box.max.y) {
+        std::swap(box.min.y, box.max.y);
     }
     if (box.min.z > box.max.z) {
         std::swap(box.min.z, box.max.z);
     }
-    tls::entry::getInstance().getSelf().getLogger().debug(
-        "try fix little endian coordinates, min: {}, max: {}"_tr(box.min.toString(), box.max.toString())
-    );
 }
 
 // structure place in world
 void ChunkManager::placeStructure(
     int                                dimensionId,
     std::unique_ptr<StructureTemplate> structure,
-    BlockPos                           minCorner,
+    BlockPos const&                    minCorner,
     Mirror                             mirror,
     Rotation                           rotation,
     bool                               ignoreBlocks,

@@ -279,7 +279,7 @@ void registerChunkCommand() {
             Vec3        pos1 = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos1);
             Vec3        pos2 = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos2);
             BoundingBox box(pos1, pos2);
-            chunk::ChunkManager::checkAndFixLittelEndianCooridnates(box);
+            chunk::ChunkManager::checkAndFixMinMax(box);
 
             int id = chunk::BindData::getInstance().createBindData(box, param.dimentionId, true);
             if (id == -1) {
