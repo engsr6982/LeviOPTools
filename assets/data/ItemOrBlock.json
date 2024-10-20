@@ -48,10 +48,10 @@
         "type": "minecraft:netherreactor"
     },
     {
-        "name": "§lNPC 生成蛋",
+        "name": "§l发光的黑曜石",
         "imageType": "path",
         "imageUrl": "",
-        "type": "minecraft:npc_spawn_egg"
+        "type": "minecraft:glowingobsidian"
     },
     {
         "name": "§l摄像机",
@@ -64,5 +64,17 @@
         "imageType": "path",
         "imageUrl": "",
         "type": "minecraft:jigsaw"
+    },
+    {
+        "name": "§c客户端请求占位符方块",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:client_request_placeholder_block"
+    },
+    {
+        "name": "§l切石机",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:stonecutter"
     }
 ]
