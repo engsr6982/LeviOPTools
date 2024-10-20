@@ -42,7 +42,7 @@
         "aux": 0
     },
     {
-        "name": "§l隐形基岩",
+        "name": "§c§l隐形基岩",
         "imageType": "path",
         "imageUrl": "",
         "type": "minecraft:invisible_bedrock",
@@ -77,7 +77,7 @@
         "aux": 0
     },
     {
-        "name": "§c客户端请求占位符方块",
+        "name": "§c§l客户端请求占位符方块",
         "imageType": "path",
         "imageUrl": "",
         "type": "minecraft:client_request_placeholder_block",
@@ -88,6 +88,69 @@
         "imageType": "path",
         "imageUrl": "",
         "type": "minecraft:stonecutter",
+        "aux": 0
+    },
+    {
+        "name": "§l下界传送门",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:portal",
+        "aux": 0
+    },
+    {
+        "name": "§l灵魂火",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:soul_fire",
+        "aux": 0
+    },
+    {
+        "name": "§l火",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:fire",
+        "aux": 0
+    },
+    {
+        "name": "§l末地传送门",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:end_portal",
+        "aux": 0
+    },
+    {
+        "name": "§l末地折跃门",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:end_gateway",
+        "aux": 0
+    },
+    {
+        "name": "§l气泡柱",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:bubble_column",
+        "aux": 1
+    },
+    {
+        "name": "§l (EDU) 水下TNT",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "tnt",
+        "aux": 2
+    },
+    {
+        "name": "§l (EDU) 水下火把",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:underwater_torch",
+        "aux": 0
+    },
+    {
+        "name": "§l (EDU) 强化玻璃",
+        "imageType": "",
+        "imageUrl": "",
+        "type": "minecraft:hard_glass",
         "aux": 0
     }
 ]
