@@ -12,8 +12,8 @@ using ll::command::CommandRegistrar;
 
 void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
-        config::cfg.command.tools.commandName,
-        config::cfg.command.tools.commandDescription
+        Config::cfg.command.tools.commandName,
+        Config::cfg.command.tools.commandDescription
     );
 
     // tools
@@ -31,7 +31,7 @@ void registerCommand() {
     // tools reload
     cmd.overload().text("reload").execute([&](CommandOrigin const& origin, CommandOutput& output) {
         CHECK_COMMAND_TYPE(output, origin.getOriginType(), CommandOriginType::DedicatedServer);
-        tls::config::loadConfig();
+        tls::Config::load();
         output.success("Config reloaded!"_tr());
     });
 

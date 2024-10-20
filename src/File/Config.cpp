@@ -5,43 +5,38 @@
 #include <ll/api/Config.h>
 #include <ll/api/i18n/I18n.h>
 
-namespace tls::config {
+namespace tls {
 
-
-#define CONFIG_FILE_NAME "Config.json"
 using ll::i18n_literals::operator""_tr;
+namespace fs = std::filesystem;
 
-S_Config cfg; // init Config
+Config Config::cfg; // init Config
 
-bool loadConfig() {
+bool Config::load() {
     auto& mSelf    = entry::entry::getInstance().getSelf();
     auto  filePath = mSelf.getConfigDir() / CONFIG_FILE_NAME;
-    auto& logger   = mSelf.getLogger();
-    // init file
-    std::filesystem::path p = filePath;
-    if (!std::filesystem::exists(p)) {
-        logger.info("Saving default configurations");
-        writeConfig(cfg);
+
+    if (!fs::exists(filePath)) {
+        save(); // save default config
     }
-    // loading
+
     if (!ll::config::loadConfig(cfg, filePath)) {
-        logger.warn("Unable to load configuration from {}"_tr(filePath));
-        return false;
+        save(); // 覆写配置文件
     }
+
     return true;
 }
 
-bool writeConfig(S_Config newCfg) {
+bool Config::save() {
     auto& mSelf          = entry::entry::getInstance().getSelf();
     auto  configFilePath = mSelf.getConfigDir() / CONFIG_FILE_NAME;
     auto& logger         = mSelf.getLogger();
 
-    if (!ll::config::saveConfig(newCfg, configFilePath)) {
+    if (!ll::config::saveConfig(cfg, configFilePath)) {
         logger.error("Cannot save configurations to {}"_tr(configFilePath));
         return false;
     }
     return true;
 }
-bool writeConfig() { return writeConfig(cfg); }
 
-} // namespace tls::config
+} // namespace tls

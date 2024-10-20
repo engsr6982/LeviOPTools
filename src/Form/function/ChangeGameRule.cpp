@@ -22,7 +22,7 @@ string getTr(string rule) {
         if (trList.empty()) {
             // load translations
             std::filesystem::path path =
-                mSelf.getModDir() / tls::config::cfg.function.gameRuleTranslatFilePath; // json file
+                mSelf.getModDir() / tls::Config::cfg.function.gameRuleTranslatFilePath; // json file
             if (std::filesystem::exists(path)) {
                 auto json = nlohmann::json::parse(std::ifstream(path));
                 for (auto& [key, value] : json.items()) {

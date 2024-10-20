@@ -26,8 +26,8 @@ struct TeleportToPosition {
 
 void registerTeleportCommand() {
     auto& tools = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
-        tls::config::cfg.command.tools.commandName,
-        tls::config::cfg.command.tools.commandDescription
+        tls::Config::cfg.command.tools.commandName,
+        tls::Config::cfg.command.tools.commandDescription
     );
 
     // tools teleport <player> [target]

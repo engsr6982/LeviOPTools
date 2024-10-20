@@ -88,7 +88,7 @@ public:
             json data = json::parse(ifs);
             ifs.close();
             return data;
-        } catch (json::parse_error const& e) {
+        } catch (json::parse_error const&) {
             return std::nullopt;
         } catch (...) {
             return std::nullopt;

@@ -1,37 +1,40 @@
 #pragma once
 #include <string>
+#include <string_view>
 
 using string = std::string;
 
-struct S_Config {
-    int    version     = 4;
+
+namespace tls {
+
+struct Config {
+    int    version     = 5;
     int    loggerLevel = 4;
     string language    = "zh_CN";
-    struct S_Command {
-        struct S_Tools {
+    struct {
+        struct {
             string commandName        = "tools";
             string commandDescription = "LeviOPTools";
         } tools;
-        struct S_Gm {
+        struct {
             bool   enable             = true;
             string commandName        = "gm";
             string commandDescription = "LeviOPTools GM";
         } gm;
     } command;
-    struct S_Function {
+    struct {
         string gameRuleTranslatFilePath = "lang/gameRuleTranslat.json";
         int    terminalCacheSize        = 20;
         bool   enableMotd               = true;
         int    motdShowTime             = 30; // motd 切换时间 单位秒
     } function;
+
+
+    static Config cfg;
+    static bool   load();
+    static bool   save();
+
+    static constexpr std::string_view CONFIG_FILE_NAME = "Config.json";
 };
 
-namespace tls::config {
-
-extern S_Config cfg;
-
-bool loadConfig();
-bool writeConfig();
-bool writeConfig(S_Config newCfg);
-
-} // namespace tls::config
+} // namespace tls

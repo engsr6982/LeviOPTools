@@ -124,8 +124,8 @@ string TransFormArgToString(Rotation angle) {
 
 void registerChunkCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
-        config::cfg.command.tools.commandName,
-        config::cfg.command.tools.commandDescription
+        Config::cfg.command.tools.commandName,
+        Config::cfg.command.tools.commandDescription
     );
 
     // tools chunk debug

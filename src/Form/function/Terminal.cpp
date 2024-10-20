@@ -15,7 +15,7 @@ static std::vector<string> mLogs;
  * @param cmd 命令
  */
 void FormatAndAppendToLogs(std::pair<bool, std::string> const& result, std::string const& cmd) {
-    if (mLogs.size() >= (size_t)config::cfg.function.terminalCacheSize) mLogs.erase(mLogs.begin());
+    if (mLogs.size() >= (size_t)Config::cfg.function.terminalCacheSize) mLogs.erase(mLogs.begin());
 
     // format
     string formatedInput = "> " + cmd;

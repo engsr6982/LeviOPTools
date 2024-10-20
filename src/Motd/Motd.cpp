@@ -70,8 +70,8 @@ bool nextMotd() {
 void initMotd() {
     loadMotd();
     motdScheduler.clear();
-    motdScheduler.add<RepeatTask>(ll::chrono::ticks(tls::config::cfg.function.motdShowTime * 20), []() {
-        if (!config::cfg.function.enableMotd) {
+    motdScheduler.add<RepeatTask>(ll::chrono::ticks(tls::Config::cfg.function.motdShowTime * 20), []() {
+        if (!Config::cfg.function.enableMotd) {
             motdScheduler.clear();
             return;
         }

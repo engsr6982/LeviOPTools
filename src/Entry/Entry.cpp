@@ -30,9 +30,9 @@ bool entry::load() {
     using ll::i18n_literals::operator""_tr;
 
     // load
-    tls::config::loadConfig();
+    tls::Config::load();
     tls::chunk::ChunkManager::initAllFolders();
-    logger.consoleLevel = tls::config::cfg.loggerLevel;
+    logger.consoleLevel = tls::Config::cfg.loggerLevel;
 
     // print plugin info
     logger.info("Autor: {}"_tr(PLUGIN_AUTHOR));
