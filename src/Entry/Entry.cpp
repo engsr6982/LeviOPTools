@@ -16,7 +16,6 @@
 #include "PluginInfo.h"
 
 
-
 namespace tls {
 
 static std::unique_ptr<entry> instance;

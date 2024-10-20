@@ -1,39 +1,9 @@
 #pragma once
-// my
 #include "Config/Config.h"
 #include "Form/index.h"
-#include <Entry/PluginInfo.h>
-
-// stl
-#include <algorithm>
-#include <cmath>
-#include <ctime>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <list>
-#include <map>
-#include <memory>
-#include <set>
-#include <stdexcept>
-#include <string>
-#include <vector>
-
-// ll
+#include "Permission/Permission.h"
 #include "ll/api/service/Bedrock.h"
-#include <ll/api/Logger.h>
-#include <ll/api/Utils/HashUtils.h>
-#include <ll/api/command/Command.h>
-#include <ll/api/command/CommandHandle.h>
-#include <ll/api/command/CommandRegistrar.h>
-#include <ll/api/i18n/I18n.h>
-#include <ll/api/mod/NativeMod.h>
-#include <ll/api/service/Bedrock.h>
-#include <ll/api/service/PlayerInfo.h>
-#include <ll/api/service/Service.h>
-
-
-// mc
+#include "magic_enum.hpp"
 #include "mc/common/wrapper/optional_ref.h"
 #include "mc/deps/core/string/HashedString.h"
 #include "mc/nbt/CompoundTag.h"
@@ -48,6 +18,28 @@
 #include "mc/world/level/block/actor/BlockActor.h"
 #include "mc/world/level/chunk/LevelChunk.h"
 #include "mc/world/level/dimension/Dimension.h"
+#include <Entry/PluginInfo.h>
+#include <PermissionCore/Group.h>
+#include <PermissionCore/PermissionCore.h>
+#include <PermissionCore/PermissionManager.h>
+#include <algorithm>
+#include <cmath>
+#include <ctime>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <ll/api/Logger.h>
+#include <ll/api/Utils/HashUtils.h>
+#include <ll/api/command/Command.h>
+#include <ll/api/command/CommandHandle.h>
+#include <ll/api/command/CommandRegistrar.h>
+#include <ll/api/i18n/I18n.h>
+#include <ll/api/mod/NativeMod.h>
+#include <ll/api/service/Bedrock.h>
+#include <ll/api/service/PlayerInfo.h>
+#include <ll/api/service/Service.h>
+#include <map>
 #include <mc/entity/utilities/ActorType.h>
 #include <mc/enums/GameType.h>
 #include <mc/network/packet/LevelChunkPacket.h>
@@ -63,12 +55,12 @@
 #include <mc/server/commands/CommandSelector.h>
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/player/Player.h>
+#include <memory>
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
-// library
-#include "Permission/Permission.h"
-#include <PermissionCore/Group.h>
-#include <PermissionCore/PermissionCore.h>
-#include <PermissionCore/PermissionManager.h>
 
 namespace tls::command {
 
@@ -135,44 +127,7 @@ inline bool checkPlayerPermission(CommandOrigin const& origin, CommandOutput& ou
     };
 }
 
-inline string CommandOriginTypeToString(CommandOriginType type) {
-    switch (type) {
-    case CommandOriginType::Player:
-        return "players";
-    case CommandOriginType::CommandBlock:
-        return "command blocks";
-    case CommandOriginType::MinecartCommandBlock:
-        return "minecart command blocks";
-    case CommandOriginType::DevConsole:
-        return "the developer console";
-    case CommandOriginType::Test:
-        return "test origins";
-    case CommandOriginType::AutomationPlayer:
-        return "automation players";
-    case CommandOriginType::ClientAutomation:
-        return "client automation";
-    case CommandOriginType::DedicatedServer:
-        return "dedicated servers";
-    case CommandOriginType::Entity:
-        return "entities";
-    case CommandOriginType::Virtual:
-        return "virtual origins";
-    case CommandOriginType::GameArgument:
-        return "game argument origins";
-    case CommandOriginType::EntityServer:
-        return "entity servers";
-    case CommandOriginType::Precompiled:
-        return "precompiled origins";
-    case CommandOriginType::GameDirectorEntityServer:
-        return "game director entity servers";
-    case CommandOriginType::Scripting:
-        return "scripting origins";
-    case CommandOriginType::ExecuteContext:
-        return "execute contexts";
-    default:
-        return "unknown";
-    }
-}
+inline string CommandOriginTypeToString(CommandOriginType type) { return string(magic_enum::enum_name(type)); }
 
 #define CHECK_COMMAND_TYPE(__output, __originType, ...)                                                                \
     {                                                                                                                  \

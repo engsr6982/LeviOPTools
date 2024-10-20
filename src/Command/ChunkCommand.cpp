@@ -138,9 +138,9 @@ void registerChunkCommand() {
                 output.error("[Chunk] Failed to get player entity!"_tr());
                 return;
             }
-            auto playerVec3 = player->getPosition();
 
-            auto levelChunk = chunk::ChunkManager::getChunkAt(playerVec3, player->getDimension());
+            Vec3 const& playerVec3 = player->getPosition();
+            LevelChunk* levelChunk = chunk::ChunkManager::getChunkAt(playerVec3, player->getDimension());
 
             output.success("[Chunk] Current Chunk info:"_tr());
             output.success("[Chunk] ================================="_tr());
@@ -172,8 +172,7 @@ void registerChunkCommand() {
             );
             CHECK_ChunkOperation_Permission(output, origin);
 
-            Vec3 pos;
-            pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
+            Vec3 pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
             // get position
             if (origin.getOriginType() == CommandOriginType::Player && pos.x == 0 && pos.y == 0 && pos.z == 0) {
                 auto* player = static_cast<Player*>(origin.getEntity());
@@ -222,8 +221,7 @@ void registerChunkCommand() {
             );
             CHECK_ChunkOperation_Permission(output, origin);
 
-            Vec3 pos;
-            pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
+            Vec3 pos = origin.getExecutePosition(CommandVersion::CurrentVersion, param.pos);
             // get position
             if (origin.getOriginType() == CommandOriginType::Player && pos.x == 0 && pos.y == 0 && pos.z == 0) {
                 auto* player = static_cast<Player*>(origin.getEntity());
