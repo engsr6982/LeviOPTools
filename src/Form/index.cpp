@@ -1,11 +1,9 @@
 #include "Form/index.h"
 #include "Entry/Entry.h"
 #include "Entry/PluginInfo.h"
-#include "File/file.h"
 #include "Form/Mapping.h"
-#include "Utils/Utils.h"
-
 #include "Utils/Mc.h"
+#include "Utils/Utils.h"
 #include <functional>
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
@@ -26,7 +24,6 @@ using string     = std::string;
 using SimpleForm = ll::form::SimpleForm;
 using ModalForm  = ll::form::ModalForm;
 using CustomForm = ll::form::CustomForm;
-using json       = nlohmann::json;
 
 struct Buttons {
     string title;
@@ -57,8 +54,8 @@ void from_json(const json& j, FormStruct& f) {
 void index(Player& player, std::filesystem::path filePath) {
     auto& mSelf    = entry::entry::getInstance().getSelf();
     auto& logger   = mSelf.getLogger();
-    auto  jsonData = tls::file::loadJsonFile(filePath);
-    if (jsonData) {
+    auto  jsonData = Utils::readJsonFromFile(filePath);
+    if (jsonData.has_value()) {
         FormStruct formStruct = jsonData->get<FormStruct>();
 
         SimpleForm fm;
