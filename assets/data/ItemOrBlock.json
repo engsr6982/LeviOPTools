@@ -34,5 +34,35 @@
         "imageType": "path",
         "imageUrl": "textures/items/light_block_15",
         "type": "light_block"
+    },
+    {
+        "name": "§l隐形基岩",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:invisible_bedrock"
+    },
+    {
+        "name": "§l下界反应核",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:netherreactor"
+    },
+    {
+        "name": "§lNPC 生成蛋",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:npc_spawn_egg"
+    },
+    {
+        "name": "§l摄像机",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:camera"
+    },
+    {
+        "name": "§l拼图方块",
+        "imageType": "path",
+        "imageUrl": "",
+        "type": "minecraft:jigsaw"
     }
 ]
