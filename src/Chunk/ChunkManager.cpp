@@ -1,6 +1,7 @@
 #include "ChunkManager.h"
 #include "Chunk/BindData.h"
 #include "Entry/Entry.h"
+#include "Utils/Utils.h"
 #include "ll/api/i18n/i18n.h"
 #include "ll/api/service/Bedrock.h"
 #include "ll/api/service/Service.h"
@@ -69,13 +70,13 @@ bool ChunkManager::findChunkFile(const ChunkPos& pos, int dimensionId) {
 
 // save and load custom chunk data
 bool ChunkManager::saveCustomData(string const& fileName, BoundingBox const& box, int dimensionId) {
-    string fixedFileName             = fileName + ".custom";
-    auto   structure                 = getStructureAt(box, dimensionId, false, true);
-    auto   tag                       = structure->save();
-    tag->at("levioptools_min_x")     = box.min.x;
-    tag->at("levioptools_min_y")     = box.min.y;
-    tag->at("levioptools_min_z")     = box.min.z;
-    tag->at("levioptools_dimension") = dimensionId;
+    string fixedFileName            = fileName + ".custom";
+    auto   structure                = getStructureAt(box, dimensionId, false, true);
+    auto   tag                      = structure->save();
+    (*tag)["levioptools_min_x"]     = box.min.x; // 转引用写入数据
+    (*tag)["levioptools_min_y"]     = box.min.y;
+    (*tag)["levioptools_min_z"]     = box.min.z;
+    (*tag)["levioptools_dimension"] = dimensionId;
     return saveFile(fixedFileName, std::move(tag), FloderType::CustomBackup, dimensionId);
 }
 
@@ -84,10 +85,10 @@ bool ChunkManager::loadCustomData(string const& fileName) {
     if (findCustomDataFile(fixedFileName)) {
         auto tag = loadFile(fixedFileName, FloderType::CustomBackup);
         if (tag) {
-            auto& minX        = tag->at("levioptools_min_x").get<IntTag>().data;
-            auto& minY        = tag->at("levioptools_min_y").get<IntTag>().data;
-            auto& minZ        = tag->at("levioptools_min_z").get<IntTag>().data;
-            auto& dimensionId = tag->at("levioptools_dimension").get<IntTag>().data;
+            auto& minX        = (*tag)["levioptools_min_x"].get<IntTag>().data;
+            auto& minY        = (*tag)["levioptools_min_y"].get<IntTag>().data;
+            auto& minZ        = (*tag)["levioptools_min_z"].get<IntTag>().data;
+            auto& dimensionId = (*tag)["levioptools_dimension"].get<IntTag>().data;
 
             ChunkManager::placeStructure(
                 dimensionId,
@@ -162,7 +163,7 @@ std::filesystem::path ChunkManager::getFilePath(string fileName, ChunkManager::F
         typeStr = "Structure";
         break;
     default:
-        std::runtime_error("Invalid folder type");
+        std::runtime_error("无效的文件夹类型");
     }
     auto globalPath = tls::entry::getInstance().getSelf().getModDir() / "Chunk" / (typeStr);
     if (!createDimFolder) {
@@ -193,7 +194,7 @@ bool ChunkManager::saveFile(
         ofs.close();
         return true;
     } catch (...) {
-        tls::entry::getInstance().getSelf().getLogger().fatal("Failed to save file {}", fileName);
+        tls::entry::getInstance().getSelf().getLogger().fatal("保存文件 {} 失败", fileName);
         return false;
     }
 }
@@ -222,7 +223,7 @@ std::unique_ptr<CompoundTag> ChunkManager::loadFile(string fileName, ChunkManage
         }
         return nullptr;
     } catch (...) {
-        tls::entry::getInstance().getSelf().getLogger().fatal("Failed to load file {}", fileName);
+        tls::entry::getInstance().getSelf().getLogger().fatal("读取文件 {} 失败", fileName);
         return nullptr;
     }
 }
@@ -276,11 +277,8 @@ ChunkManager::getStructureAt(BoundingBox const& box, int dimensionId, bool ignor
         // catch std::length_error, vector too long
     } catch (const std::length_error& e) {
         tls::entry::getInstance().getSelf().getLogger().error(
-            "Selection error, point 1: {} | point 2: {}, original error: {}"_tr(
-                box.min.toString(),
-                box.max.toString(),
-                e.what()
-            )
+            // "Selection error, point 1: {} | point 2: {}, original error: {}"_tr(
+            "选区错误，点1: {} | 点2: {}, 原始异常: {}"_tr(box.min.toString(), box.max.toString(), e.what())
         );
         return nullptr;
     }
